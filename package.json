@@ -1,0 +1,21 @@
+{
+  "name": "osaka-minshuku-admin",
+  "version": "1.0.0",
+  "description": "大阪旅行日民宿 後台管理系統",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build:css": "tailwindcss -i src/input.css -o css/tailwind.min.css --minify"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "express": "^4.21.0",
+    "express-rate-limit": "^8.2.1",
+    "multer": "^1.4.5-lts.1",
+    "playwright": "^1.58.2"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.19",
+    "xlsx": "^0.18.5"
+  }
+}

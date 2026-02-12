@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>後台管理 | 大阪旅行日民宿</title>
+  <link rel="stylesheet" href="/css/tailwind.min.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif; }
+    .sidebar-nav-item.active { background: rgba(255,255,255,0.1); }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.06); }
+    .toast {
+      position: fixed; top: 20px; right: 20px; z-index: 9999;
+      padding: 12px 20px; border-radius: 8px; color: white;
+      font-size: 14px; animation: slideIn 0.3s ease-out;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .toast.success { background: #008060; }
+    .toast.error { background: #d72c0d; }
+    .toast.info { background: #2c6ecb; }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .img-thumb { position: relative; }
+    .img-thumb:first-child::after {
+      content: '封面'; position: absolute; top: 4px; left: 4px;
+      background: #008060; color: white; font-size: 10px;
+      padding: 2px 6px; border-radius: 4px;
+    }
+    .img-thumb .delete-img {
+      position: absolute; top: 4px; right: 4px;
+      background: rgba(0,0,0,0.6); color: white;
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; cursor: pointer; opacity: 0; transition: opacity 0.2s;
+    }
+    .img-thumb:hover .delete-img { opacity: 1; }
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 1000; display: flex; align-items: center; justify-content: center;
+    }
+    textarea { resize: vertical; }
+    .amenity-check:checked + .amenity-label {
+      background: #f2f7fe; border-color: #2c6ecb; color: #1a1c1d;
+    }
+    .amenity-label {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 12px; border: 1px solid #e1e3e5; border-radius: 8px;
+      cursor: pointer; font-size: 0.8125rem; transition: all 0.15s;
+      user-select: none; background: white;
+    }
+    .amenity-label:hover { border-color: #2c6ecb; }
+    .custom-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #f2f7fe; color: #1a1c1d; padding: 4px 10px;
+      border-radius: 6px; font-size: 0.8rem;
+    }
+    .custom-tag button {
+      background: none; border: none; cursor: pointer; color: #6d7175;
+      font-size: 14px; line-height: 1; padding: 0 2px;
+    }
+    .custom-tag button:hover { color: #d72c0d; }
+    input:focus, textarea:focus, select:focus {
+      outline: none; border-color: #2c6ecb; box-shadow: 0 0 0 1px #2c6ecb;
+    }
+    .form-input {
+      width: 100%; padding: 8px 12px; border: 1px solid #e1e3e5;
+      border-radius: 8px; font-size: 0.875rem; background: white;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-label { display: block; font-size: 0.8125rem; font-weight: 500; color: #202223; margin-bottom: 4px; }
+    .form-hint { font-size: 0.75rem; color: #6d7175; margin-top: 2px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 500;
+      cursor: pointer; transition: all 0.15s; border: 1px solid transparent;
+    }
+    .btn-primary { background: #008060; color: white; border-color: #006e52; }
+    .btn-primary:hover { background: #006e52; }
+    .btn-default { background: white; color: #202223; border-color: #e1e3e5; }
+    .btn-default:hover { background: #f6f6f7; }
+    .btn-destructive { background: white; color: #d72c0d; border-color: #e1e3e5; }
+    .btn-destructive:hover { background: #fef2f2; border-color: #d72c0d; }
+    .btn-destructive-fill { background: #d72c0d; color: white; border-color: #bc2200; }
+    .btn-destructive-fill:hover { background: #bc2200; }
+    .card {
+      background: white; border: 1px solid #e1e3e5; border-radius: 12px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 20px; border-bottom: 1px solid #e1e3e5;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-body { padding: 20px; }
+  </style>
+</head>
+<body class="bg-surface min-h-screen text-text-primary">
+
+<!-- ==================== LOGIN GATE ==================== -->
+<div id="loginGate" class="min-h-screen flex items-center justify-center bg-surface">
+  <div class="bg-white rounded-xl shadow-sm border border-border-default p-8 w-full max-w-sm">
+    <div class="text-center mb-6">
+      <div class="w-14 h-14 mx-auto mb-3 bg-sidebar rounded-xl flex items-center justify-center">
+        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+      </div>
+      <h1 class="text-lg font-semibold text-text-primary">大阪旅行日民宿</h1>
+      <p class="text-text-secondary text-sm mt-1">後台管理系統</p>
+    </div>
+    <form autocomplete="off" onsubmit="event.preventDefault();login()">
+      <label class="form-label">管理密碼</label>
+      <input type="password" id="passwordInput" placeholder="請輸入密碼"
+        class="form-input text-center" autocomplete="new-password">
+      <button type="submit" class="btn btn-primary w-full mt-4 py-2.5">
+        登入後台
+      </button>
+      <p id="loginError" class="text-destructive text-sm text-center mt-3 hidden">密碼錯誤</p>
+    </form>
+  </div>
+</div>
+
+<!-- ==================== ADMIN PANEL ==================== -->
+<div id="adminPanel" class="hidden">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-60 bg-sidebar z-40 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform">
+    <!-- Logo -->
+    <div class="px-4 py-4 border-b border-white/10">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-white text-sm font-semibold leading-tight">大阪旅行日</p>
+          <p class="text-white/50 text-xs">管理後台</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
+      <button onclick="navigate('dashboard')" data-nav="dashboard"
+        class="sidebar-nav-item active w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/90 text-sm transition-colors">
+        <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+        </svg>
+        儀表板
+      </button>
+      <button onclick="navigate('properties')" data-nav="properties"
+        class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/90 text-sm transition-colors">
+        <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+        </svg>
+        房源管理
+        <span id="navPropertyCount" class="ml-auto text-xs text-white/40 bg-white/10 px-1.5 py-0.5 rounded">0</span>
+      </button>
+      <button onclick="navigate('regions')" data-nav="regions"
+        class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/90 text-sm transition-colors">
+        <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        區域管理
+        <span id="navRegionCount" class="ml-auto text-xs text-white/40 bg-white/10 px-1.5 py-0.5 rounded">0</span>
+      </button>
+    </nav>
+
+    <!-- Footer -->
+    <div class="px-4 py-3 border-t border-white/10">
+      <button onclick="logout()" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/50 hover:text-white/80 hover:bg-white/5 text-sm transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        登出
+      </button>
+    </div>
+  </aside>
+
+  <!-- Mobile Sidebar Overlay -->
+  <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+  <!-- Main Content -->
+  <main class="lg:ml-60 min-h-screen">
+    <!-- Top Bar -->
+    <header class="sticky top-0 z-20 bg-white border-b border-border-default h-14">
+      <div class="flex items-center justify-between h-full px-4 lg:px-6">
+        <div class="flex items-center gap-3">
+          <button onclick="toggleSidebar()" class="lg:hidden p-2 -ml-2 hover:bg-surface-hover rounded-lg">
+            <svg class="w-5 h-5 text-icon-default" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+          <nav id="breadcrumb" class="flex items-center gap-1.5 text-sm">
+            <span class="text-text-secondary">儀表板</span>
+          </nav>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-text-disabled hidden sm:inline">大阪旅行日民宿</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <div class="p-4 lg:p-6 max-w-6xl">
+
+      <!-- View: Dashboard -->
+      <div id="view-dashboard">
+        <h1 class="text-xl font-semibold mb-6">儀表板</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          <div class="card">
+            <div class="card-body flex items-center gap-4">
+              <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold" id="statProperties">0</p>
+                <p class="text-sm text-text-secondary">房源總數</p>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body flex items-center gap-4">
+              <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-link" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold" id="statRegions">0</p>
+                <p class="text-sm text-text-secondary">區域總數</p>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body flex items-center gap-4">
+              <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold" id="statImages">0</p>
+                <p class="text-sm text-text-secondary">圖片總數</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Properties -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">最近更新的房源</h2>
+            <button onclick="navigate('properties')" class="text-link text-sm hover:underline">查看全部</button>
+          </div>
+          <div id="dashboardRecentList" class="divide-y divide-border-subdued"></div>
+        </div>
+      </div>
+
+      <!-- View: Property List -->
+      <div id="view-properties" class="hidden">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <h1 class="text-xl font-semibold">房源管理</h1>
+          <button onclick="createNewProperty()" class="btn btn-primary">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            新增房源
+          </button>
+        </div>
+
+        <!-- Search -->
+        <div class="mb-4">
+          <input type="text" id="propertySearch" placeholder="搜尋房源名稱或 ID..."
+            class="form-input max-w-sm" oninput="renderPropertyList()" autocomplete="off" name="property-search-nofill">
+        </div>
+
+        <!-- Property Table -->
+        <div class="card">
+          <div id="propertyTableBody" class="divide-y divide-border-subdued"></div>
+          <div id="propertyEmpty" class="hidden p-12 text-center text-text-secondary">
+            <svg class="w-12 h-12 mx-auto mb-3 text-text-disabled" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+            <p class="font-medium mb-1">尚無房源</p>
+            <p class="text-sm">點擊「新增房源」開始建立第一個房源</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: Property Form (Add/Edit) -->
+      <div id="view-property-form" class="hidden">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <h1 id="formTitle" class="text-xl font-semibold">新增房源</h1>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="navigate('properties')" class="btn btn-default">取消</button>
+            <button onclick="deleteProperty()" id="btnDelete" class="btn btn-destructive hidden">刪除</button>
+            <button onclick="saveProperty()" class="btn btn-primary">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              儲存
+            </button>
+          </div>
+        </div>
+
+        <!-- ============ 首頁卡片資訊 ============ -->
+        <div class="mb-2 mt-2">
+          <p class="text-xs font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            首頁顯示
+          </p>
+        </div>
+
+        <!-- 基本資訊 (首頁) -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">基本資訊</h2>
+            <span class="text-xs text-text-disabled">顯示在首頁房源卡片</span>
+          </div>
+          <div class="card-body space-y-4">
+            <input type="hidden" id="f-id">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="form-label">房源名稱 <span class="text-destructive">*</span></label>
+                <input type="text" id="f-name" class="form-input" placeholder="例: 文華園 大正 Guest House" oninput="autoGenerateSlug()" onblur="checkNameDuplicate()">
+              </div>
+              <div>
+                <label class="form-label">所屬區域</label>
+                <select id="f-regionId" class="form-input">
+                  <option value="">-- 請選擇區域 --</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="form-label">房源類型</label>
+                <select id="f-type" class="form-input">
+                  <option value="包棟民宿">包棟民宿</option>
+                  <option value="獨立式套房">獨立式套房</option>
+                  <option value="Guest House">Guest House</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">簡短描述</label>
+                <input type="text" id="f-shortDesc" class="form-input" placeholder="例: 全新裝潢・3間浴室">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="form-label">標籤 Badge</label>
+                <input type="text" id="f-badge" class="form-input" placeholder="例: 包棟民宿">
+              </div>
+              <div>
+                <label class="form-label">次要標籤</label>
+                <input type="text" id="f-secondaryBadge" class="form-input" placeholder="例: 2025新開幕">
+              </div>
+            </div>
+            <div>
+              <label class="form-label">地址</label>
+              <input type="text" id="f-address" class="form-input" placeholder="例: 大阪市大正區三軒家西1-12-19">
+            </div>
+            <div>
+              <label class="form-label">交通資訊（卡片簡短顯示）</label>
+              <input type="text" id="f-transportInfo" class="form-input" placeholder="例: 大正車站4分鐘・心齋橋3站">
+            </div>
+          </div>
+        </div>
+
+        <!-- 封面圖片 (首頁) -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">封面圖片</h2>
+            <span class="text-xs text-text-disabled">首頁卡片的主圖</span>
+          </div>
+          <div class="card-body">
+            <div id="coverPreview" class="mb-3"></div>
+            <div class="flex gap-2 flex-wrap">
+              <input type="text" id="coverUrlInput" placeholder="貼上封面圖片 URL" class="form-input flex-1 min-w-[200px]">
+              <button onclick="setCoverByUrl()" class="btn btn-default">設定 URL</button>
+              <label class="btn btn-default cursor-pointer">
+                上傳封面
+                <input type="file" accept="image/*" onchange="setCoverByUpload(event)" class="hidden">
+              </label>
+            </div>
+            <p class="form-hint mt-2">此圖片會顯示在首頁卡片上</p>
+          </div>
+        </div>
+
+        <!-- ============ 詳情頁資訊 ============ -->
+        <div class="mb-2 mt-6">
+          <p class="text-xs font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            詳情頁顯示
+          </p>
+        </div>
+
+        <!-- 影片 & 介紹 (詳情頁) -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">影片 & 房源介紹</h2>
+            <span class="text-xs text-text-disabled">詳情頁頂部區塊</span>
+          </div>
+          <div class="card-body space-y-4">
+            <div>
+              <label class="form-label">YouTube 影片 URL</label>
+              <input type="text" id="f-videoUrl" class="form-input" placeholder="例: https://www.youtube.com/watch?v=xxxx 或 https://youtu.be/xxxx">
+              <p class="form-hint">詳情頁左側會嵌入此影片</p>
+            </div>
+            <div>
+              <label class="form-label">房源介紹</label>
+              <textarea id="f-introduction" rows="5" class="form-input" placeholder="在這裡撰寫房源的詳細描述...&#10;&#10;每段用空行分隔，會自動分段顯示在詳情頁右側"></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="form-label">容量</label>
+                <input type="text" id="f-capacity" class="form-input" placeholder="例: 最多8人">
+              </div>
+              <div>
+                <label class="form-label">坪數</label>
+                <input type="text" id="f-size" class="form-input" placeholder="例: 58㎡">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 快速資訊卡 (詳情頁) -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">快速資訊卡</h2>
+            <span class="text-xs text-text-disabled">詳情頁介紹下方的 2 張摘要卡</span>
+          </div>
+          <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-surface rounded-lg p-4 space-y-3">
+                <p class="text-xs font-semibold text-text-secondary uppercase">卡片 1</p>
+                <input type="text" id="f-qi1Title" class="form-input" placeholder="標題（例: 房源特色）">
+                <input type="text" id="f-qi1Value" class="form-input" placeholder="數值（例: 2025年新屋）">
+                <input type="text" id="f-qi1Desc" class="form-input" placeholder="描述（例: 全新裝潢設備）">
+              </div>
+              <div class="bg-surface rounded-lg p-4 space-y-3">
+                <p class="text-xs font-semibold text-text-secondary uppercase">卡片 2</p>
+                <input type="text" id="f-qi2Title" class="form-input" placeholder="標題（例: 房源類型）">
+                <input type="text" id="f-qi2Value" class="form-input" placeholder="數值（例: 整套房源）">
+                <input type="text" id="f-qi2Desc" class="form-input" placeholder="描述（例: 包棟民宿）">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 圖片集 (詳情頁) -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">圖片集</h2>
+            <span class="text-xs text-text-disabled">詳情頁「瀏覽照片」區塊</span>
+          </div>
+          <div class="card-body">
+            <div class="flex gap-2 mb-3 flex-wrap">
+              <input type="text" id="imageUrlInput" placeholder="貼上圖片 URL" class="form-input flex-1 min-w-[200px]">
+              <button onclick="addImageByUrl()" class="btn btn-default">新增 URL</button>
+              <label class="btn btn-default cursor-pointer">
+                上傳圖片
+                <input type="file" accept="image/*" multiple onchange="addImageByUpload(event)" class="hidden">
+              </label>
+            </div>
+            <p class="form-hint mb-3">這些照片會以 4 欄網格顯示在詳情頁。拖曳可調整順序。</p>
+            <div id="imageGrid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3"></div>
+          </div>
+        </div>
+
+        <!-- 空間介紹 (詳情頁) -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">空間介紹</h2>
+            <span class="text-xs text-text-disabled">詳情頁「空間介紹」4 張卡片</span>
+          </div>
+          <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-surface rounded-lg p-4 space-y-3">
+                <p class="text-xs font-semibold text-text-secondary uppercase">卡片 1</p>
+                <input type="text" id="f-si1Title" class="form-input" placeholder="標題（例: 衛浴設備）">
+                <textarea id="f-si1Desc" rows="2" class="form-input" placeholder="描述"></textarea>
+              </div>
+              <div class="bg-surface rounded-lg p-4 space-y-3">
+                <p class="text-xs font-semibold text-text-secondary uppercase">卡片 2</p>
+                <input type="text" id="f-si2Title" class="form-input" placeholder="標題（例: 適合家庭）">
+                <textarea id="f-si2Desc" rows="2" class="form-input" placeholder="描述"></textarea>
+              </div>
+              <div class="bg-surface rounded-lg p-4 space-y-3">
+                <p class="text-xs font-semibold text-text-secondary uppercase">卡片 3</p>
+                <input type="text" id="f-si3Title" class="form-input" placeholder="標題（例: 交通便利）">
+                <textarea id="f-si3Desc" rows="2" class="form-input" placeholder="描述"></textarea>
+              </div>
+              <div class="bg-surface rounded-lg p-4 space-y-3">
+                <p class="text-xs font-semibold text-text-secondary uppercase">卡片 4</p>
+                <input type="text" id="f-si4Title" class="form-input" placeholder="標題（例: 入住/退房）">
+                <textarea id="f-si4Desc" rows="2" class="form-input" placeholder="描述"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 交通 & 地圖 (詳情頁) -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">交通 & 地圖</h2>
+            <span class="text-xs text-text-disabled">詳情頁「住宿地址」區塊</span>
+          </div>
+          <div class="card-body space-y-4">
+            <div>
+              <label class="form-label">最近車站</label>
+              <input type="text" id="f-nearestStation" class="form-input" placeholder="例: JR / 大阪Metro 大正站">
+            </div>
+            <div>
+              <label class="form-label">詳細交通資訊（每行一條）</label>
+              <textarea id="f-transportDetail" rows="4" class="form-input" placeholder="大正站步行4分鐘&#10;心齋橋站 只需3站&#10;難波站 約10分鐘"></textarea>
+            </div>
+            <div>
+              <label class="form-label">Google Maps 嵌入 URL</label>
+              <input type="text" id="f-mapEmbedUrl" class="form-input" placeholder="https://www.google.com/maps/embed?pb=...">
+            </div>
+          </div>
+        </div>
+
+        <!-- 設備清單 (詳情頁) -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">設備清單</h2>
+            <span class="text-xs text-text-disabled">詳情頁「有提供的設備和服務」</span>
+          </div>
+          <div class="card-body">
+            <div id="amenitiesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-4"></div>
+            <div class="border-t border-border-subdued pt-4">
+              <p class="form-label">自訂設備</p>
+              <div class="flex gap-2 mb-3">
+                <input type="text" id="customAmenityInput" class="form-input flex-1" placeholder="輸入自訂設備名稱" onkeydown="if(event.key==='Enter')addCustomAmenity()">
+                <button onclick="addCustomAmenity()" class="btn btn-default">新增</button>
+              </div>
+              <div id="customAmenitiesList" class="flex flex-wrap gap-2"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 預訂資訊 (詳情頁) -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">預訂資訊</h2>
+            <span class="text-xs text-text-disabled">詳情頁底部「選擇入住日期」</span>
+          </div>
+          <div class="card-body space-y-4">
+            <div>
+              <label class="form-label">Airbnb 連結</label>
+              <input type="text" id="f-airbnbUrl" class="form-input" placeholder="https://www.airbnb.com.tw/rooms/...">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="form-label">入住時間</label>
+                <input type="text" id="f-checkIn" class="form-input" placeholder="例: 下午3點以後">
+              </div>
+              <div>
+                <label class="form-label">退房時間</label>
+                <input type="text" id="f-checkOut" class="form-input" placeholder="例: 上午10點之前">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Actions -->
+        <div class="flex items-center justify-between py-4">
+          <button onclick="deleteProperty()" id="btnDeleteBottom" class="btn btn-destructive hidden">刪除此房源</button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button onclick="navigate('properties')" class="btn btn-default">取消</button>
+            <button onclick="saveProperty()" class="btn btn-primary">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              儲存
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: Regions -->
+      <div id="view-regions" class="hidden">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <h1 class="text-xl font-semibold">區域管理</h1>
+          <button onclick="openRegionModal()" class="btn btn-primary">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            新增區域
+          </button>
+        </div>
+
+        <div class="card">
+          <div id="regionTableBody" class="divide-y divide-border-subdued"></div>
+          <div id="regionEmpty" class="hidden p-12 text-center text-text-secondary">
+            <svg class="w-12 h-12 mx-auto mb-3 text-text-disabled" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            </svg>
+            <p class="font-medium mb-1">尚無區域</p>
+            <p class="text-sm">點擊「新增區域」開始建立</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Region Modal -->
+<div id="regionModal" class="modal-overlay hidden" onclick="if(event.target===this)closeRegionModal()">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+    <h3 id="regionModalTitle" class="text-lg font-semibold mb-4">新增區域</h3>
+    <div class="space-y-4">
+      <div>
+        <label class="form-label">區域名稱（中文）<span class="text-destructive">*</span></label>
+        <input type="text" id="r-nameZh" class="form-input" placeholder="例: 大正區">
+      </div>
+      <div>
+        <label class="form-label">區域名稱（英文）</label>
+        <input type="text" id="r-nameEn" class="form-input" placeholder="例: Taisho Ward">
+      </div>
+      <div>
+        <label class="form-label">區域描述</label>
+        <input type="text" id="r-desc" class="form-input" placeholder="例: 大阪的小沖繩...">
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button onclick="closeRegionModal()" class="btn btn-default flex-1">取消</button>
+      <button onclick="saveRegion()" class="btn btn-primary flex-1">確認</button>
+    </div>
+  </div>
+</div>
+
+<!-- Select Region Modal (for new property) -->
+<div id="selectRegionModal" class="modal-overlay hidden" onclick="if(event.target===this)closeSelectRegionModal()">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+    <h3 class="text-lg font-semibold mb-4">選擇區域</h3>
+    <p class="text-sm text-text-secondary mb-4">請選擇新房源所屬的區域</p>
+    <div id="selectRegionList" class="space-y-2 max-h-60 overflow-y-auto"></div>
+    <div class="flex gap-3 mt-6">
+      <button onclick="closeSelectRegionModal()" class="btn btn-default flex-1">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== CONFIG ====================
+const API_BASE = '/api';
+const DEFAULT_AMENITIES = ['Wi-Fi','電視','廚房','洗衣機','空調設備','吹風機','冰箱','自助入住','停車場','浴缸','微波爐','電梯'];
+let AUTH_TOKEN = sessionStorage.getItem('admin_token') || '';
+
+// ==================== STATE ====================
+let properties = [];
+let regions = [];
+let currentView = 'dashboard';
+let currentPropertyId = null;
+let currentRegionId = null;
+let currentCoverImage = null;
+let currentImages = [];
+let currentAmenities = [];
+let isNewProperty = false;
+let editingRegionId = null;
+
+// ==================== AUTH ====================
+async function login() {
+  const pwd = document.getElementById('passwordInput').value;
+  try {
+    const res = await fetch(API_BASE + '/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd })
+    });
+    if (!res.ok) throw new Error('密碼錯誤');
+    const data = await res.json();
+    AUTH_TOKEN = data.token;
+    sessionStorage.setItem('admin_token', AUTH_TOKEN);
+    document.getElementById('loginGate').classList.add('hidden');
+    document.getElementById('adminPanel').classList.remove('hidden');
+    loadData();
+  } catch (err) {
+    document.getElementById('loginError').classList.remove('hidden');
+    document.getElementById('passwordInput').value = '';
+    document.getElementById('passwordInput').focus();
+  }
+}
+
+function logout() {
+  AUTH_TOKEN = '';
+  sessionStorage.removeItem('admin_token');
+  location.reload();
+}
+
+async function checkAuth() {
+  if (AUTH_TOKEN) {
+    try {
+      const res = await fetch(API_BASE + '/export', { headers: { 'X-Admin-Token': AUTH_TOKEN } });
+      if (res.status === 401) { AUTH_TOKEN = ''; sessionStorage.removeItem('admin_token'); return; }
+      document.getElementById('loginGate').classList.add('hidden');
+      document.getElementById('adminPanel').classList.remove('hidden');
+      loadData();
+    } catch (e) { /* stay on login */ }
+  }
+}
+
+// ==================== API ====================
+function authHeaders(extra) {
+  return Object.assign({ 'X-Admin-Token': AUTH_TOKEN }, extra || {});
+}
+
+async function apiGet(path) {
+  const res = await fetch(API_BASE + path, { headers: authHeaders() });
+  if (res.status === 401) { logout(); return; }
+  if (!res.ok) throw new Error('API error: ' + res.status);
+  return res.json();
+}
+
+async function apiPost(path, data) {
+  const res = await fetch(API_BASE + path, {
+    method: 'POST',
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify(data)
+  });
+  if (res.status === 401) { logout(); return; }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'API error: ' + res.status);
+  }
+  return res.json();
+}
+
+async function apiPut(path, data) {
+  const res = await fetch(API_BASE + path, {
+    method: 'PUT',
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify(data)
+  });
+  if (res.status === 401) { logout(); return; }
+  if (!res.ok) throw new Error('API error: ' + res.status);
+  return res.json();
+}
+
+async function apiDelete(path) {
+  const res = await fetch(API_BASE + path, { method: 'DELETE', headers: authHeaders() });
+  if (res.status === 401) { logout(); return; }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'API error: ' + res.status);
+  }
+  return res.json();
+}
+
+async function apiUpload(files) {
+  const formData = new FormData();
+  for (const file of files) formData.append('images', file);
+  const res = await fetch(API_BASE + '/upload', { method: 'POST', headers: { 'X-Admin-Token': AUTH_TOKEN }, body: formData });
+  if (res.status === 401) { logout(); return; }
+  if (!res.ok) throw new Error('Upload failed');
+  return res.json();
+}
+
+// ==================== DATA LOADING ====================
+async function loadData() {
+  try {
+    regions = await apiGet('/regions');
+    properties = regions.flatMap(r => r.properties);
+    updateCounts();
+    renderCurrentView();
+  } catch (err) {
+    showToast('載入資料失敗：' + err.message, 'error');
+    regions = [];
+    properties = [];
+  }
+}
+
+function updateCounts() {
+  const totalImages = properties.reduce((sum, p) => sum + (p.images ? p.images.length : 0), 0);
+  document.getElementById('statProperties').textContent = properties.length;
+  document.getElementById('statRegions').textContent = regions.length;
+  document.getElementById('statImages').textContent = totalImages;
+  document.getElementById('navPropertyCount').textContent = properties.length;
+  document.getElementById('navRegionCount').textContent = regions.length;
+}
+
+// ==================== NAVIGATION ====================
+function navigate(view, params) {
+  // Hide all views
+  document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+  // Show target view
+  const el = document.getElementById('view-' + view);
+  if (el) el.classList.remove('hidden');
+
+  // Update sidebar active
+  document.querySelectorAll('.sidebar-nav-item').forEach(btn => btn.classList.remove('active'));
+  const navKey = view === 'property-form' ? 'properties' : view;
+  const activeBtn = document.querySelector(`[data-nav="${navKey}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  currentView = view;
+  updateBreadcrumb(view);
+  renderCurrentView();
+
+  // Close mobile sidebar
+  document.getElementById('sidebar').classList.add('-translate-x-full');
+  document.getElementById('sidebarOverlay').classList.add('hidden');
+}
+
+function updateBreadcrumb(view) {
+  const bc = document.getElementById('breadcrumb');
+  const names = {
+    dashboard: '儀表板',
+    properties: '房源管理',
+    'property-form': isNewProperty ? '新增房源' : '編輯房源',
+    regions: '區域管理'
+  };
+
+  if (view === 'property-form') {
+    bc.innerHTML = `
+      <button onclick="navigate('properties')" class="text-link hover:underline">房源管理</button>
+      <svg class="w-4 h-4 text-text-disabled" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-text-primary font-medium">${names[view]}</span>`;
+  } else {
+    bc.innerHTML = `<span class="text-text-primary font-medium">${names[view] || view}</span>`;
+  }
+}
+
+function renderCurrentView() {
+  switch (currentView) {
+    case 'dashboard': renderDashboard(); break;
+    case 'properties': renderPropertyList(); break;
+    case 'property-form': break; // Form is rendered when opening
+    case 'regions': renderRegionList(); break;
+  }
+}
+
+// ==================== SIDEBAR ====================
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('-translate-x-full');
+  overlay.classList.toggle('hidden');
+}
+
+// ==================== DASHBOARD ====================
+function renderDashboard() {
+  const list = document.getElementById('dashboardRecentList');
+  const recent = [...properties].sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || '')).slice(0, 5);
+
+  if (recent.length === 0) {
+    list.innerHTML = '<div class="p-8 text-center text-text-secondary text-sm">尚無房源資料</div>';
+    return;
+  }
+
+  list.innerHTML = recent.map(p => {
+    const thumb = p.images && p.images.length > 0 ? p.images[0].url : '';
+    const region = regions.find(r => r.id === p.regionId);
+    return `
+      <div class="flex items-center gap-4 px-5 py-3 hover:bg-surface-hover cursor-pointer transition-colors" onclick="editProperty('${p.id}')">
+        <div class="w-12 h-12 rounded-lg overflow-hidden bg-surface flex-shrink-0">
+          ${thumb
+            ? `<img src="${thumb}" class="w-full h-full object-cover" onerror="this.style.display='none'">`
+            : '<div class="w-full h-full flex items-center justify-center text-text-disabled"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>'}
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-medium truncate">${p.name || '(未命名)'}</p>
+          <p class="text-xs text-text-secondary truncate">${region ? region.nameZh : ''} · ${p.type || ''}</p>
+        </div>
+        <div class="text-xs text-text-disabled flex-shrink-0">
+          ${p.images ? p.images.length : 0} 張圖片
+        </div>
+        <svg class="w-4 h-4 text-text-disabled flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>`;
+  }).join('');
+}
+
+// ==================== PROPERTY LIST ====================
+function renderPropertyList() {
+  const search = (document.getElementById('propertySearch')?.value || '').toLowerCase();
+  const filtered = properties.filter(p =>
+    !search || (p.name || '').toLowerCase().includes(search) || (p.id || '').toLowerCase().includes(search)
+  );
+
+  const table = document.getElementById('propertyTableBody');
+  const empty = document.getElementById('propertyEmpty');
+
+  if (filtered.length === 0) {
+    table.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+
+  empty.classList.add('hidden');
+  table.innerHTML = filtered.map(p => {
+    const thumb = p.images && p.images.length > 0 ? p.images[0].url : '';
+    const region = regions.find(r => r.id === p.regionId);
+    return `
+      <div class="flex items-center gap-4 px-5 py-3 hover:bg-surface-hover cursor-pointer transition-colors" onclick="editProperty('${p.id}')">
+        <div class="w-14 h-10 rounded-lg overflow-hidden bg-surface flex-shrink-0">
+          ${thumb
+            ? `<img src="${thumb}" class="w-full h-full object-cover" onerror="this.style.display='none'">`
+            : '<div class="w-full h-full flex items-center justify-center text-text-disabled"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>'}
+        </div>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-medium truncate">${p.name || '(未命名)'}</p>
+          <p class="text-xs text-text-secondary truncate">${p.id}</p>
+        </div>
+        <div class="hidden sm:block text-sm text-text-secondary flex-shrink-0 w-24 truncate">
+          ${region ? region.nameZh : '-'}
+        </div>
+        <div class="hidden md:block text-sm text-text-secondary flex-shrink-0 w-20 truncate">
+          ${p.type || '-'}
+        </div>
+        <div class="text-xs text-text-disabled flex-shrink-0 w-16 text-right">
+          ${p.images ? p.images.length : 0} 張
+        </div>
+        <svg class="w-4 h-4 text-text-disabled flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </div>`;
+  }).join('');
+}
+
+// ==================== PROPERTY FORM ====================
+function createNewProperty() {
+  if (regions.length === 0) {
+    showToast('請先新增至少一個區域', 'error');
+    navigate('regions');
+    return;
+  }
+
+  // Show region selection modal
+  const list = document.getElementById('selectRegionList');
+  list.innerHTML = regions.map(r => `
+    <button onclick="startNewPropertyInRegion(${r.id})" class="w-full text-left px-4 py-3 rounded-lg border border-border-default hover:bg-surface-hover transition-colors">
+      <p class="text-sm font-medium">${r.nameZh}</p>
+      <p class="text-xs text-text-secondary">${r.nameEn || ''} · ${(r.properties || []).length} 個房源</p>
+    </button>
+  `).join('');
+  document.getElementById('selectRegionModal').classList.remove('hidden');
+}
+
+function closeSelectRegionModal() {
+  document.getElementById('selectRegionModal').classList.add('hidden');
+}
+
+function startNewPropertyInRegion(regionId) {
+  closeSelectRegionModal();
+  isNewProperty = true;
+  currentPropertyId = null;
+  currentRegionId = regionId;
+  currentCoverImage = null;
+  currentImages = [];
+  currentAmenities = [];
+
+  clearForm();
+  document.getElementById('f-checkIn').value = '下午3點以後';
+  document.getElementById('f-checkOut').value = '上午10點之前';
+  document.getElementById('f-regionId').value = regionId;
+
+  document.getElementById('formTitle').textContent = '新增房源';
+  document.getElementById('btnDelete').classList.add('hidden');
+  document.getElementById('btnDeleteBottom').classList.add('hidden');
+
+  renderCoverPreview();
+  renderImageGrid();
+  renderAmenities();
+  populateRegionSelect();
+  navigate('property-form');
+}
+
+function editProperty(id) {
+  const prop = properties.find(p => p.id === id);
+  if (!prop) return;
+
+  isNewProperty = false;
+  currentPropertyId = prop.id;
+  currentRegionId = prop.regionId || null;
+
+  loadPropertyToForm(prop);
+  document.getElementById('formTitle').textContent = '編輯：' + (prop.name || '(未命名)');
+  document.getElementById('btnDelete').classList.remove('hidden');
+  document.getElementById('btnDeleteBottom').classList.remove('hidden');
+
+  populateRegionSelect();
+  navigate('property-form');
+}
+
+function populateRegionSelect() {
+  const sel = document.getElementById('f-regionId');
+  sel.innerHTML = '<option value="">-- 請選擇區域 --</option>' +
+    regions.map(r => `<option value="${r.id}" ${currentRegionId == r.id ? 'selected' : ''}>${r.nameZh}</option>`).join('');
+}
+
+// ==================== AUTO SLUG ====================
+function generateSlug(name) {
+  if (!name) return '';
+  // Japanese/Chinese character to romaji mapping (common property name chars)
+  const map = {
+    '艾':'ai','屋':'ya','吉':'kichi','よ':'yo','も':'mo','ぎ':'gi','の':'no',
+    '十':'ju','一':'ichi','鳴':'mei','文':'bun','華':'ka','苑':'en','大':'tai',
+    '正':'sho','桜':'sakura','川':'kawa','西':'nishi','九':'ku','条':'jo','條':'jo',
+    '台':'tai','香':'xiang','芸':'gei','舎':'sha','棟':'tou','民':'min','宿':'shuku'
+  };
+  let slug = name
+    .toLowerCase()
+    .replace(/[^\w\s\u3000-\u9fff\u30a0-\u30ff\u3040-\u309f-]/g, '')  // keep CJK, alphanumeric, hyphens
+    .replace(/[\s\u3000]+/g, '-')        // spaces to hyphens
+    .replace(/[・·]/g, '-');
+  // Replace known CJK chars, remove remaining ones
+  let result = '';
+  for (const ch of slug) {
+    if (map[ch]) result += map[ch];
+    else if (/[\u3000-\u9fff\u30a0-\u30ff\u3040-\u309f]/.test(ch)) continue; // skip unknown CJK
+    else result += ch;
+  }
+  return result.replace(/-+/g, '-').replace(/^-|-$/g, '').substring(0, 50);
+}
+
+function autoGenerateSlug() {
+  if (!isNewProperty) return; // 編輯時不改變 ID
+  const name = document.getElementById('f-name').value.trim();
+  document.getElementById('f-id').value = generateSlug(name);
+}
+
+function checkNameDuplicate() {
+  const name = document.getElementById('f-name').value.trim();
+  const nameEl = document.getElementById('f-name');
+  if (!name) { nameEl.classList.remove('border-destructive'); return; }
+  const existing = properties.find(p => p.name === name && p.id !== currentPropertyId);
+  if (existing) {
+    nameEl.classList.add('border-destructive');
+    showToast('房源名稱「' + name + '」已存在', 'error');
+  } else {
+    nameEl.classList.remove('border-destructive');
+  }
+}
+
+function clearForm() {
+
+  ['f-id','f-name','f-badge','f-secondaryBadge',
+   'f-shortDesc','f-capacity','f-size','f-introduction','f-address','f-transportInfo',
+   'f-nearestStation','f-transportDetail','f-mapEmbedUrl','f-airbnbUrl','f-checkIn','f-checkOut','f-videoUrl',
+   'f-qi1Title','f-qi1Value','f-qi1Desc','f-qi2Title','f-qi2Value','f-qi2Desc',
+   'f-si1Title','f-si1Desc','f-si2Title','f-si2Desc','f-si3Title','f-si3Desc','f-si4Title','f-si4Desc'
+  ].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('f-type').value = '包棟民宿';
+  document.getElementById('f-regionId').value = '';
+  currentCoverImage = null;
+  currentAmenities = [];
+}
+
+function loadPropertyToForm(prop) {
+
+  document.getElementById('f-id').value = prop.id || '';
+  document.getElementById('f-name').value = prop.name || '';
+  document.getElementById('f-type').value = prop.type || '包棟民宿';
+  document.getElementById('f-regionId').value = prop.regionId || '';
+  currentRegionId = prop.regionId || null;
+  document.getElementById('f-badge').value = prop.badge || '';
+  document.getElementById('f-secondaryBadge').value = prop.secondaryBadge || '';
+  document.getElementById('f-shortDesc').value = prop.shortDesc || '';
+  document.getElementById('f-capacity').value = prop.capacity || '';
+  document.getElementById('f-size').value = prop.size || '';
+  document.getElementById('f-introduction').value = prop.introduction || '';
+  document.getElementById('f-address').value = prop.address || '';
+  document.getElementById('f-transportInfo').value = prop.transportInfo || '';
+  document.getElementById('f-nearestStation').value = prop.nearestStation || '';
+  document.getElementById('f-transportDetail').value = prop.transportDetail || '';
+  document.getElementById('f-mapEmbedUrl').value = prop.mapEmbedUrl || '';
+  document.getElementById('f-airbnbUrl').value = prop.airbnbUrl || '';
+  document.getElementById('f-checkIn').value = prop.checkIn || '下午3點以後';
+  document.getElementById('f-checkOut').value = prop.checkOut || '上午10點之前';
+  document.getElementById('f-videoUrl').value = prop.videoUrl || '';
+
+  const qi = prop.quickInfo || [{},{}];
+  document.getElementById('f-qi1Title').value = qi[0]?.title || '';
+  document.getElementById('f-qi1Value').value = qi[0]?.value || '';
+  document.getElementById('f-qi1Desc').value = qi[0]?.desc || '';
+  document.getElementById('f-qi2Title').value = qi[1]?.title || '';
+  document.getElementById('f-qi2Value').value = qi[1]?.value || '';
+  document.getElementById('f-qi2Desc').value = qi[1]?.desc || '';
+
+  const si = prop.spaceIntro || [{},{},{},{}];
+  document.getElementById('f-si1Title').value = si[0]?.title || '';
+  document.getElementById('f-si1Desc').value = si[0]?.desc || '';
+  document.getElementById('f-si2Title').value = si[1]?.title || '';
+  document.getElementById('f-si2Desc').value = si[1]?.desc || '';
+  document.getElementById('f-si3Title').value = si[2]?.title || '';
+  document.getElementById('f-si3Desc').value = si[2]?.desc || '';
+  document.getElementById('f-si4Title').value = si[3]?.title || '';
+  document.getElementById('f-si4Desc').value = si[3]?.desc || '';
+
+  currentAmenities = Array.isArray(prop.amenities) ? [...prop.amenities] : [];
+
+  const allImages = (prop.images || []).map(img => ({
+    url: img.url,
+    isLocal: !!img.isLocal,
+    filename: img.filename || ''
+  }));
+  // First image = cover, rest = gallery
+  currentCoverImage = allImages.length > 0 ? allImages[0] : null;
+  currentImages = allImages.slice(1);
+
+  renderCoverPreview();
+  renderImageGrid();
+  renderAmenities();
+}
+
+async function saveProperty() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { showToast('請填寫房源名稱', 'error'); return; }
+  let newId = document.getElementById('f-id').value.trim();
+  if (!newId) newId = generateSlug(name) || ('prop-' + Date.now());
+  const dupName = properties.find(p => p.name === name && p.id !== currentPropertyId);
+  if (dupName) {
+    showToast('房源名稱「' + name + '」已存在，請使用不同名稱', 'error'); return;
+  }
+
+  const selectedRegionId = document.getElementById('f-regionId').value;
+
+  const prop = {
+    id: newId,
+    name: name,
+    type: document.getElementById('f-type').value,
+    regionId: selectedRegionId || currentRegionId,
+    badge: document.getElementById('f-badge').value.trim(),
+    secondaryBadge: document.getElementById('f-secondaryBadge').value.trim(),
+    shortDesc: document.getElementById('f-shortDesc').value.trim(),
+    capacity: document.getElementById('f-capacity').value.trim(),
+    size: document.getElementById('f-size').value.trim(),
+    introduction: document.getElementById('f-introduction').value.trim(),
+    address: document.getElementById('f-address').value.trim(),
+    transportInfo: document.getElementById('f-transportInfo').value.trim(),
+    nearestStation: document.getElementById('f-nearestStation').value.trim(),
+    transportDetail: document.getElementById('f-transportDetail').value.trim(),
+    mapEmbedUrl: document.getElementById('f-mapEmbedUrl').value.trim(),
+    airbnbUrl: document.getElementById('f-airbnbUrl').value.trim(),
+    checkIn: document.getElementById('f-checkIn').value.trim(),
+    checkOut: document.getElementById('f-checkOut').value.trim(),
+    videoUrl: document.getElementById('f-videoUrl').value.trim(),
+    amenities: currentAmenities,
+    spaceIntro: [
+      { title: document.getElementById('f-si1Title').value.trim(), desc: document.getElementById('f-si1Desc').value.trim() },
+      { title: document.getElementById('f-si2Title').value.trim(), desc: document.getElementById('f-si2Desc').value.trim() },
+      { title: document.getElementById('f-si3Title').value.trim(), desc: document.getElementById('f-si3Desc').value.trim() },
+      { title: document.getElementById('f-si4Title').value.trim(), desc: document.getElementById('f-si4Desc').value.trim() },
+    ],
+    quickInfo: [
+      { title: document.getElementById('f-qi1Title').value.trim(), value: document.getElementById('f-qi1Value').value.trim(), desc: document.getElementById('f-qi1Desc').value.trim() },
+      { title: document.getElementById('f-qi2Title').value.trim(), value: document.getElementById('f-qi2Value').value.trim(), desc: document.getElementById('f-qi2Desc').value.trim() },
+    ],
+    images: [
+      ...(currentCoverImage ? [{ url: currentCoverImage.url, isLocal: currentCoverImage.isLocal ? 1 : 0, filename: currentCoverImage.filename || '' }] : []),
+      ...currentImages.map(img => ({ url: img.url, isLocal: img.isLocal ? 1 : 0, filename: img.filename || '' }))
+    ]
+  };
+
+  try {
+    if (!isNewProperty && currentPropertyId && currentPropertyId !== newId) {
+      await apiPut('/properties/' + encodeURIComponent(currentPropertyId) + '/rename', { newId });
+    }
+    await apiPost('/properties', prop);
+    currentPropertyId = newId;
+    currentRegionId = selectedRegionId || currentRegionId;
+    isNewProperty = false;
+    await loadData();
+    document.getElementById('formTitle').textContent = '編輯：' + name;
+    document.getElementById('btnDelete').classList.remove('hidden');
+    document.getElementById('btnDeleteBottom').classList.remove('hidden');
+    showToast('儲存成功', 'success');
+  } catch (err) {
+    showToast('儲存失敗：' + err.message, 'error');
+  }
+}
+
+async function deleteProperty() {
+  if (!currentPropertyId) return;
+  if (!confirm('確定要刪除「' + (document.getElementById('f-name').value || currentPropertyId) + '」嗎？此操作無法復原。')) return;
+
+  try {
+    await apiDelete('/properties/' + encodeURIComponent(currentPropertyId));
+    currentPropertyId = null;
+    isNewProperty = false;
+    await loadData();
+    navigate('properties');
+    showToast('已刪除房源', 'info');
+  } catch (err) {
+    showToast('刪除失敗：' + err.message, 'error');
+  }
+}
+
+// ==================== IMAGES ====================
+function addImageByUrl() {
+  const input = document.getElementById('imageUrlInput');
+  const url = input.value.trim();
+  if (!url) return;
+  currentImages.push({ url, isLocal: false, filename: '' });
+  input.value = '';
+  renderImageGrid();
+}
+
+async function addImageByUpload(event) {
+  const files = event.target.files;
+  if (!files.length) return;
+  try {
+    showToast('上傳中...', 'info');
+    const uploaded = await apiUpload(files);
+    for (const img of uploaded) {
+      currentImages.push({ url: img.url, isLocal: true, filename: img.filename });
+    }
+    renderImageGrid();
+    showToast(`已上傳 ${uploaded.length} 張圖片`, 'success');
+  } catch (err) {
+    showToast('上傳失敗：' + err.message, 'error');
+  }
+  event.target.value = '';
+}
+
+function removeImage(index) {
+  currentImages.splice(index, 1);
+  renderImageGrid();
+}
+
+function renderImageGrid() {
+  const grid = document.getElementById('imageGrid');
+  if (currentImages.length === 0) {
+    grid.innerHTML = '<p class="text-sm text-text-disabled col-span-full py-6 text-center">尚未新增圖片</p>';
+    return;
+  }
+  grid.innerHTML = currentImages.map((img, i) => `
+    <div class="img-thumb aspect-square rounded-lg overflow-hidden bg-surface relative group" draggable="true"
+      ondragstart="dragStart(event,${i})" ondragover="event.preventDefault()" ondrop="drop(event,${i})">
+      <img src="${img.url}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+      <div class="delete-img" onclick="removeImage(${i})">&times;</div>
+      ${img.isLocal ? '<span class="absolute bottom-1 left-1 bg-link text-white text-[9px] px-1.5 rounded">本地</span>' : ''}
+    </div>
+  `).join('');
+}
+
+let dragIndex = null;
+function dragStart(e, i) { dragIndex = i; e.dataTransfer.effectAllowed = 'move'; }
+function drop(e, i) {
+  e.preventDefault();
+  if (dragIndex === null || dragIndex === i) return;
+  const [item] = currentImages.splice(dragIndex, 1);
+  currentImages.splice(i, 0, item);
+  dragIndex = null;
+  renderImageGrid();
+}
+
+// ==================== COVER IMAGE ====================
+function setCoverByUrl() {
+  const input = document.getElementById('coverUrlInput');
+  const url = input.value.trim();
+  if (!url) return;
+  currentCoverImage = { url, isLocal: false, filename: '' };
+  input.value = '';
+  renderCoverPreview();
+}
+
+async function setCoverByUpload(event) {
+  const files = event.target.files;
+  if (!files.length) return;
+  try {
+    showToast('上傳中...', 'info');
+    const uploaded = await apiUpload(files);
+    if (uploaded.length > 0) {
+      currentCoverImage = { url: uploaded[0].url, isLocal: true, filename: uploaded[0].filename };
+      renderCoverPreview();
+      showToast('封面已設定', 'success');
+    }
+  } catch (err) {
+    showToast('上傳失敗：' + err.message, 'error');
+  }
+  event.target.value = '';
+}
+
+function removeCover() {
+  currentCoverImage = null;
+  renderCoverPreview();
+}
+
+function renderCoverPreview() {
+  const container = document.getElementById('coverPreview');
+  if (!currentCoverImage) {
+    container.innerHTML = '<div class="w-full h-40 bg-surface rounded-lg flex items-center justify-center text-text-disabled text-sm">尚未設定封面圖片</div>';
+    return;
+  }
+  container.innerHTML = `
+    <div class="relative inline-block">
+      <img src="${currentCoverImage.url}" class="h-40 rounded-lg object-cover" onerror="this.src='';this.alt='圖片載入失敗'">
+      <button onclick="removeCover()" class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600">&times;</button>
+    </div>`;
+}
+
+// ==================== AMENITIES ====================
+function renderAmenities() {
+  const grid = document.getElementById('amenitiesGrid');
+  grid.innerHTML = DEFAULT_AMENITIES.map(name => {
+    const checked = currentAmenities.includes(name);
+    const id = 'am-' + name.replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g, '_');
+    return `
+      <div>
+        <input type="checkbox" id="${id}" class="amenity-check hidden" ${checked ? 'checked' : ''} onchange="toggleAmenity('${name}', this.checked)">
+        <label for="${id}" class="amenity-label">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          ${name}
+        </label>
+      </div>`;
+  }).join('');
+
+  const customList = document.getElementById('customAmenitiesList');
+  const customs = currentAmenities.filter(a => !DEFAULT_AMENITIES.includes(a));
+  if (customs.length === 0) {
+    customList.innerHTML = '<p class="text-xs text-text-disabled">尚無自訂設備</p>';
+  } else {
+    customList.innerHTML = customs.map(name =>
+      `<span class="custom-tag">${name}<button onclick="removeCustomAmenity('${name}')">&times;</button></span>`
+    ).join('');
+  }
+}
+
+function toggleAmenity(name, checked) {
+  if (checked) {
+    if (!currentAmenities.includes(name)) currentAmenities.push(name);
+  } else {
+    currentAmenities = currentAmenities.filter(a => a !== name);
+  }
+  renderAmenities();
+}
+
+function addCustomAmenity() {
+  const input = document.getElementById('customAmenityInput');
+  const name = input.value.trim();
+  if (!name) return;
+  if (currentAmenities.includes(name)) {
+    showToast('此設備已存在', 'error');
+    return;
+  }
+  currentAmenities.push(name);
+  input.value = '';
+  renderAmenities();
+}
+
+function removeCustomAmenity(name) {
+  currentAmenities = currentAmenities.filter(a => a !== name);
+  renderAmenities();
+}
+
+// ==================== REGION LIST ====================
+function renderRegionList() {
+  const table = document.getElementById('regionTableBody');
+  const empty = document.getElementById('regionEmpty');
+
+  if (regions.length === 0) {
+    table.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+
+  empty.classList.add('hidden');
+  table.innerHTML = regions.map((r, idx) => `
+    <div class="flex items-center gap-4 px-5 py-3 hover:bg-surface-hover transition-colors">
+      <div class="min-w-0 flex-1">
+        <p class="text-sm font-medium">${r.nameZh}</p>
+        <p class="text-xs text-text-secondary">${r.nameEn || ''} ${r.description ? '· ' + r.description : ''}</p>
+      </div>
+      <div class="text-xs text-text-disabled flex-shrink-0">
+        ${(r.properties || []).length} 個房源
+      </div>
+      <div class="flex items-center gap-1 flex-shrink-0">
+        <button onclick="moveRegion(${r.id},'up')" class="p-1.5 rounded-lg hover:bg-surface transition-colors ${idx === 0 ? 'opacity-30 pointer-events-none' : ''}" title="上移">
+          <svg class="w-4 h-4 text-icon-default" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+        </button>
+        <button onclick="moveRegion(${r.id},'down')" class="p-1.5 rounded-lg hover:bg-surface transition-colors ${idx === regions.length - 1 ? 'opacity-30 pointer-events-none' : ''}" title="下移">
+          <svg class="w-4 h-4 text-icon-default" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <button onclick="openRegionModal(regions.find(r=>r.id===${r.id}))" class="p-1.5 rounded-lg hover:bg-surface transition-colors" title="編輯">
+          <svg class="w-4 h-4 text-icon-default" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        </button>
+        <button onclick="deleteRegion(${r.id})" class="p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="刪除">
+          <svg class="w-4 h-4 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ==================== REGION CRUD ====================
+function openRegionModal(region) {
+  editingRegionId = region ? region.id : null;
+  document.getElementById('regionModalTitle').textContent = region ? '編輯區域' : '新增區域';
+  document.getElementById('r-nameZh').value = region ? region.nameZh : '';
+  document.getElementById('r-nameEn').value = region ? (region.nameEn || '') : '';
+  document.getElementById('r-desc').value = region ? (region.description || '') : '';
+  document.getElementById('regionModal').classList.remove('hidden');
+}
+
+function closeRegionModal() {
+  document.getElementById('regionModal').classList.add('hidden');
+}
+
+async function saveRegion() {
+  const nameZh = document.getElementById('r-nameZh').value.trim();
+  if (!nameZh) { showToast('請填寫區域名稱', 'error'); return; }
+
+  try {
+    await apiPost('/regions', {
+      id: editingRegionId,
+      nameZh,
+      nameEn: document.getElementById('r-nameEn').value.trim(),
+      description: document.getElementById('r-desc').value.trim()
+    });
+    closeRegionModal();
+    await loadData();
+    showToast(editingRegionId ? '區域已更新' : '區域已新增', 'success');
+  } catch (err) {
+    showToast('儲存失敗：' + err.message, 'error');
+  }
+}
+
+async function deleteRegion(id) {
+  const region = regions.find(r => r.id === id);
+  const propCount = region ? (region.properties || []).length : 0;
+  if (propCount > 0) {
+    showToast(`此區域還有 ${propCount} 個房源，請先移除房源再刪除區域`, 'error');
+    return;
+  }
+  if (!confirm('確定要刪除「' + (region ? region.nameZh : '') + '」嗎？')) return;
+
+  try {
+    await apiDelete('/regions/' + id);
+    await loadData();
+    showToast('區域已刪除', 'info');
+  } catch (err) {
+    showToast(err.message || '刪除失敗', 'error');
+  }
+}
+
+async function moveRegion(id, direction) {
+  try {
+    await apiPut('/regions/' + id + '/move', { direction });
+    await loadData();
+  } catch (err) {
+    showToast('移動失敗', 'error');
+  }
+}
+
+// ==================== TOAST ====================
+function showToast(msg, type = 'info') {
+  const icons = {
+    success: '<svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
+    error: '<svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+    info: '<svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+  };
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.innerHTML = (icons[type] || '') + '<span>' + msg + '</span>';
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
+}
+
+// ==================== INIT ====================
+checkAuth();
+</script>
+</body>
+</html>

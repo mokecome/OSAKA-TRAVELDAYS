@@ -1,0 +1,23 @@
+name: Deploy to Cloudways
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.CW_HOST }}
+          username: ${{ secrets.CW_USER }}
+          key: ${{ secrets.CW_SSH_KEY }}
+          script: |
+            cd /home/1267721.cloudwaysapps.com/yuqqxgzmck/public_html
+            git pull origin main
+            export PATH="/home/master/.nvm/versions/node/v22.22.0/bin:$PATH"
+            npm install --omit=dev
+            npx tailwindcss -i src/input.css -o css/tailwind.min.css --minify
+            bash stop-server.sh
+            bash start-server.sh

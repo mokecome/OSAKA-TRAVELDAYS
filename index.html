@@ -1,0 +1,2394 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大阪旅行日民宿 | 精選大阪包棟民宿・公寓式住宿 | OSAKA TRAVELDAYS</title>
+  <meta name="description" content="大阪旅行日民宿精選大阪各區優質包棟民宿與公寓式住宿。大正區、心齋橋、難波、西九條等熱門地段，鄰近車站交通便利，中文客服24小時支援，適合家庭旅遊與團體入住。透過 Airbnb 安心預訂。">
+  <meta name="keywords" content="大阪民宿,大阪包棟,大阪住宿,Osaka vacation rental,大阪旅行,Airbnb大阪,大阪家庭住宿,心齋橋民宿,難波住宿,大正區民宿,西九條住宿,大阪自由行住宿">
+  <meta name="author" content="大阪旅行日民宿 OSAKA TRAVELDAYS">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://osaka-traveldays.com/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="大阪旅行日民宿 | 精選大阪包棟民宿・公寓式住宿">
+  <meta property="og:description" content="精選大阪各區優質包棟民宿與公寓式住宿。大正區、心齋橋、難波、西九條等熱門地段，鄰近車站交通便利，中文客服24小時支援。">
+  <meta property="og:image" content="https://osaka-traveldays.com/images/hero.jpg">
+  <meta property="og:url" content="https://osaka-traveldays.com/">
+  <meta property="og:site_name" content="大阪旅行日民宿 OSAKA TRAVELDAYS">
+  <meta property="og:locale" content="zh_TW">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="大阪旅行日民宿 | 精選大阪包棟民宿・公寓式住宿">
+  <meta name="twitter:description" content="精選大阪各區優質包棟民宿與公寓式住宿。大正區、心齋橋、難波、西九條等熱門地段，中文客服24小時支援。">
+  <meta name="twitter:image" content="https://osaka-traveldays.com/images/hero.jpg">
+
+  <!-- Google Search Console placeholder -->
+  <!-- <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE"> -->
+
+  <link rel="stylesheet" href="/css/tailwind.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #8B4513;
+      --color-secondary: #A0522D;
+      --color-accent: #D4A574;
+      --color-bg: #FFFBF7;
+      --color-text: #2D1810;
+      --color-text-muted: #6B5344;
+    }
+
+    * {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .font-serif { font-family: 'Noto Serif TC', serif; }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fadeInUp {
+      animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      opacity: 0;
+    }
+
+    .animate-scaleIn {
+      animation: scaleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      opacity: 0;
+    }
+
+    /* Property Card */
+    .property-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(139, 69, 19, 0.08);
+      transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      border: 1px solid rgba(139, 69, 19, 0.06);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .property-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(139, 69, 19, 0.15);
+    }
+
+    .property-card:hover .card-image {
+      transform: scale(1.08);
+    }
+
+    .card-image {
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Buttons */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+      color: white;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #A0522D 0%, #8B4513 100%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(139, 69, 19, 0.3);
+    }
+
+    .btn-primary:hover::before {
+      opacity: 1;
+    }
+
+    .btn-primary span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 28px;
+      border: 2px solid #8B4513;
+      color: #8B4513;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      text-decoration: none;
+      background: transparent;
+    }
+
+    .btn-outline:hover {
+      background: #8B4513;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Section Title */
+    .section-title {
+      position: relative;
+      display: inline-block;
+      padding: 0 40px;
+    }
+
+    .section-title::before,
+    .section-title::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 30px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-accent), transparent);
+    }
+
+    .section-title::before {
+      right: 100%;
+      margin-right: 15px;
+      background: linear-gradient(90deg, transparent, var(--color-accent));
+    }
+
+    .section-title::after {
+      left: 100%;
+      margin-left: 15px;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      background: rgba(139, 69, 19, 0.9);
+      backdrop-filter: blur(8px);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    /* Image Overlay */
+    .image-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.4) 100%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .property-card:hover .image-overlay {
+      opacity: 1;
+    }
+
+    /* Info Item */
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      color: var(--color-text-muted);
+      font-size: 0.875rem;
+    }
+
+    .info-item svg {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      color: var(--color-accent);
+    }
+
+    /* Feature Card */
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+      transition: all 0.4s;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .feature-card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-5px);
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+      40% { transform: translateY(-10px) translateX(-50%); }
+      60% { transform: translateY(-5px) translateX(-50%); }
+    }
+
+    /* Header blur */
+    .header-blur {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .section-title::before,
+      .section-title::after {
+        display: none;
+      }
+
+      .section-title {
+        padding: 0;
+      }
+    }
+
+    /* ======================================
+       FAQ Chatbot Styles
+       ====================================== */
+
+    /* Chat Button */
+    .chat-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+      color: white;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(139, 69, 19, 0.3);
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 30px rgba(139, 69, 19, 0.4);
+    }
+
+    .chat-btn:active {
+      transform: scale(0.95);
+    }
+
+    .chat-btn.open {
+      transform: rotate(0deg);
+    }
+
+    .chat-btn svg {
+      width: 28px;
+      height: 28px;
+      transition: transform 0.3s ease-out;
+    }
+
+    /* Pulse animation - subtle, stops on hover */
+    @keyframes chatPulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(139, 69, 19, 0.3); }
+      50% { box-shadow: 0 4px 30px rgba(139, 69, 19, 0.5); }
+    }
+
+    .chat-btn:not(.open):not(:hover) {
+      animation: chatPulse 3s ease-in-out infinite;
+    }
+
+    /* Chat Window */
+    .chat-window {
+      position: fixed;
+      bottom: 100px;
+      right: 24px;
+      z-index: 999;
+      width: 400px;
+      max-width: calc(100vw - 48px);
+      height: 600px;
+      max-height: calc(100vh - 140px);
+      background: #FFFBF7;
+      border-radius: 20px;
+      box-shadow: 0 10px 50px rgba(139, 69, 19, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px) scale(0.95);
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .chat-window.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Mobile full screen */
+    @media (max-width: 480px) {
+      .chat-window {
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 85vh;
+        max-height: 85vh;
+        border-radius: 20px 20px 0 0;
+      }
+
+      .chat-btn {
+        bottom: 16px;
+        right: 16px;
+        width: 56px;
+        height: 56px;
+      }
+    }
+
+    /* Chat Header */
+    .chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+      color: white;
+    }
+
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chat-avatar {
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      position: relative;
+    }
+
+    .chat-avatar::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      background: #22C55E;
+      border-radius: 50%;
+      border: 2px solid #8B4513;
+    }
+
+    .chat-title {
+      font-weight: 600;
+      color: white;
+      font-size: 15px;
+    }
+
+    .chat-subtitle {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.75);
+      margin-top: 1px;
+    }
+
+    .chat-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-toggle {
+      padding: 5px 10px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      font-size: 12px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+    }
+
+    .lang-toggle:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      transition: all 0.2s ease-out;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Chat Messages */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: #FFFBF7;
+      scroll-behavior: smooth;
+    }
+
+    .chat-messages::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: #E8DDD0;
+      border-radius: 4px;
+    }
+
+    .message {
+      display: flex;
+      margin-bottom: 16px;
+      animation: messageIn 0.35s ease-out forwards;
+    }
+
+    @keyframes messageIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.bot {
+      justify-content: flex-start;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #D4A574, #E8C9A0);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .message-content {
+      max-width: 80%;
+    }
+
+    .message-bubble {
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
+    .message.bot .message-bubble {
+      background: white;
+      color: #3D2914;
+      border-radius: 18px 18px 18px 4px;
+      box-shadow: 0 1px 4px rgba(139, 69, 19, 0.08);
+    }
+
+    .message.user .message-bubble {
+      background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+      color: white;
+      border-radius: 18px 18px 4px 18px;
+      box-shadow: 0 1px 4px rgba(139, 69, 19, 0.15);
+    }
+
+    /* Quick Replies */
+    .quick-replies {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+      padding-left: 42px;
+    }
+
+    .quick-reply-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px 14px;
+      background: white;
+      border: 1px solid #E8DDD0;
+      border-radius: 12px;
+      font-size: 13px;
+      color: #6B5344;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+      text-align: left;
+      box-shadow: 0 1px 3px rgba(139, 69, 19, 0.06);
+    }
+
+    .quick-reply-btn:hover {
+      background: #FDF5EB;
+      border-color: #D4A574;
+      color: #8B4513;
+      box-shadow: 0 2px 8px rgba(139, 69, 19, 0.1);
+    }
+
+    .quick-reply-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 12px 16px;
+      background: white;
+      border-radius: 18px 18px 18px 4px;
+      box-shadow: 0 2px 8px rgba(139, 69, 19, 0.08);
+      width: fit-content;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: #D4A574;
+      border-radius: 50%;
+      animation: typingBounce 1.4s ease-in-out infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-4px); }
+    }
+
+    /* Categories */
+    .chat-categories {
+      display: flex;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(253, 245, 235, 0.5);
+      border-top: 1px solid rgba(139, 69, 19, 0.1);
+    }
+
+    .category-btn {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 14px;
+      background: white;
+      border: 1px solid #E8DDD0;
+      border-radius: 12px;
+      font-size: 13px;
+      color: #6B5344;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+    }
+
+    .category-btn:hover {
+      background: #FDF5EB;
+      border-color: #D4A574;
+      color: #8B4513;
+    }
+
+    .category-btn:active {
+      transform: scale(0.96);
+    }
+
+    .category-btn.active {
+      background: #8B4513;
+      color: white;
+      border-color: #8B4513;
+      box-shadow: 0 2px 8px rgba(139, 69, 19, 0.2);
+    }
+
+    .learn-more-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 14px;
+      background: #06C755;
+      border: none;
+      border-radius: 12px;
+      font-size: 13px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+      white-space: nowrap;
+    }
+
+    .learn-more-btn:hover {
+      background: #05b34c;
+      box-shadow: 0 2px 8px rgba(6, 199, 85, 0.3);
+    }
+
+    .learn-more-btn:active {
+      transform: scale(0.96);
+    }
+
+    .learn-more-btn svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .qrcode-container {
+      text-align: center;
+      padding: 8px 0;
+      margin-left: 42px;
+    }
+
+    .qrcode-container img {
+      max-width: 200px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(139, 69, 19, 0.15);
+    }
+
+    .qrcode-container p {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #6B5344;
+    }
+
+    /* Chat Input */
+    .chat-input-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: white;
+      border-top: 1px solid rgba(139, 69, 19, 0.1);
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 12px 16px;
+      background: #FDF5EB;
+      border: 1px solid #E8DDD0;
+      border-radius: 24px;
+      font-size: 14px;
+      color: #3D2914;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .chat-input:focus {
+      border-color: #D4A574;
+      box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.2);
+    }
+
+    .chat-input::placeholder {
+      color: #A08878;
+    }
+
+    .send-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease-out;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+    }
+
+    .send-btn:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .chat-btn:not(.open), .typing-dot { animation: none; }
+      .message { animation: none; opacity: 1; }
+      .chat-window { transition: opacity 0.15s; }
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .send-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+  </style>
+
+  <!-- Structured Data: Organization + LodgingBusiness -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LodgingBusiness",
+    "name": "大阪旅行日民宿 OSAKA TRAVELDAYS",
+    "description": "精選大阪各區優質包棟民宿與公寓式住宿，適合家庭旅遊與團體入住。",
+    "url": "https://osaka-traveldays.com",
+    "logo": "https://osaka-traveldays.com/images/logo.png",
+    "image": "https://osaka-traveldays.com/images/hero.jpg",
+    "email": "service.traveldays@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "大阪市",
+      "addressRegion": "大阪府",
+      "addressCountry": "JP"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "addressCountry": "JP"
+    },
+    "priceRange": "$$",
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+      "opens": "00:00",
+      "closes": "23:59"
+    },
+    "sameAs": [
+      "https://lin.ee/pGrA7Ej"
+    ]
+  }
+  </script>
+
+  <!-- Structured Data: FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "如何預訂大阪旅行日民宿？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "透過 Airbnb 預訂，或透過 LINE（@fgk8695x）/ Email（service.traveldays@gmail.com）聯繫我們。最少需訂 2 晚。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "入住和退房時間是幾點？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "入住時間為下午 3 點（15:00）以後，退房時間為上午 10 點（10:00）之前。採用自助式密碼鎖入住，入住前會傳送密碼。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "民宿提供哪些設施？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "所有房源均配備 WiFi、廚房、洗衣機、空調、毛巾及沐浴用品等基本設施。部分房源另有停車場、浴缸等設施，詳情請查看各房源頁面。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "可以取消或改期嗎？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "入住 14 天前可免費取消，之後依時間收取費用。如需改期請提前聯繫，詳細政策請參考 Airbnb 頁面。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "退房後可以寄放行李嗎？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "可以，退房後行李可寄放至當日 18:00，請提前聯繫客服確認。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "大阪旅行日民宿有哪些地區的房源？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "我們的房源遍布大阪熱門地區，包括大正區、心齋橋/日本橋/難波、住之江區、西九條/九條區/福島區等，均鄰近車站，交通便利。"
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured Data: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "首頁",
+        "item": "https://osaka-traveldays.com/"
+      }
+    ]
+  }
+  </script>
+</head>
+<body class="min-h-screen">
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/90 header-blur border-b border-amber-100">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="flex items-center justify-between h-18 py-4">
+        <a href="/" class="flex items-center gap-3 group">
+          <img src="images/logo.png" alt="大阪旅行日民宿 OSAKA TRAVELDAYS" class="w-10 h-10 object-contain">
+          <div>
+            <span class="text-xl font-serif font-bold text-amber-900 group-hover:text-amber-700 transition-colors">大阪旅行日民宿</span>
+            <span class="hidden sm:inline text-xs text-amber-600 ml-2 tracking-widest">OSAKA TRAVELDAYS</span>
+          </div>
+        </a>
+        <nav class="hidden md:flex items-center space-x-10">
+          <a href="#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">房源一覽</a>
+          <a href="#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">關於我們</a>
+          <a href="#contact" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">聯絡我們</a>
+        </nav>
+        <button class="md:hidden p-2 text-amber-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative min-h-screen flex items-center justify-center">
+    <div class="absolute inset-0">
+      <img src="images/hero.jpg"
+           alt="大阪旅行日民宿 - 精選大阪各區優質民宿住宿"
+           class="w-full h-full object-cover object-center">
+      <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-amber-50/80"></div>
+    </div>
+
+    <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+      <p class="text-amber-200 text-sm tracking-[0.3em] uppercase mb-6 animate-fadeInUp">Welcome to Osaka</p>
+      <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-white mb-6 animate-fadeInUp" style="animation-delay: 0.1s;">
+        大阪旅行日民宿
+      </h1>
+      <p class="text-xl sm:text-2xl md:text-3xl text-white/90 mb-4 font-light animate-fadeInUp" style="animation-delay: 0.2s;">
+        OSAKA TRAVELDAYS
+      </p>
+      <p class="text-base sm:text-lg text-white/70 max-w-xl mx-auto mb-10 animate-fadeInUp" style="animation-delay: 0.3s;">
+        精選大阪各區優質民宿・包棟住宿・公寓式酒店<br class="hidden sm:block">
+        體驗最道地的日本生活
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fadeInUp" style="animation-delay: 0.4s;">
+        <a href="#properties" class="btn-primary">
+          <span>瀏覽房源</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="absolute bottom-10 left-1/2 scroll-indicator">
+      <div class="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center pt-2">
+        <div class="w-1 h-2 bg-white/80 rounded-full animate-pulse"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="py-16 bg-white border-b border-amber-100">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div class="animate-scaleIn">
+          <p id="statProperties" class="text-4xl md:text-5xl font-serif text-amber-800 mb-2">10</p>
+          <p class="text-amber-600 text-sm">精選房源</p>
+        </div>
+        <div class="animate-scaleIn" style="animation-delay: 0.1s;">
+          <p id="statRegions" class="text-4xl md:text-5xl font-serif text-amber-800 mb-2">4</p>
+          <p class="text-amber-600 text-sm">熱門地區</p>
+        </div>
+        <div class="animate-scaleIn" style="animation-delay: 0.2s;">
+          <p class="text-4xl md:text-5xl font-serif text-amber-800 mb-2">24h</p>
+          <p class="text-amber-600 text-sm">客服支援</p>
+        </div>
+        <div class="animate-scaleIn" style="animation-delay: 0.3s;">
+          <p class="text-4xl md:text-5xl font-serif text-amber-800 mb-2">100%</p>
+          <p class="text-amber-600 text-sm">滿意保證</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Properties Section -->
+  <section id="properties" class="py-20 lg:py-28">
+
+    <div id="propertiesContainer" style="display:none;"></div>
+
+    <div id="staticProperties">
+    <!-- 大正區 -->
+    <div class="py-16 lg:py-20 bg-gradient-to-b from-amber-50/50 to-white">
+      <div class="container mx-auto px-4 lg:px-8">
+        <div class="text-center mb-14">
+          <span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">Taisho Ward</span>
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-serif text-amber-900 section-title">大正區</h2>
+          <p class="text-amber-600 mt-4 max-w-lg mx-auto">大阪的小沖繩，充滿獨特文化魅力的下町風情</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <!-- 艾屋吉屋よもぎの屋 -->
+          <div class="property-card animate-fadeInUp">
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-1543539317236403832/original/8b40bf75-14a9-40dd-98a3-ce0d90847671.jpeg"
+                   alt="艾屋吉屋よもぎの屋"
+                   class="w-full h-full object-cover card-image">
+              <div class="image-overlay"></div>
+              <div class="absolute top-4 left-4">
+                <span class="badge">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
+                  包棟民宿
+                </span>
+              </div>
+              <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <span class="text-amber-800 font-bold text-sm">2025新屋</span>
+              </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="font-bold text-xl text-amber-900 mb-1">艾屋吉屋よもぎの屋</h3>
+              <p class="text-amber-500 text-sm mb-4">全新包棟房・3廁2浴室</p>
+
+              <div class="space-y-1 mb-5">
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span>大阪市大正区三軒家西1-12-19</span>
+                </div>
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                  <span>大正車站4分鐘・心齋橋3站</span>
+                </div>
+              </div>
+
+              <a href="rooms/yomogi.html" class="btn-primary w-full mt-auto">
+                <span>查看詳情</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- 十一鳴 -->
+          <div class="property-card animate-fadeInUp" style="animation-delay: 0.15s;">
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTM3Mjg5MTI1ODg1MjEyMDU2Ng==/original/2df9c702-2477-45ba-929e-524d8383f7fb.jpeg"
+                   alt="十一鳴"
+                   class="w-full h-full object-cover card-image">
+              <div class="image-overlay"></div>
+              <div class="absolute top-4 left-4">
+                <span class="badge">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
+                  包棟民宿
+                </span>
+              </div>
+              <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <span class="text-amber-800 font-bold text-sm">整套房源</span>
+              </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="font-bold text-xl text-amber-900 mb-1">十一鳴</h3>
+              <p class="text-amber-500 text-sm mb-4">舒適包棟住宿</p>
+
+              <div class="space-y-1 mb-5">
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span>大阪市大正区三軒家西2-1-6</span>
+                </div>
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                  </svg>
+                  <span>寧靜住宅區・適合家庭旅遊</span>
+                </div>
+              </div>
+
+              <a href="rooms/juichimei.html" class="btn-primary w-full mt-auto">
+                <span>查看詳情</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- 文華苑 -->
+          <div class="property-card animate-fadeInUp" style="animation-delay: 0.3s;">
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTI3ODkyNzg2MzY5MzQzODg3Mw%3D%3D/original/7bd428dd-6a09-4916-8ea5-364de7662fbc.jpeg"
+                   alt="文華苑 大正 Guest House"
+                   class="w-full h-full object-cover card-image">
+              <div class="image-overlay"></div>
+              <div class="absolute top-4 left-4">
+                <span class="badge">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
+                  Guest House
+                </span>
+              </div>
+              <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <span class="text-amber-800 font-bold text-sm">整套房源</span>
+              </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="font-bold text-xl text-amber-900 mb-1">文華苑 大正 Guest House</h3>
+              <p class="text-amber-500 text-sm mb-4">溫馨民宿體驗</p>
+
+              <div class="space-y-1 mb-5">
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span>大阪市大正区三軒家西</span>
+                </div>
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                  </svg>
+                  <span>大正區中心・交通便利</span>
+                </div>
+              </div>
+
+              <a href="rooms/bunkaen.html" class="btn-primary w-full mt-auto">
+                <span>查看詳情</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 心齋橋 / 日本橋 / 難波 -->
+    <div class="py-16 lg:py-20">
+      <div class="container mx-auto px-4 lg:px-8">
+        <div class="text-center mb-14">
+          <span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">Shinsaibashi / Nipponbashi / Namba</span>
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-serif text-amber-900 section-title">心齋橋 / 日本橋 / 難波</h2>
+          <p class="text-amber-600 mt-4 max-w-lg mx-auto">大阪最繁華的商業中心，購物美食一應俱全</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <!-- NK Homes Namba -->
+          <div class="property-card animate-fadeInUp">
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6Mjg0NDA2Mjg%3D/original/32ebfb0d-cf1c-4c9d-84a4-55bbefd752ac.jpeg"
+                   alt="NK Homes Namba"
+                   class="w-full h-full object-cover card-image">
+              <div class="image-overlay"></div>
+              <div class="absolute top-4 left-4">
+                <span class="badge">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
+                  公寓式民宿
+                </span>
+              </div>
+              <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <span class="text-amber-800 font-bold text-sm">道頓堀旁</span>
+              </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="font-bold text-xl text-amber-900 mb-1">NK Homes Namba</h3>
+              <p class="text-amber-500 text-sm mb-4">道頓堀高級公寓</p>
+
+              <div class="space-y-1 mb-5">
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span>大阪市中央区西心斎橋2-7-22 405號</span>
+                </div>
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                  <span>心齋橋站步行3分鐘・購物天堂</span>
+                </div>
+              </div>
+
+              <a href="rooms/nk-homes-namba.html" class="btn-primary w-full mt-auto">
+                <span>查看詳情</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Shinsaibashi Family Room -->
+          <div class="property-card animate-fadeInUp" style="animation-delay: 0.15s;">
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTM4MDgzMzM%3D/original/8c675e91-f0c4-4165-b7be-15c789a34e2f.jpeg"
+                   alt="Shinsaibashi Family Room"
+                   class="w-full h-full object-cover card-image">
+              <div class="image-overlay"></div>
+              <div class="absolute top-4 left-4">
+                <span class="badge">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
+                  公寓式民宿
+                </span>
+              </div>
+              <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <span class="text-amber-800 font-bold text-sm">家庭首選</span>
+              </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="font-bold text-xl text-amber-900 mb-1">Shinsaibashi Family Room</h3>
+              <p class="text-amber-500 text-sm mb-4">道頓堀家庭房</p>
+
+              <div class="space-y-1 mb-5">
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span>大阪市中央区西心斎橋2-7-22 406號</span>
+                </div>
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                  </svg>
+                  <span>適合家庭入住・寬敞舒適</span>
+                </div>
+              </div>
+
+              <a href="rooms/shinsaibashi-family.html" class="btn-primary w-full mt-auto">
+                <span>查看詳情</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- The Nomad inn Osaka -->
+          <div class="property-card animate-fadeInUp" style="animation-delay: 0.3s;">
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <img src="https://a0.muscache.com/im/pictures/miso/Hosting-1326417920271287072/original/cc4c8b06-db32-41ee-804d-250f31e8b128.jpeg"
+                   alt="The Nomad inn Osaka"
+                   class="w-full h-full object-cover card-image">
+              <div class="image-overlay"></div>
+              <div class="absolute top-4 left-4">
+                <span class="badge">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
+                  包棟民宿
+                </span>
+              </div>
+              <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <span class="text-amber-800 font-bold text-sm">最多 8 人</span>
+              </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="font-bold text-xl text-amber-900 mb-1">The Nomad inn Osaka</h3>
+              <p class="text-amber-500 text-sm mb-4">58㎡ ・ 2LDK</p>
+
+              <div class="space-y-1 mb-5">
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span>大阪市中央区谷町六丁目-3-11</span>
+                </div>
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                  <span>谷町六丁目站步行2分鐘</span>
+                </div>
+              </div>
+
+              <a href="rooms/nomad-inn.html" class="btn-primary w-full mt-auto">
+                <span>查看詳情</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 住之江区 -->
+    <div class="py-16 lg:py-20 bg-gradient-to-b from-amber-50/50 to-white">
+      <div class="container mx-auto px-4 lg:px-8">
+        <div class="text-center mb-14">
+          <span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">Suminoe Ward</span>
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-serif text-amber-900 section-title">住之江区</h2>
+          <p class="text-amber-600 mt-4 max-w-lg mx-auto">寧靜住宅區，感受在地生活氛圍</p>
+        </div>
+
+        <div class="max-w-lg mx-auto">
+          <div class="property-card animate-fadeInUp">
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTQ2MjcxNTk1NzM1NTAwMzMyNw==/original/237464a1-4121-4b42-a793-8b7475f26388.jpeg?im_w=720"
+                   alt="芸舎"
+                   class="w-full h-full object-cover card-image">
+              <div class="image-overlay"></div>
+              <div class="absolute top-4 left-4">
+                <span class="badge">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
+                  包棟民宿
+                </span>
+              </div>
+              <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <span class="text-amber-800 font-bold text-sm">整套房源</span>
+              </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="font-bold text-xl text-amber-900 mb-1">芸舎</h3>
+              <p class="text-amber-500 text-sm mb-4">住之江包棟一軒家</p>
+
+              <div class="space-y-1 mb-5">
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span>大阪市住之江区住之江3-8-8</span>
+                </div>
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                  </svg>
+                  <span>寬敞舒適・適合家庭旅遊</span>
+                </div>
+              </div>
+
+              <a href="rooms/geisha.html" class="btn-primary w-full mt-auto">
+                <span>查看詳情</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 西九條 / 九條區 / 福島區 -->
+    <div class="py-16 lg:py-20">
+      <div class="container mx-auto px-4 lg:px-8">
+        <div class="text-center mb-14">
+          <span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">Nishikujo / Kujo / Fukushima</span>
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-serif text-amber-900 section-title">西九條 / 九條區 / 福島區</h2>
+          <p class="text-amber-600 mt-4 max-w-lg mx-auto">交通樞紐，輕鬆前往各大景點</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <!-- 桜川・西九条 -->
+          <div class="property-card animate-fadeInUp">
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <img src="https://a0.muscache.com/im/pictures/miso/Hosting-42631189/original/364206ee-096b-4c4f-8050-4417b9e82580.png"
+                   alt="桜川・西九条"
+                   class="w-full h-full object-cover card-image">
+              <div class="image-overlay"></div>
+              <div class="absolute top-4 left-4">
+                <span class="badge">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
+                  包棟民宿
+                </span>
+              </div>
+              <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <span class="text-amber-800 font-bold text-sm">USJ首選</span>
+              </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="font-bold text-xl text-amber-900 mb-1">桜川・西九条</h3>
+              <p class="text-amber-500 text-sm mb-4">此花区舒適住宿</p>
+
+              <div class="space-y-1 mb-5">
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span>大阪市此花区西九条1-10-12</span>
+                </div>
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                  <span>西九條站步行5分鐘・USJ直達</span>
+                </div>
+              </div>
+
+              <a href="rooms/sakuragawa-nishikujo.html" class="btn-primary w-full mt-auto">
+                <span>查看詳情</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- 台香 2F -->
+          <div class="property-card animate-fadeInUp" style="animation-delay: 0.15s;">
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTQ2MjcwMjU1OTM4MDMxOTcyMQ==/original/600a04f5-ad46-4703-be41-71debea597f4.jpeg"
+                   alt="台香2F"
+                   class="w-full h-full object-cover card-image">
+              <div class="image-overlay"></div>
+              <div class="absolute top-4 left-4">
+                <span class="badge">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                  </svg>
+                  包棟民宿
+                </span>
+              </div>
+              <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <span class="text-amber-800 font-bold text-sm">附停車場</span>
+              </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="font-bold text-xl text-amber-900 mb-1">台香 2F</h3>
+              <p class="text-amber-500 text-sm mb-4">舒適住宅・二階</p>
+
+              <div class="space-y-1 mb-5">
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span>大阪市福島区鷺洲1-12-35 二階</span>
+                </div>
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                  </svg>
+                  <span>附設停車場・自駕首選</span>
+                </div>
+              </div>
+
+              <a href="rooms/taixiang-2f.html" class="btn-primary w-full mt-auto">
+                <span>查看詳情</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- 台香 3F -->
+          <div class="property-card animate-fadeInUp" style="animation-delay: 0.3s;">
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <img src="https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTQ2MjcxMTQwNDk4MzU0NDMzNg==/original/1a21ce8e-edf4-4381-8807-2be00d836a5b.jpeg"
+                   alt="台香3F"
+                   class="w-full h-full object-cover card-image">
+              <div class="image-overlay"></div>
+              <div class="absolute top-4 left-4">
+                <span class="badge">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                  </svg>
+                  公寓式民宿
+                </span>
+              </div>
+              <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                <span class="text-amber-800 font-bold text-sm">最多 3 人</span>
+              </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="font-bold text-xl text-amber-900 mb-1">台香 3F</h3>
+              <p class="text-amber-500 text-sm mb-4">榻榻米住宿・三階</p>
+
+              <div class="space-y-1 mb-5">
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span>大阪市福島区鷺洲1-12-35 三階</span>
+                </div>
+                <div class="info-item">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                  </svg>
+                  <span>傳統榻榻米・日式體驗</span>
+                </div>
+              </div>
+
+              <a href="rooms/taixiang-3f.html" class="btn-primary w-full mt-auto">
+                <span>查看詳情</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="about" class="py-24 bg-gradient-to-br from-amber-800 via-amber-900 to-amber-950 text-white overflow-hidden">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="text-center mb-16">
+        <span class="text-amber-300 text-sm tracking-widest uppercase mb-3 block">Why Choose Us</span>
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-serif mb-4">為什麼選擇我們</h2>
+        <p class="text-amber-200/80 max-w-lg mx-auto">專業用心・品質保證・賓至如歸</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div class="feature-card animate-fadeInUp">
+          <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-3">品質保證</h3>
+          <p class="text-amber-200/70 leading-relaxed">所有房源均經過嚴格審核，確保清潔度、設施完善度達到最高標準</p>
+        </div>
+
+        <div class="feature-card animate-fadeInUp" style="animation-delay: 0.1s;">
+          <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-3">交通便利</h3>
+          <p class="text-amber-200/70 leading-relaxed">精選鄰近車站的房源，讓您輕鬆前往大阪各大景點與商圈</p>
+        </div>
+
+        <div class="feature-card animate-fadeInUp" style="animation-delay: 0.2s;">
+          <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-3">貼心服務</h3>
+          <p class="text-amber-200/70 leading-relaxed">中文客服全天候支援，從預訂到退房，隨時為您解答疑問</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-24 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-amber-50 via-white to-amber-50"></div>
+    <div class="absolute top-0 left-0 w-64 h-64 bg-amber-200/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-amber-100/50 rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
+
+    <div class="relative z-10 container mx-auto px-4 text-center">
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-serif text-amber-900 mb-6">準備好開始您的大阪之旅了嗎？</h2>
+      <p class="text-amber-700 mb-10 text-lg max-w-xl mx-auto">立即預訂，體驗道地的大阪民宿生活，創造難忘的旅行回憶</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#properties" class="btn-primary text-lg px-10 py-4">
+          <span>查看所有房源</span>
+        </a>
+        <a href="#contact" class="btn-outline text-lg px-10 py-4">聯絡我們</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section for SEO/GEO -->
+  <section id="faq" class="py-20 lg:py-24 bg-white">
+    <div class="container mx-auto px-4 lg:px-8 max-w-4xl">
+      <div class="text-center mb-14">
+        <span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">FAQ</span>
+        <h2 class="text-3xl md:text-4xl font-serif text-amber-900 section-title">常見問題</h2>
+        <p class="text-amber-600 mt-4">關於大阪旅行日民宿的常見疑問</p>
+      </div>
+
+      <div class="space-y-4">
+        <details class="group bg-amber-50/50 rounded-xl border border-amber-100 overflow-hidden">
+          <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+            <h3 class="font-semibold text-amber-900 text-lg pr-4">如何預訂大阪旅行日民宿？</h3>
+            <svg class="w-5 h-5 text-amber-500 flex-shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-6 text-amber-700 leading-relaxed">
+            <p>透過 Airbnb 預訂，或透過 LINE（@fgk8695x）/ Email（service.traveldays@gmail.com）聯繫我們進行直接預訂。最少需訂 2 晚，支援信用卡、PayPal、Apple Pay / Google Pay 等付款方式。</p>
+          </div>
+        </details>
+
+        <details class="group bg-amber-50/50 rounded-xl border border-amber-100 overflow-hidden">
+          <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+            <h3 class="font-semibold text-amber-900 text-lg pr-4">入住和退房時間是幾點？</h3>
+            <svg class="w-5 h-5 text-amber-500 flex-shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-6 text-amber-700 leading-relaxed">
+            <p>入住時間為下午 3 點（15:00）以後，退房時間為上午 10 點（10:00）之前。我們採用自助式密碼鎖入住，入住前會將密碼傳送給您，讓您隨時輕鬆入住。</p>
+          </div>
+        </details>
+
+        <details class="group bg-amber-50/50 rounded-xl border border-amber-100 overflow-hidden">
+          <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+            <h3 class="font-semibold text-amber-900 text-lg pr-4">民宿提供哪些設施和服務？</h3>
+            <svg class="w-5 h-5 text-amber-500 flex-shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-6 text-amber-700 leading-relaxed">
+            <p>所有房源均配備免費 WiFi、廚房設備、洗衣機、空調、吹風機、毛巾及沐浴用品等基本生活設施。部分房源另提供停車場、浴缸、私人庭院等。詳細設施請參考各房源頁面。</p>
+          </div>
+        </details>
+
+        <details class="group bg-amber-50/50 rounded-xl border border-amber-100 overflow-hidden">
+          <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+            <h3 class="font-semibold text-amber-900 text-lg pr-4">大阪旅行日民宿有哪些地區的房源？</h3>
+            <svg class="w-5 h-5 text-amber-500 flex-shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-6 text-amber-700 leading-relaxed">
+            <p>我們的房源遍布大阪熱門地區，包括<strong>大正區</strong>（小沖繩風情）、<strong>心齋橋/日本橋/難波</strong>（購物美食中心）、<strong>住之江區</strong>（寧靜住宅區）、<strong>西九條/九條區/福島區</strong>（USJ交通樞紐）。所有房源均鄰近車站，方便前往各大景點。</p>
+          </div>
+        </details>
+
+        <details class="group bg-amber-50/50 rounded-xl border border-amber-100 overflow-hidden">
+          <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+            <h3 class="font-semibold text-amber-900 text-lg pr-4">可以取消預訂或改期嗎？</h3>
+            <svg class="w-5 h-5 text-amber-500 flex-shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-6 text-amber-700 leading-relaxed">
+            <p>入住 14 天前可免費取消，之後將依距離入住日的時間收取相應費用。如需改期，請盡早透過 LINE 或 Email 聯繫我們協助處理。詳細取消政策請參考 Airbnb 預訂頁面。</p>
+          </div>
+        </details>
+
+        <details class="group bg-amber-50/50 rounded-xl border border-amber-100 overflow-hidden">
+          <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
+            <h3 class="font-semibold text-amber-900 text-lg pr-4">退房後可以寄放行李嗎？</h3>
+            <svg class="w-5 h-5 text-amber-500 flex-shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-6 pb-6 text-amber-700 leading-relaxed">
+            <p>可以！退房後行李可寄放至當日 18:00 為止。請於退房前聯繫客服確認，我們會為您妥善安排。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact" class="bg-gradient-to-b from-amber-900 to-amber-950 text-amber-100 py-20 px-4">
+    <div class="container mx-auto max-w-6xl">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div class="lg:col-span-2">
+          <div class="flex items-center gap-3 mb-6">
+            <img src="images/logo.png" alt="Logo" class="w-12 h-12 object-contain">
+            <div>
+              <h3 class="text-2xl font-serif text-white">大阪旅行日民宿</h3>
+              <p class="text-amber-400 text-sm tracking-widest">OSAKA TRAVELDAYS</p>
+            </div>
+          </div>
+          <p class="text-amber-300/80 leading-relaxed max-w-md">
+            精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。無論是家庭旅遊、朋友出遊或商務出差，都能找到最適合的住宿選擇。
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+            <span class="w-8 h-0.5 bg-amber-500"></span>
+            聯絡資訊
+          </h4>
+          <div class="space-y-4">
+            <a href="mailto:service.traveldays@gmail.com" class="flex items-center gap-3 text-amber-300 hover:text-white transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              service.traveldays@gmail.com
+            </a>
+            <a href="https://lin.ee/pGrA7Ej" target="_blank" class="flex items-center gap-3 text-amber-300 hover:text-white transition-colors">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+              </svg>
+              LINE: @fgk8695x
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+            <span class="w-8 h-0.5 bg-amber-500"></span>
+            營業登記
+          </h4>
+          <div class="text-amber-400/80 text-sm space-y-2">
+            <p>大阪戦略特区民泊</p>
+            <p>旅館業法 簡易宿所</p>
+            <p>住宅宿泊管理業者</p>
+            <p class="text-amber-500">旅行日民宿均為合法經營・安心入住</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-amber-800/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-amber-500/80 text-sm">© 2025 大阪旅行日民宿 OSAKA TRAVELDAYS. All rights reserved.</p>
+        <div class="flex items-center gap-6">
+          <a href="#" class="text-amber-400 hover:text-white transition-colors text-sm">隱私政策</a>
+          <a href="#" class="text-amber-400 hover:text-white transition-colors text-sm">使用條款</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- FAQ Chatbot Widget -->
+  <button class="chat-btn" id="chatBtn" aria-label="開啟客服">
+    <svg id="chatIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+    </svg>
+    <svg id="closeIcon" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="chat-avatar">🏠</div>
+        <div>
+          <div class="chat-title" id="chatTitle">旅行日客服</div>
+          <div class="chat-subtitle" id="chatSubtitle">隨時為您服務</div>
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <button class="lang-toggle" id="langToggle">日本語</button>
+        <button class="close-btn" id="closeChat">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages"></div>
+
+    <div class="chat-categories" id="chatCategories"></div>
+
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chatInput" placeholder="請輸入您的問題...">
+      <button class="send-btn" id="sendBtn" disabled>
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Intersection Observer for animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.animate-fadeInUp, .animate-scaleIn').forEach(el => {
+      el.style.animationPlayState = 'paused';
+      observer.observe(el);
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Header scroll effect
+    const header = document.querySelector('header');
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+
+      if (currentScroll > 100) {
+        header.classList.add('shadow-md');
+      } else {
+        header.classList.remove('shadow-md');
+      }
+
+      lastScroll = currentScroll;
+    });
+
+    // ======================================
+    // FAQ Chatbot
+    // ======================================
+
+    const FAQChatbot = {
+      // State
+      isOpen: false,
+      language: 'zh-TW',
+      messages: [],
+      isTyping: false,
+
+      // DOM Elements
+      elements: {},
+
+      // FAQ Data
+      categories: [
+        { id: 'booking', name: { 'zh-TW': '預訂付款', 'ja': '予約・支払' }, icon: '📅' },
+        { id: 'checkin', name: { 'zh-TW': '入住設施', 'ja': '入住・設備' }, icon: '🔑' },
+      ],
+
+      faqs: [
+        {
+          id: 'booking-1',
+          categoryId: 'booking',
+          question: { 'zh-TW': '如何預訂？', 'ja': '予約方法は？' },
+          answer: {
+            'zh-TW': '透過 Airbnb 預訂，或 LINE（@fgk8695x）/ Email 聯繫我們。最少需訂 2 晚。',
+            'ja': 'Airbnbで予約、またはLINE（@fgk8695x）/ Emailでお問い合わせください。最低2泊から。'
+          },
+          keywords: { 'zh-TW': '預訂 訂房 預約 怎麼訂 幾晚', 'ja': '予約 予約方法 何泊' },
+          priority: 10
+        },
+        {
+          id: 'booking-2',
+          categoryId: 'booking',
+          question: { 'zh-TW': '付款方式？', 'ja': '支払い方法は？' },
+          answer: {
+            'zh-TW': 'Airbnb 支援信用卡、PayPal、Apple Pay / Google Pay。直接預訂請聯繫我們。',
+            'ja': 'Airbnbではクレジットカード、PayPal、Apple Pay / Google Pay対応。直接予約はお問い合わせください。'
+          },
+          keywords: { 'zh-TW': '付款 信用卡 支付', 'ja': '支払い クレジットカード' },
+          priority: 8
+        },
+        {
+          id: 'booking-3',
+          categoryId: 'booking',
+          question: { 'zh-TW': '取消或改期？', 'ja': 'キャンセル・日程変更は？' },
+          answer: {
+            'zh-TW': '入住 14 天前可免費取消，之後依時間收取費用。改期請提前聯繫，詳見 Airbnb 頁面。',
+            'ja': '14日前まで無料キャンセル、以降は時期により費用が発生します。詳細はAirbnbページへ。'
+          },
+          keywords: { 'zh-TW': '取消 退款 更改 改期', 'ja': 'キャンセル 返金 変更' },
+          priority: 9
+        },
+        {
+          id: 'checkin-1',
+          categoryId: 'checkin',
+          question: { 'zh-TW': '入住/退房時間？', 'ja': 'チェックイン・アウト時間は？' },
+          answer: {
+            'zh-TW': '入住 15:00 後，退房 10:00 前。自助式密碼鎖入住，入住前會傳送密碼。',
+            'ja': 'チェックイン15:00以降、チェックアウト10:00まで。暗証番号式セルフチェックインです。'
+          },
+          keywords: { 'zh-TW': '入住 退房 時間 幾點 密碼 鑰匙', 'ja': 'チェックイン チェックアウト 時間 暗証番号' },
+          priority: 10
+        },
+        {
+          id: 'checkin-2',
+          categoryId: 'checkin',
+          question: { 'zh-TW': '有哪些設施？', 'ja': 'どんな設備がありますか？' },
+          answer: {
+            'zh-TW': 'WiFi、廚房、洗衣機、空調、毛巾及沐浴用品。詳情請查看各房源頁面。',
+            'ja': 'WiFi、キッチン、洗濯機、エアコン、タオル・アメニティ完備。詳細は各物件ページへ。'
+          },
+          keywords: { 'zh-TW': '設施 設備 WiFi 廚房 洗衣機', 'ja': '設備 WiFi キッチン 洗濯機' },
+          priority: 8
+        },
+        {
+          id: 'checkin-3',
+          categoryId: 'checkin',
+          question: { 'zh-TW': '可以寄放行李嗎？', 'ja': '荷物を預けられますか？' },
+          answer: {
+            'zh-TW': '可以，退房後可寄放至 18:00，請提前聯繫確認。',
+            'ja': 'はい、チェックアウト後18:00までお預かり可能です。事前にご連絡ください。'
+          },
+          keywords: { 'zh-TW': '行李 寄放 寄存', 'ja': '荷物 預ける' },
+          priority: 7
+        }
+      ],
+
+      texts: {
+        title: { 'zh-TW': '旅行日客服', 'ja': '旅行日サポート' },
+        placeholder: { 'zh-TW': '請輸入您的問題...', 'ja': 'ご質問を入力してください...' },
+        welcome: {
+          'zh-TW': '您好！歡迎來到大阪旅行日民宿 🏠\n請問有什麼可以幫助您的嗎？',
+          'ja': 'こんにちは！大阪旅行日民宿へようこそ 🏠\nご質問がございましたらお気軽にどうぞ！'
+        },
+        noMatch: {
+          'zh-TW': '抱歉，我沒有找到相關答案。您可以：\n• 選擇下方分類瀏覽\n• 透過 LINE 聯繫我們：@fgk8695x\n• 發郵件至：service.traveldays@gmail.com',
+          'ja': '申し訳ございません、回答が見つかりませんでした。\n• 下のカテゴリーから選択してください\n• LINEでお問い合わせ：@fgk8695x\n• メール：service.traveldays@gmail.com'
+        },
+        langButton: { 'zh-TW': '日本語', 'ja': '中文' },
+        subtitle: { 'zh-TW': '隨時為您服務', 'ja': 'いつでもお手伝いします' },
+        learnMore: { 'zh-TW': '瞭解更多', 'ja': 'もっと詳しく' },
+        qrcodeMessage: {
+          'zh-TW': '掃描下方 QR Code，加入我們的 LINE 官方帳號，即時聯繫客服！\nLINE ID: @fgk8695x',
+          'ja': '下のQRコードをスキャンして、LINE公式アカウントを追加してください！\nLINE ID: @fgk8695x'
+        }
+      },
+
+      // Initialize
+      init() {
+        this.elements = {
+          chatBtn: document.getElementById('chatBtn'),
+          chatWindow: document.getElementById('chatWindow'),
+          chatIcon: document.getElementById('chatIcon'),
+          closeIcon: document.getElementById('closeIcon'),
+          closeChat: document.getElementById('closeChat'),
+          langToggle: document.getElementById('langToggle'),
+          chatTitle: document.getElementById('chatTitle'),
+          chatSubtitle: document.getElementById('chatSubtitle'),
+          chatMessages: document.getElementById('chatMessages'),
+          chatCategories: document.getElementById('chatCategories'),
+          chatInput: document.getElementById('chatInput'),
+          sendBtn: document.getElementById('sendBtn')
+        };
+
+        this.bindEvents();
+        this.renderCategories();
+      },
+
+      // Bind Events
+      bindEvents() {
+        this.elements.chatBtn.addEventListener('click', () => this.toggleChat());
+        this.elements.closeChat.addEventListener('click', () => this.toggleChat());
+        this.elements.langToggle.addEventListener('click', () => this.toggleLanguage());
+        this.elements.sendBtn.addEventListener('click', () => this.sendMessage());
+        this.elements.chatInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.sendMessage();
+        });
+        this.elements.chatInput.addEventListener('input', () => {
+          this.elements.sendBtn.disabled = !this.elements.chatInput.value.trim();
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && this.isOpen) this.toggleChat();
+        });
+      },
+
+      // Toggle Chat
+      toggleChat() {
+        this.isOpen = !this.isOpen;
+
+        this.elements.chatWindow.classList.toggle('open', this.isOpen);
+        this.elements.chatBtn.classList.toggle('open', this.isOpen);
+        this.elements.chatIcon.style.display = this.isOpen ? 'none' : 'block';
+        this.elements.closeIcon.style.display = this.isOpen ? 'block' : 'none';
+
+        // Show welcome message on first open
+        if (this.isOpen && this.messages.length === 0) {
+          this.addBotMessage(this.texts.welcome[this.language], ['booking-1', 'checkin-1', 'facilities-1']);
+        }
+
+        if (this.isOpen) {
+          setTimeout(() => this.elements.chatInput.focus(), 300);
+        }
+      },
+
+      // Toggle Language
+      toggleLanguage() {
+        this.language = this.language === 'zh-TW' ? 'ja' : 'zh-TW';
+
+        // Update UI
+        this.elements.chatTitle.textContent = this.texts.title[this.language];
+        this.elements.chatSubtitle.textContent = this.texts.subtitle[this.language];
+        this.elements.langToggle.textContent = this.texts.langButton[this.language];
+        this.elements.chatInput.placeholder = this.texts.placeholder[this.language];
+
+        this.renderCategories();
+
+        // Re-render welcome if only welcome message
+        if (this.messages.length === 1 && this.messages[0].id === 'welcome') {
+          this.elements.chatMessages.innerHTML = '';
+          this.messages = [];
+          this.addBotMessage(this.texts.welcome[this.language], ['booking-1', 'checkin-1', 'facilities-1'], 'welcome');
+        }
+      },
+
+      // Render Categories
+      renderCategories() {
+        const categoryHtml = this.categories.map(cat =>
+          `<button class="category-btn" data-category="${cat.id}">
+            <span>${cat.icon}</span>
+            <span>${cat.name[this.language]}</span>
+          </button>`
+        ).join('');
+
+        const learnMoreHtml = `<button class="learn-more-btn" id="learnMoreBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg><span>${this.texts.learnMore[this.language]}</span></button>`;
+
+        this.elements.chatCategories.innerHTML = categoryHtml + learnMoreHtml;
+
+        // Bind category clicks
+        this.elements.chatCategories.querySelectorAll('.category-btn').forEach(btn => {
+          btn.addEventListener('click', () => this.selectCategory(btn.dataset.category));
+        });
+
+        // Bind learn more button
+        document.getElementById('learnMoreBtn').addEventListener('click', () => this.showLineQRCode());
+      },
+
+      // Select Category
+      selectCategory(categoryId) {
+        const faqs = this.faqs.filter(f => f.categoryId === categoryId);
+        const cat = this.categories.find(c => c.id === categoryId);
+
+        if (faqs.length > 0 && cat) {
+          const quickReplies = faqs.slice(0, 3).map(f => f.id);
+          const intro = this.language === 'zh-TW'
+            ? `以下是「${cat.name[this.language]}」的常見問題：`
+            : `「${cat.name[this.language]}」に関するご質問：`;
+          this.addBotMessage(intro, quickReplies);
+        }
+
+        // Update active state
+        this.elements.chatCategories.querySelectorAll('.category-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.category === categoryId);
+        });
+      },
+
+      // Send Message
+      sendMessage() {
+        const text = this.elements.chatInput.value.trim();
+        if (!text || this.isTyping) return;
+
+        this.addUserMessage(text);
+        this.elements.chatInput.value = '';
+        this.elements.sendBtn.disabled = true;
+
+        // Search FAQ
+        const matches = this.searchFAQs(text);
+
+        if (matches.length > 0) {
+          const best = matches[0];
+          const related = matches.slice(1).map(f => f.id).slice(0, 2);
+          this.showTyping(() => {
+            this.addBotMessage(best.answer[this.language], related);
+          });
+        } else {
+          this.showTyping(() => {
+            this.addBotMessage(this.texts.noMatch[this.language]);
+          });
+        }
+      },
+
+      // Search FAQs
+      searchFAQs(query) {
+        const normalizedQuery = query.toLowerCase();
+
+        const scored = this.faqs.map(faq => {
+          let score = 0;
+          const question = faq.question[this.language].toLowerCase();
+          const keywords = faq.keywords[this.language].toLowerCase();
+
+          // Question match
+          if (question.includes(normalizedQuery)) score += 100;
+
+          // Keyword match
+          normalizedQuery.split(/\s+/).forEach(word => {
+            if (word.length > 1 && keywords.includes(word)) score += 30;
+            if (word.length > 1 && question.includes(word)) score += 20;
+          });
+
+          score += faq.priority;
+          return { faq, score };
+        });
+
+        return scored
+          .filter(s => s.score > 15)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 3)
+          .map(s => s.faq);
+      },
+
+      // Show Typing Indicator
+      showTyping(callback) {
+        this.isTyping = true;
+
+        const typingHtml = `
+          <div class="message bot" id="typing">
+            <div class="message-avatar">🏠</div>
+            <div class="typing-indicator">
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+            </div>
+          </div>
+        `;
+        this.elements.chatMessages.insertAdjacentHTML('beforeend', typingHtml);
+        this.scrollToBottom();
+
+        setTimeout(() => {
+          const typing = document.getElementById('typing');
+          if (typing) typing.remove();
+          this.isTyping = false;
+          callback();
+        }, 500 + Math.random() * 500);
+      },
+
+      // Add Bot Message
+      addBotMessage(text, quickReplies = [], id = null) {
+        const msgId = id || `msg-${Date.now()}`;
+        this.messages.push({ id: msgId, type: 'bot', content: text });
+
+        let html = `
+          <div class="message bot">
+            <div class="message-avatar">🏠</div>
+            <div class="message-content">
+              <div class="message-bubble">${text}</div>
+            </div>
+          </div>
+        `;
+
+        if (quickReplies.length > 0) {
+          const buttons = quickReplies.map(faqId => {
+            const faq = this.faqs.find(f => f.id === faqId);
+            if (!faq) return '';
+            return `<button class="quick-reply-btn" data-faq="${faqId}">▸ ${faq.question[this.language]}</button>`;
+          }).join('');
+
+          html += `<div class="quick-replies">${buttons}</div>`;
+        }
+
+        this.elements.chatMessages.insertAdjacentHTML('beforeend', html);
+        this.scrollToBottom();
+
+        // Bind quick reply clicks
+        this.elements.chatMessages.querySelectorAll('.quick-reply-btn:not([data-bound])').forEach(btn => {
+          btn.setAttribute('data-bound', 'true');
+          btn.addEventListener('click', () => this.handleQuickReply(btn.dataset.faq));
+        });
+      },
+
+      // Add User Message
+      addUserMessage(text) {
+        this.messages.push({ id: `msg-${Date.now()}`, type: 'user', content: text });
+
+        const html = `
+          <div class="message user">
+            <div class="message-content">
+              <div class="message-bubble">${text}</div>
+            </div>
+          </div>
+        `;
+
+        this.elements.chatMessages.insertAdjacentHTML('beforeend', html);
+        this.scrollToBottom();
+      },
+
+      // Show LINE QR Code
+      showLineQRCode() {
+        const text = this.texts.qrcodeMessage[this.language];
+        const qrcodeHtml = `
+          <div class="message bot">
+            <div class="message-avatar">🏠</div>
+            <div class="message-content">
+              <div class="message-bubble">${text}</div>
+              <div class="qrcode-container">
+                <img src="line-qrcode.png" alt="LINE QR Code">
+              </div>
+            </div>
+          </div>
+        `;
+        this.elements.chatMessages.insertAdjacentHTML('beforeend', qrcodeHtml);
+        this.scrollToBottom();
+      },
+
+      // Handle Quick Reply
+      handleQuickReply(faqId) {
+        const faq = this.faqs.find(f => f.id === faqId);
+        if (!faq) return;
+
+        this.addUserMessage(faq.question[this.language]);
+
+        // Find related FAQs in same category
+        const related = this.faqs
+          .filter(f => f.categoryId === faq.categoryId && f.id !== faqId)
+          .slice(0, 2)
+          .map(f => f.id);
+
+        this.showTyping(() => {
+          this.addBotMessage(faq.answer[this.language], related);
+        });
+      },
+
+      // Scroll to bottom
+      scrollToBottom() {
+        this.elements.chatMessages.scrollTop = this.elements.chatMessages.scrollHeight;
+      }
+    };
+
+    // Initialize chatbot
+    FAQChatbot.init();
+  </script>
+  <script>
+    // Dynamic Properties Renderer
+    (function() {
+      const HOUSE_ICON = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>';
+      const APARTMENT_ICON = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/></svg>';
+
+      function getBadgeIcon(badge, type) {
+        if (badge === '公寓式民宿' || type === '公寓式民宿') {
+          return APARTMENT_ICON;
+        }
+        return HOUSE_ICON;
+      }
+
+      function getCoverImage(property) {
+        if (property.images && property.images.length > 0) {
+          return property.images[0].url || '';
+        }
+        return '';
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      function renderCard(property, delay) {
+        var coverUrl = getCoverImage(property);
+        var badgeIcon = getBadgeIcon(property.badge, property.type);
+        var delayAttr = delay > 0 ? ' style="animation-delay: ' + delay + 's;"' : '';
+
+        return '<div class="property-card animate-fadeInUp"' + delayAttr + '>' +
+          '<div class="relative aspect-[4/3] overflow-hidden">' +
+            '<img src="' + escapeHtml(coverUrl) + '" alt="' + escapeHtml(property.name) + '" class="w-full h-full object-cover card-image">' +
+            '<div class="image-overlay"></div>' +
+            '<div class="absolute top-4 left-4">' +
+              '<span class="badge">' +
+                badgeIcon +
+                ' ' + escapeHtml(property.badge) +
+              '</span>' +
+            '</div>' +
+            (property.secondaryBadge ? '<div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">' +
+              '<span class="text-amber-800 font-bold text-sm">' + escapeHtml(property.secondaryBadge) + '</span>' +
+            '</div>' : '') +
+          '</div>' +
+          '<div class="p-6 flex flex-col flex-1">' +
+            '<h3 class="font-bold text-xl text-amber-900 mb-1">' + escapeHtml(property.name) + '</h3>' +
+            '<p class="text-amber-500 text-sm mb-4">' + escapeHtml(property.shortDesc) + '</p>' +
+            '<div class="space-y-1 mb-5">' +
+              '<div class="info-item">' +
+                '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                  '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>' +
+                  '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>' +
+                '</svg>' +
+                '<span>' + escapeHtml(property.address) + '</span>' +
+              '</div>' +
+              '<div class="info-item">' +
+                '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                  '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>' +
+                '</svg>' +
+                '<span>' + escapeHtml(property.transportInfo) + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<a href="rooms/' + escapeHtml(property.id) + '.html" class="btn-primary w-full mt-auto">' +
+              '<span>查看詳情</span>' +
+              '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>' +
+              '</svg>' +
+            '</a>' +
+          '</div>' +
+        '</div>';
+      }
+
+      function renderRegion(regionZh, regionEn, regionDesc, properties, isOdd) {
+        var bgClass = isOdd ? 'bg-gradient-to-b from-amber-50/50 to-white' : 'bg-white';
+        var count = properties.length;
+
+        // Grid class based on property count
+        var gridClass;
+        if (count === 1) {
+          gridClass = 'flex justify-center';
+        } else if (count === 2) {
+          gridClass = 'grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto';
+        } else if (count <= 4) {
+          gridClass = 'grid grid-cols-1 md:grid-cols-' + count + ' gap-8 max-w-6xl mx-auto';
+        } else {
+          // 5+ properties: use 3 columns, center the last incomplete row with flexbox
+          gridClass = 'flex flex-wrap justify-center gap-8 max-w-6xl mx-auto';
+        }
+
+        var cardsHtml = '';
+        for (var i = 0; i < count; i++) {
+          var delay = i * 0.1;
+          if (count === 1) {
+            // Single card: constrain width
+            cardsHtml += '<div class="w-full max-w-sm">' + renderCard(properties[i], delay) + '</div>';
+          } else if (count >= 5) {
+            // Flex items: fixed width for 3-per-row alignment
+            cardsHtml += '<div class="w-full md:w-[calc(33.333%-1.4rem)]">' + renderCard(properties[i], delay) + '</div>';
+          } else {
+            cardsHtml += renderCard(properties[i], delay);
+          }
+        }
+
+        return '<div class="py-16 lg:py-20 ' + bgClass + '">' +
+          '<div class="container mx-auto px-4 lg:px-8">' +
+            '<div class="text-center mb-14">' +
+              '<span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">' + escapeHtml(regionEn) + '</span>' +
+              '<h2 class="text-2xl md:text-3xl lg:text-4xl font-serif text-amber-900 section-title">' + escapeHtml(regionZh) + '</h2>' +
+              (regionDesc ? '<p class="text-amber-600 mt-4 max-w-lg mx-auto">' + escapeHtml(regionDesc) + '</p>' : '') +
+            '</div>' +
+            '<div class="' + gridClass + '">' +
+              cardsHtml +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }
+
+      function renderAllRegions(regions) {
+        var html = '';
+        var totalProperties = 0;
+        var totalRegions = regions.length;
+
+        for (var i = 0; i < regions.length; i++) {
+          var region = regions[i];
+          var props = region.properties || [];
+          totalProperties += props.length;
+          if (props.length === 0) continue;
+          var isOdd = (i % 2 === 0);
+          html += renderRegion(region.nameZh, region.nameEn, region.description, props, isOdd);
+        }
+
+        var container = document.getElementById('propertiesContainer');
+        var staticEl = document.getElementById('staticProperties');
+
+        if (html) {
+          container.innerHTML = html;
+          container.style.display = '';
+          if (staticEl) staticEl.style.display = 'none';
+
+          var statProps = document.getElementById('statProperties');
+          var statRegions = document.getElementById('statRegions');
+          if (statProps) statProps.textContent = totalProperties;
+          if (statRegions) statRegions.textContent = totalRegions;
+
+          container.querySelectorAll('.animate-fadeInUp, .animate-scaleIn').forEach(function(el) {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
+          });
+        }
+      }
+
+      // Fetch regions from API
+      fetch('/api/regions')
+        .then(function(response) {
+          if (!response.ok) throw new Error('API returned ' + response.status);
+          return response.json();
+        })
+        .then(function(data) {
+          if (Array.isArray(data) && data.length > 0) {
+            renderAllRegions(data);
+          }
+        })
+        .catch(function(err) {
+          console.warn('Failed to load regions from API, using static fallback:', err);
+        });
+    })();
+  </script>
+</body>
+</html>

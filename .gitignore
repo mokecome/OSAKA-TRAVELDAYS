@@ -1,0 +1,11 @@
+node_modules/
+.env
+osaka-minshuku.db
+server.log
+images/uploads/
+index.php.bak
+scrape-results/
+.npm-cache/
+.npm-global/
+.claude-install/
+.claude/

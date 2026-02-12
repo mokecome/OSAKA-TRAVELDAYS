@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>載入中... | 大阪旅行日民宿</title>
+  <meta name="robots" content="index, follow">
+  <link rel="stylesheet" href="/css/tailwind.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #8B4513;
+      --color-secondary: #A0522D;
+      --color-accent: #D4A574;
+      --color-bg: #FFFBF7;
+      --color-text: #2D1810;
+      --color-text-muted: #6B5344;
+    }
+
+    * { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.7;
+    }
+
+    .font-serif { font-family: 'Noto Serif TC', serif; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+      color: white;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(139, 69, 19, 0.3);
+    }
+
+    .section-title {
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+      border-radius: 2px;
+    }
+
+    .video-placeholder {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      aspect-ratio: 16/9;
+    }
+
+    .play-btn {
+      width: 80px;
+      height: 80px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      transition: all 0.3s;
+    }
+
+    .play-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.1);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .gallery-item {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .gallery-item:hover {
+      transform: scale(1.05);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .amenity-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid rgba(139, 69, 19, 0.1);
+    }
+
+    .amenity-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #FEF3E2 0%, #FDE8D0 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .info-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(139, 69, 19, 0.08);
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.95);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 32px;
+      cursor: pointer;
+    }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: white;
+      font-size: 48px;
+      cursor: pointer;
+      padding: 20px;
+    }
+
+    .lightbox-prev { left: 20px; }
+    .lightbox-next { right: 20px; }
+
+    .new-badge {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-amber-100">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="../index.html" class="flex items-center gap-3 group">
+          <svg class="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          <span class="text-xl font-serif font-bold text-amber-900">大阪旅行日民宿</span>
+        </a>
+        <nav class="hidden md:flex items-center space-x-8">
+          <a href="../index.html#properties" class="text-amber-800 hover:text-amber-600 transition-colors">房源一覽</a>
+          <a href="../index.html#contact" class="text-amber-800 hover:text-amber-600 transition-colors">聯絡我們</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main id="mainContent" class="pt-16">
+    <!-- Loading -->
+    <div id="loadingState" class="py-32 text-center">
+      <p class="text-amber-600 text-lg">載入中...</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-amber-950 text-amber-100 py-12 px-4">
+    <div class="container mx-auto max-w-6xl">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+          <img src="../images/logo.png" alt="大阪旅行日民宿 OSAKA TRAVELDAYS" class="w-8 h-8 object-contain">
+          <div>
+            <span class="text-lg font-serif text-white">大阪旅行日民宿</span>
+            <span class="text-amber-400 text-sm ml-2">OSAKA TRAVELDAYS</span>
+          </div>
+        </div>
+        <p class="text-amber-500 text-sm">&copy; 2025 大阪旅行日民宿. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+    <span class="lightbox-nav lightbox-prev" onclick="event.stopPropagation(); navigateLightbox(-1)">&#10094;</span>
+    <img id="lightbox-img" src="" alt="Gallery Image" onclick="event.stopPropagation()">
+    <span class="lightbox-nav lightbox-next" onclick="event.stopPropagation(); navigateLightbox(1)">&#10095;</span>
+  </div>
+
+  <script>
+    var allImages = [];
+    var currentIndex = 0;
+
+    // Extract property ID from URL: /rooms/xxx.html -> xxx
+    var pathParts = window.location.pathname.split('/');
+    var filename = pathParts[pathParts.length - 1];
+    var propertyId = filename.replace('.html', '');
+
+    function esc(str) {
+      var div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
+    }
+
+    function getYoutubeEmbedUrl(url) {
+      if (!url) return null;
+      var m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      return m ? 'https://www.youtube.com/embed/' + m[1] + '?rel=0' : null;
+    }
+
+    function getYoutubeId(url) {
+      if (!url) return null;
+      var m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      return m ? m[1] : null;
+    }
+
+    // Amenity icon mapping - specific SVG path for each amenity
+    function getAmenityIcon(name) {
+      var icons = {
+        'Wi-Fi': 'M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0',
+        'wifi': 'M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0',
+        '電視': 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+        '廚房': 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+        '洗衣機': 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',
+        '空調設備': 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z',
+        '吹風機': 'M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z',
+        '冰箱': 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
+        '微波爐': 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+        '自助入住': 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z',
+        '煙霧警報器': 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+        '適合家庭': 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
+        '全新設備': 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
+        '基本沐浴用品': 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
+        '床單毛巾': 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
+        '私人車庫': 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+        '停車位': 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+        '陽台': 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+        '熨斗': 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
+        '衣架': 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
+        '烘衣機': 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',
+        '浴缸': 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
+        '交通便利': 'M13 10V3L4 14h7v7l9-11h-7z',
+        '簡易廚房': 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+        '攜帶式WiFi': 'M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0',
+        '電梯': 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+        '日式被褥': 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'
+      };
+      // Default check icon for unknown amenities
+      return icons[name] || 'M5 13l4 4L19 7';
+    }
+
+    function renderProperty(p) {
+      document.title = p.name + ' | 大阪旅行日民宿';
+      allImages = (p.images || []).map(function(img) { return img.url; });
+
+      var embedUrl = getYoutubeEmbedUrl(p.videoUrl);
+      var ytId = getYoutubeId(p.videoUrl);
+
+      // ========== Video section with fallback ==========
+      var videoHtml = '';
+      var videoId = 'yt-embed-' + Date.now();
+      var fallbackId = 'yt-fallback-' + Date.now();
+      if (embedUrl && ytId) {
+        videoHtml = '<div id="video-container" class="aspect-video rounded-2xl overflow-hidden shadow-lg relative">' +
+          '<iframe id="' + videoId + '" width="100%" height="100%" src="' + esc(embedUrl) + '" title="' + esc(p.name) + ' 房源影片" ' +
+          'frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
+          'allowfullscreen class="w-full h-full"></iframe>' +
+          '<a id="' + fallbackId + '" href="' + esc(p.videoUrl) + '" target="_blank" class="hidden absolute inset-0 group">' +
+          '<img src="https://img.youtube.com/vi/' + esc(ytId) + '/maxresdefault.jpg" alt="' + esc(p.name) + ' 影片縮圖" class="w-full h-full object-cover">' +
+          '<div class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">' +
+          '<div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">' +
+          '<svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>' +
+          '</div></div>' +
+          '<div class="absolute bottom-4 left-4 text-white text-sm bg-black/60 px-3 py-1 rounded-full">點擊前往 YouTube 觀看</div>' +
+          '</a></div>';
+      } else if (p.videoUrl) {
+        videoHtml = '<div class="aspect-video rounded-2xl overflow-hidden shadow-lg">' +
+          '<a href="' + esc(p.videoUrl) + '" target="_blank" class="block w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">' +
+          '<div class="text-center text-white"><div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">' +
+          '<svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>' +
+          '</div><p>點擊觀看影片</p></div></a></div>';
+      } else {
+        // No video: show "coming soon" placeholder to keep 2-column layout
+        videoHtml = '<div class="video-placeholder">' +
+          '<div class="play-btn">' +
+          '<svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">' +
+          '<path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>' +
+          '</div><p class="text-white/70">影片即將推出</p></div>';
+      }
+
+      // ========== Introduction ==========
+      var introHtml = '';
+      if (p.introduction) {
+        var paragraphs = p.introduction.split(/\n\s*\n|\n/);
+        introHtml = paragraphs.map(function(para) {
+          return '<p class="text-amber-800 leading-relaxed mb-4">' + esc(para.trim()) + '</p>';
+        }).join('');
+      }
+
+      // ========== Quick Info ==========
+      var qi = p.quickInfo || [];
+      var qiHtml = '';
+      qi.forEach(function(item) {
+        if (item.title || item.value) {
+          qiHtml += '<div class="info-card">' +
+            '<p class="text-amber-500 text-sm mb-1">' + esc(item.title) + '</p>' +
+            '<p class="font-semibold text-amber-900">' + esc(item.value) + '</p>' +
+            (item.desc ? '<p class="text-amber-600 text-sm">' + esc(item.desc) + '</p>' : '') +
+            '</div>';
+        }
+      });
+
+      // ========== Gallery (show up to 8, with "+N 張" overlay on last) ==========
+      var galleryHtml = '';
+      var galleryImages = allImages.slice(1); // skip cover
+      var maxShow = 8; // show up to 8 photos like original
+      if (galleryImages.length > 0) {
+        var showCount = Math.min(galleryImages.length, maxShow);
+        var remaining = galleryImages.length - showCount;
+        for (var i = 0; i < showCount; i++) {
+          var url = galleryImages[i];
+          var isLast = (i === showCount - 1) && remaining > 0;
+          if (isLast) {
+            // Last item with "+N 張" overlay
+            galleryHtml += '<div class="gallery-item relative" onclick="openLightbox(' + (i + 1) + ')">' +
+              '<img src="' + esc(url) + '" alt="房源照片 ' + (i + 2) + '" loading="lazy">' +
+              '<div class="absolute inset-0 bg-black/50 flex items-center justify-center">' +
+              '<span class="text-white font-semibold">+' + remaining + ' 張</span>' +
+              '</div></div>';
+          } else {
+            galleryHtml += '<div class="gallery-item" onclick="openLightbox(' + (i + 1) + ')">' +
+              '<img src="' + esc(url) + '" alt="房源照片 ' + (i + 2) + '" loading="lazy"></div>';
+          }
+        }
+      }
+
+      // ========== Space Intro ==========
+      var si = p.spaceIntro || [];
+      var siHtml = '';
+      var siIcons = [
+        'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+        'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+        'M13 10V3L4 14h7v7l9-11h-7z',
+        'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
+      ];
+      si.forEach(function(item, idx) {
+        if (item.title) {
+          siHtml += '<div class="info-card"><h3 class="font-semibold text-amber-900 mb-4 flex items-center gap-2">' +
+            '<span class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">' +
+            '<svg class="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + (siIcons[idx] || siIcons[0]) + '"/></svg></span>' +
+            esc(item.title) + '</h3><p class="text-amber-700">' + esc(item.desc) + '</p></div>';
+        }
+      });
+
+      // ========== Transport detail ==========
+      var transportLines = '';
+      if (p.transportDetail) {
+        p.transportDetail.split('\n').forEach(function(line) {
+          if (line.trim()) transportLines += '<li>• ' + esc(line.trim()) + '</li>';
+        });
+      }
+
+      // ========== Amenities with specific icons ==========
+      var amenitiesHtml = '';
+      var amenities = p.amenities || [];
+      amenities.forEach(function(name) {
+        var iconPath = getAmenityIcon(name);
+        amenitiesHtml += '<div class="amenity-item"><div class="amenity-icon">' +
+          '<svg class="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + iconPath + '"/></svg>' +
+          '</div><span class="text-amber-800">' + esc(name) + '</span></div>';
+      });
+
+      // ==================== Build full page ====================
+      var html = '';
+
+      // ========== Title Section ==========
+      // Build tag items from capacity (first gets star) + size
+      var tagItems = [];
+      if (p.capacity) {
+        p.capacity.split(/[・]/).forEach(function(t, i) {
+          if (t.trim()) tagItems.push({ text: t.trim(), hasStar: i === 0 });
+        });
+      }
+      if (p.size) {
+        p.size.split(/[・]/).forEach(function(t) {
+          if (t.trim()) tagItems.push({ text: t.trim(), hasStar: false });
+        });
+      }
+
+      var tagsHtml = '';
+      tagItems.forEach(function(item, i) {
+        if (i > 0) tagsHtml += '<span>•</span>';
+        if (item.hasStar) {
+          tagsHtml += '<span class="flex items-center gap-2">' +
+            '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>' +
+            esc(item.text) + '</span>';
+        } else {
+          tagsHtml += '<span>' + esc(item.text) + '</span>';
+        }
+      });
+
+      html += '<section class="py-8 lg:py-12 bg-gradient-to-b from-amber-50 to-white">' +
+        '<div class="container mx-auto px-4 lg:px-8"><div class="max-w-4xl">' +
+        '<div class="flex items-center gap-3 mb-2">' +
+        '<span class="text-amber-600 text-sm tracking-widest uppercase">' + esc(p.regionEn) + '</span>' +
+        (p.secondaryBadge ? '<span class="new-badge">' + esc(p.secondaryBadge) + '</span>' : '') +
+        '</div>' +
+        '<h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-amber-900 mb-4">' + esc(p.name) + '</h1>' +
+        '<p class="text-xl text-amber-700 mb-4">' + esc(p.transportInfo) + '</p>' +
+        (tagsHtml ? '<div class="flex flex-wrap items-center gap-4 text-amber-600">' + tagsHtml + '</div>' : '') +
+        '</div></div></section>';
+
+      // ========== Media & Introduction (always 2-column: video/placeholder left, intro right) ==========
+      if (videoHtml || introHtml || qiHtml) {
+        html += '<section class="py-12 lg:py-16"><div class="container mx-auto px-4 lg:px-8">';
+        html += '<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">' + videoHtml +
+          '<div><h2 class="text-2xl font-serif text-amber-900 mb-4 section-title">房源介紹</h2>' +
+          '<div class="prose prose-amber mt-8">' + introHtml + '</div>' +
+          (qiHtml ? '<div class="mt-8 grid grid-cols-2 gap-4">' + qiHtml + '</div>' : '') +
+          '</div></div>';
+
+        // Gallery
+        if (galleryHtml) {
+          html += '<div class="mt-12">' +
+            '<div class="flex items-center justify-between mb-6">' +
+            '<h3 class="text-xl font-serif text-amber-900">瀏覽照片</h3>' +
+            '<button onclick="openLightbox(0)" class="text-amber-600 hover:text-amber-800 flex items-center gap-2">' +
+            '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>' +
+            '查看全部照片</button>' +
+            '</div>' +
+            '<div class="gallery-grid">' + galleryHtml + '</div></div>';
+        }
+        html += '</div></section>';
+      }
+
+      // ========== Space Introduction ==========
+      if (siHtml) {
+        html += '<section class="py-12 lg:py-16 bg-amber-50/50"><div class="container mx-auto px-4 lg:px-8">' +
+          '<h2 class="text-2xl font-serif text-amber-900 mb-8 section-title">空間介紹</h2>' +
+          '<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">' + siHtml + '</div></div></section>';
+      }
+
+      // ========== Address & Transport ==========
+      if (p.address || p.mapEmbedUrl || p.nearestStation || transportLines) {
+        html += '<section class="py-12 lg:py-16"><div class="container mx-auto px-4 lg:px-8">' +
+          '<h2 class="text-2xl font-serif text-amber-900 mb-8 section-title">住宿地址</h2>' +
+          '<div class="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">';
+        if (p.mapEmbedUrl) {
+          html += '<div class="lg:col-span-2"><div class="rounded-2xl overflow-hidden shadow-lg">' +
+            '<iframe src="' + esc(p.mapEmbedUrl) + '" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div>';
+        }
+        html += '<div class="info-card' + (p.mapEmbedUrl ? '' : ' lg:col-span-3') + '">' +
+          '<h3 class="font-semibold text-amber-900 mb-4">交通資訊</h3><div class="space-y-3 text-amber-700 text-sm">';
+        if (p.address) {
+          html += '<div class="flex items-start gap-2"><svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>' +
+            '<span>' + esc(p.address) + '</span></div>';
+        }
+        if (p.nearestStation) {
+          var stationLines = '';
+          p.nearestStation.split('\n').forEach(function(line) {
+            if (line.trim()) stationLines += '<li>• ' + esc(line.trim()) + '</li>';
+          });
+          html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">最近車站</p>' +
+            '<ul class="space-y-1">' + stationLines + '</ul></div>';
+        }
+        if (transportLines) {
+          html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">交通時間</p>' +
+            '<ul class="space-y-1">' + transportLines + '</ul></div>';
+        }
+        // Nearby attractions
+        if (p.nearbyAttractions) {
+          var attractionLines = '';
+          p.nearbyAttractions.split('\n').forEach(function(line) {
+            if (line.trim()) attractionLines += '<li>• ' + esc(line.trim()) + '</li>';
+          });
+          if (attractionLines) {
+            html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">周邊景點</p>' +
+              '<ul class="space-y-1">' + attractionLines + '</ul></div>';
+          }
+        }
+        // Parking info
+        if (p.parkingInfo) {
+          html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">停車資訊</p>' +
+            '<ul class="space-y-1"><li>• ' + esc(p.parkingInfo) + '</li></ul></div>';
+        }
+        html += '</div></div></div></div></section>';
+      }
+
+      // ========== Amenities ==========
+      if (amenitiesHtml) {
+        html += '<section class="py-12 lg:py-16 bg-amber-50/50"><div class="container mx-auto px-4 lg:px-8">' +
+          '<h2 class="text-2xl font-serif text-amber-900 mb-8 section-title">有提供的設備和服務</h2>' +
+          '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-12">' + amenitiesHtml + '</div></div></section>';
+      }
+
+      // ========== CTA ==========
+      var airbnbTrackUrl = p.airbnbUrl ? p.airbnbUrl + (p.airbnbUrl.includes('?') ? '&' : '?') + 'utm_source=osaka-traveldays&utm_medium=website&utm_campaign=room-page' : '';
+      if (p.airbnbUrl) {
+        html += '<section class="py-16 lg:py-24 bg-gradient-to-br from-amber-800 via-amber-900 to-amber-950">' +
+          '<div class="container mx-auto px-4 lg:px-8 text-center">' +
+          '<h2 class="text-3xl md:text-4xl font-serif text-white mb-4">選擇入住日期</h2>' +
+          '<p class="text-amber-200 mb-8 max-w-lg mx-auto">點擊下方按鈕前往 Airbnb 選擇您的入住日期並完成預訂</p>' +
+          '<a href="' + esc(airbnbTrackUrl) + '" target="_blank" rel="noopener" class="btn-primary text-lg px-12 py-4 bg-white text-amber-900 hover:bg-amber-50 airbnb-cta">' +
+          '<span>立即預訂</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></div></section>';
+      }
+
+      document.getElementById('loadingState').remove();
+      document.getElementById('mainContent').innerHTML = html;
+
+      // ========== Sticky Mobile Booking Button ==========
+      if (p.airbnbUrl) {
+        var stickyBar = document.createElement('div');
+        stickyBar.id = 'stickyBooking';
+        stickyBar.className = 'fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-t border-amber-200 p-3 shadow-lg lg:hidden';
+        stickyBar.style.display = 'none';
+        stickyBar.innerHTML = '<div class="flex items-center justify-between max-w-lg mx-auto">' +
+          '<div class="flex-1 mr-3"><p class="font-bold text-amber-900 text-sm truncate">' + esc(p.name) + '</p>' +
+          '<p class="text-amber-600 text-xs">前往 Airbnb 預訂</p></div>' +
+          '<a href="' + esc(airbnbTrackUrl) + '" target="_blank" rel="noopener" class="btn-primary px-6 py-3 text-sm flex-shrink-0 airbnb-cta">' +
+          '<span>立即預訂</span></a></div>';
+        document.body.appendChild(stickyBar);
+
+        window.addEventListener('scroll', function() {
+          var sticky = document.getElementById('stickyBooking');
+          if (sticky) sticky.style.display = window.scrollY > 400 ? 'block' : 'none';
+        });
+      }
+
+      // ========== Airbnb Click Tracking ==========
+      document.addEventListener('click', function(e) {
+        var link = e.target.closest('.airbnb-cta');
+        if (link && window.gtag) {
+          gtag('event', 'click', {
+            event_category: 'outbound',
+            event_label: 'airbnb_booking',
+            transport_type: 'beacon'
+          });
+        }
+      });
+
+      // ========== YouTube fallback detection ==========
+      if (embedUrl && ytId) {
+        var iframeEl = null;
+        var fallbackEl = null;
+
+        // Wait for DOM to update, then attach error handlers
+        setTimeout(function() {
+          iframeEl = document.getElementById(videoId);
+          fallbackEl = document.getElementById(fallbackId);
+          if (!iframeEl || !fallbackEl) return;
+
+          // Only trigger fallback on actual load errors
+          iframeEl.onerror = function() {
+            iframeEl.classList.add('hidden');
+            fallbackEl.classList.remove('hidden');
+          };
+        }, 100);
+      }
+    }
+
+    // Lightbox
+    function openLightbox(index) {
+      currentIndex = index;
+      document.getElementById('lightbox-img').src = allImages[index];
+      document.getElementById('lightbox').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    function navigateLightbox(direction) {
+      currentIndex += direction;
+      if (currentIndex < 0) currentIndex = allImages.length - 1;
+      if (currentIndex >= allImages.length) currentIndex = 0;
+      document.getElementById('lightbox-img').src = allImages[currentIndex];
+    }
+    document.addEventListener('keydown', function(e) {
+      if (!document.getElementById('lightbox').classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') navigateLightbox(-1);
+      if (e.key === 'ArrowRight') navigateLightbox(1);
+    });
+
+    // Fetch and render
+    fetch('/api/properties/' + encodeURIComponent(propertyId))
+      .then(function(res) {
+        if (!res.ok) throw new Error('找不到此房源');
+        return res.json();
+      })
+      .then(function(data) {
+        renderProperty(data);
+      })
+      .catch(function(err) {
+        document.getElementById('loadingState').innerHTML =
+          '<div class="py-32 text-center"><p class="text-amber-600 text-lg mb-4">' + err.message + '</p>' +
+          '<a href="../index.html" class="btn-primary inline-flex">返回首頁</a></div>';
+      });
+  </script>
+</body>
+</html>
