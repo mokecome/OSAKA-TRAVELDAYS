@@ -681,9 +681,9 @@
 
 <script>
 // ==================== CONFIG ====================
-const ADMIN_PASSWORD = 'osaka2024';
 const API_BASE = '/api';
 const DEFAULT_AMENITIES = ['Wi-Fi','電視','廚房','洗衣機','空調設備','吹風機','冰箱','自助入住','停車場','浴缸','微波爐','電梯'];
+let AUTH_TOKEN = sessionStorage.getItem('admin_token') || '';
 
 // ==================== STATE ====================
 let properties = [];
@@ -698,14 +698,22 @@ let isNewProperty = false;
 let editingRegionId = null;
 
 // ==================== AUTH ====================
-function login() {
+async function login() {
   const pwd = document.getElementById('passwordInput').value;
-  if (pwd === ADMIN_PASSWORD) {
-    sessionStorage.setItem('admin_auth', '1');
+  try {
+    const res = await fetch(API_BASE + '/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd })
+    });
+    if (!res.ok) throw new Error('密碼錯誤');
+    const data = await res.json();
+    AUTH_TOKEN = data.token;
+    sessionStorage.setItem('admin_token', AUTH_TOKEN);
     document.getElementById('loginGate').classList.add('hidden');
     document.getElementById('adminPanel').classList.remove('hidden');
     loadData();
-  } else {
+  } catch (err) {
     document.getElementById('loginError').classList.remove('hidden');
     document.getElementById('passwordInput').value = '';
     document.getElementById('passwordInput').focus();
@@ -713,21 +721,31 @@ function login() {
 }
 
 function logout() {
-  sessionStorage.removeItem('admin_auth');
+  AUTH_TOKEN = '';
+  sessionStorage.removeItem('admin_token');
   location.reload();
 }
 
-function checkAuth() {
-  if (sessionStorage.getItem('admin_auth') === '1') {
-    document.getElementById('loginGate').classList.add('hidden');
-    document.getElementById('adminPanel').classList.remove('hidden');
-    loadData();
+async function checkAuth() {
+  if (AUTH_TOKEN) {
+    try {
+      const res = await fetch(API_BASE + '/regions', { headers: { 'X-Admin-Token': AUTH_TOKEN } });
+      if (res.status === 401) { AUTH_TOKEN = ''; sessionStorage.removeItem('admin_token'); return; }
+      document.getElementById('loginGate').classList.add('hidden');
+      document.getElementById('adminPanel').classList.remove('hidden');
+      loadData();
+    } catch (e) { /* stay on login */ }
   }
 }
 
 // ==================== API ====================
+function authHeaders(extra) {
+  return Object.assign({ 'X-Admin-Token': AUTH_TOKEN }, extra || {});
+}
+
 async function apiGet(path) {
-  const res = await fetch(API_BASE + path);
+  const res = await fetch(API_BASE + path, { headers: authHeaders() });
+  if (res.status === 401) { logout(); return; }
   if (!res.ok) throw new Error('API error: ' + res.status);
   return res.json();
 }
@@ -735,9 +753,10 @@ async function apiGet(path) {
 async function apiPost(path, data) {
   const res = await fetch(API_BASE + path, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(data)
   });
+  if (res.status === 401) { logout(); return; }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || 'API error: ' + res.status);
@@ -748,15 +767,17 @@ async function apiPost(path, data) {
 async function apiPut(path, data) {
   const res = await fetch(API_BASE + path, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(data)
   });
+  if (res.status === 401) { logout(); return; }
   if (!res.ok) throw new Error('API error: ' + res.status);
   return res.json();
 }
 
 async function apiDelete(path) {
-  const res = await fetch(API_BASE + path, { method: 'DELETE' });
+  const res = await fetch(API_BASE + path, { method: 'DELETE', headers: authHeaders() });
+  if (res.status === 401) { logout(); return; }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || 'API error: ' + res.status);
@@ -767,7 +788,8 @@ async function apiDelete(path) {
 async function apiUpload(files) {
   const formData = new FormData();
   for (const file of files) formData.append('images', file);
-  const res = await fetch(API_BASE + '/upload', { method: 'POST', body: formData });
+  const res = await fetch(API_BASE + '/upload', { method: 'POST', headers: { 'X-Admin-Token': AUTH_TOKEN }, body: formData });
+  if (res.status === 401) { logout(); return; }
   if (!res.ok) throw new Error('Upload failed');
   return res.json();
 }
