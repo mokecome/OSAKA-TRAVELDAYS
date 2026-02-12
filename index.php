@@ -21,6 +21,12 @@ curl_setopt($ch, CURLOPT_HEADER, true);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
 curl_setopt($ch, CURLOPT_TIMEOUT, 300);
 
+// Build forwarded headers (always include auth token if present)
+$fwdHeaders = [];
+if (!empty($_SERVER['HTTP_X_ADMIN_TOKEN'])) {
+    $fwdHeaders[] = 'X-Admin-Token: ' . $_SERVER['HTTP_X_ADMIN_TOKEN'];
+}
+
 // Forward request body for POST/PUT
 if (in_array($method, ['POST', 'PUT', 'PATCH'])) {
     $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
@@ -57,11 +63,14 @@ if (in_array($method, ['POST', 'PUT', 'PATCH'])) {
         // Forward raw body (JSON, etc.)
         $body = file_get_contents('php://input');
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: ' . $contentType,
-            'Content-Length: ' . strlen($body)
-        ]);
+        $fwdHeaders[] = 'Content-Type: ' . $contentType;
+        $fwdHeaders[] = 'Content-Length: ' . strlen($body);
     }
+}
+
+// Set all forwarded headers
+if (!empty($fwdHeaders)) {
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $fwdHeaders);
 }
 
 // Execute request

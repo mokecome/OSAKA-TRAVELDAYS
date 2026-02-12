@@ -4,7 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>後台管理 | 大阪旅行日民宿</title>
-  <link rel="stylesheet" href="/css/tailwind.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sidebar: '#1a1a1a',
+            surface: '#f6f6f7',
+            card: '#ffffff',
+            primary: '#008060',
+            'primary-hover': '#006e52',
+            destructive: '#d72c0d',
+            'destructive-hover': '#bc2200',
+            link: '#2c6ecb',
+            'text-primary': '#202223',
+            'text-secondary': '#6d7175',
+            'text-disabled': '#8c9196',
+            'border-default': '#e1e3e5',
+            'border-subdued': '#eaecee',
+            'icon-default': '#5c5f62',
+            'surface-selected': '#f2f7fe',
+            'surface-hover': '#f1f2f3',
+          }
+        }
+      }
+    }
+  </script>
   <style>
     * { box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif; }
@@ -40,6 +66,9 @@
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.5);
       z-index: 1000; display: flex; align-items: center; justify-content: center;
+    }
+    .modal-overlay.hidden {
+      display: none !important;
     }
     textarea { resize: vertical; }
     .amenity-check:checked + .amenity-label {
@@ -652,9 +681,9 @@
 
 <script>
 // ==================== CONFIG ====================
+const ADMIN_PASSWORD = 'osaka2024';
 const API_BASE = '/api';
 const DEFAULT_AMENITIES = ['Wi-Fi','電視','廚房','洗衣機','空調設備','吹風機','冰箱','自助入住','停車場','浴缸','微波爐','電梯'];
-let AUTH_TOKEN = sessionStorage.getItem('admin_token') || '';
 
 // ==================== STATE ====================
 let properties = [];
@@ -669,22 +698,14 @@ let isNewProperty = false;
 let editingRegionId = null;
 
 // ==================== AUTH ====================
-async function login() {
+function login() {
   const pwd = document.getElementById('passwordInput').value;
-  try {
-    const res = await fetch(API_BASE + '/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pwd })
-    });
-    if (!res.ok) throw new Error('密碼錯誤');
-    const data = await res.json();
-    AUTH_TOKEN = data.token;
-    sessionStorage.setItem('admin_token', AUTH_TOKEN);
+  if (pwd === ADMIN_PASSWORD) {
+    sessionStorage.setItem('admin_auth', '1');
     document.getElementById('loginGate').classList.add('hidden');
     document.getElementById('adminPanel').classList.remove('hidden');
     loadData();
-  } catch (err) {
+  } else {
     document.getElementById('loginError').classList.remove('hidden');
     document.getElementById('passwordInput').value = '';
     document.getElementById('passwordInput').focus();
@@ -692,31 +713,21 @@ async function login() {
 }
 
 function logout() {
-  AUTH_TOKEN = '';
-  sessionStorage.removeItem('admin_token');
+  sessionStorage.removeItem('admin_auth');
   location.reload();
 }
 
-async function checkAuth() {
-  if (AUTH_TOKEN) {
-    try {
-      const res = await fetch(API_BASE + '/export', { headers: { 'X-Admin-Token': AUTH_TOKEN } });
-      if (res.status === 401) { AUTH_TOKEN = ''; sessionStorage.removeItem('admin_token'); return; }
-      document.getElementById('loginGate').classList.add('hidden');
-      document.getElementById('adminPanel').classList.remove('hidden');
-      loadData();
-    } catch (e) { /* stay on login */ }
+function checkAuth() {
+  if (sessionStorage.getItem('admin_auth') === '1') {
+    document.getElementById('loginGate').classList.add('hidden');
+    document.getElementById('adminPanel').classList.remove('hidden');
+    loadData();
   }
 }
 
 // ==================== API ====================
-function authHeaders(extra) {
-  return Object.assign({ 'X-Admin-Token': AUTH_TOKEN }, extra || {});
-}
-
 async function apiGet(path) {
-  const res = await fetch(API_BASE + path, { headers: authHeaders() });
-  if (res.status === 401) { logout(); return; }
+  const res = await fetch(API_BASE + path);
   if (!res.ok) throw new Error('API error: ' + res.status);
   return res.json();
 }
@@ -724,10 +735,9 @@ async function apiGet(path) {
 async function apiPost(path, data) {
   const res = await fetch(API_BASE + path, {
     method: 'POST',
-    headers: authHeaders({ 'Content-Type': 'application/json' }),
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
-  if (res.status === 401) { logout(); return; }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || 'API error: ' + res.status);
@@ -738,17 +748,15 @@ async function apiPost(path, data) {
 async function apiPut(path, data) {
   const res = await fetch(API_BASE + path, {
     method: 'PUT',
-    headers: authHeaders({ 'Content-Type': 'application/json' }),
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
-  if (res.status === 401) { logout(); return; }
   if (!res.ok) throw new Error('API error: ' + res.status);
   return res.json();
 }
 
 async function apiDelete(path) {
-  const res = await fetch(API_BASE + path, { method: 'DELETE', headers: authHeaders() });
-  if (res.status === 401) { logout(); return; }
+  const res = await fetch(API_BASE + path, { method: 'DELETE' });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || 'API error: ' + res.status);
@@ -759,8 +767,7 @@ async function apiDelete(path) {
 async function apiUpload(files) {
   const formData = new FormData();
   for (const file of files) formData.append('images', file);
-  const res = await fetch(API_BASE + '/upload', { method: 'POST', headers: { 'X-Admin-Token': AUTH_TOKEN }, body: formData });
-  if (res.status === 401) { logout(); return; }
+  const res = await fetch(API_BASE + '/upload', { method: 'POST', body: formData });
   if (!res.ok) throw new Error('Upload failed');
   return res.json();
 }
