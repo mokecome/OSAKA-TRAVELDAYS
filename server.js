@@ -90,10 +90,13 @@ app.post('/api/upload', rateLimit({
   message: { error: '上傳次數過多' }
 }));
 
-// Security: block admin from indexing
-app.use('/admin.html', (req, res, next) => {
+// Serve admin.html from views/ with no-cache headers
+app.get('/admin.html', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-  next();
+  res.sendFile(path.join(__dirname, 'views', 'admin.html'));
 });
 
 // ==================== DATABASE SETUP ====================
