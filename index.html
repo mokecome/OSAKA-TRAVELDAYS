@@ -321,6 +321,13 @@
     .lang-btn-nav:hover { background: #fde68a; }
     .lang-btn-nav.active { background: #92400e; color: white; border-radius: 20px; }
 
+    /* Footer Layout */
+    .footer-top-row { flex-direction: column; }
+    @media (min-width: 1024px) {
+      .footer-top-row { flex-direction: row; justify-content: space-between; }
+      .footer-logo-col { max-width: 24rem; }
+    }
+
     /* ======================================
        FAQ Chatbot Styles
        ====================================== */
@@ -1719,53 +1726,67 @@
   <!-- Footer -->
   <footer id="contact" class="bg-gradient-to-b from-amber-900 to-amber-950 text-amber-100 py-20 px-4">
     <div class="container mx-auto max-w-6xl">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-        <div class="lg:col-span-2">
-          <div class="flex items-center gap-3 mb-6">
+      <div class="flex footer-top-row gap-12 mb-16">
+        <!-- Logo + 標語 (left) -->
+        <div class="footer-logo-col">
+          <div class="flex items-center gap-3 mb-5">
             <img src="images/logo.png" alt="Logo" class="w-12 h-12 object-contain">
             <div>
-              <h3 class="text-2xl font-serif text-white">大阪旅行日民宿</h3>
-              <p class="text-amber-400 text-sm tracking-widest">OSAKA TRAVELDAYS</p>
+              <h3 class="text-xl font-serif text-white">大阪旅行日民宿</h3>
+              <p class="text-amber-400 text-xs tracking-widest">OSAKA TRAVELDAYS</p>
             </div>
           </div>
-          <p class="text-amber-300/80 leading-relaxed max-w-md" data-i18n="footer.tagline">
-            精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。無論是家庭旅遊、朋友出遊或商務出差，都能找到最適合的住宿選擇。
-          </p>
+          <p class="text-amber-300/80 leading-relaxed text-sm" data-i18n="footer.tagline">精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。無論是家庭旅遊、朋友出遊或商務出差，都能找到最適合的住宿選擇。</p>
         </div>
 
-        <div>
-          <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-            <span class="w-8 h-0.5 bg-amber-500"></span>
-            <span data-i18n="footer.contact">聯絡資訊</span>
-          </h4>
-          <div class="space-y-4">
-            <a href="mailto:service.traveldays@gmail.com" class="flex items-center gap-3 text-amber-300 hover:text-white transition-colors">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-              </svg>
-              service.traveldays@gmail.com
-            </a>
-            <a href="https://lin.ee/pGrA7Ej" target="_blank" class="flex items-center gap-3 text-amber-300 hover:text-white transition-colors">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
-              </svg>
-              LINE: @fgk8695x
-            </a>
+        <!-- 聯絡資訊 ｜ 営業登記 ｜ 公司資訊 (right) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <!-- 聯絡資訊 -->
+          <div class="min-w-0">
+            <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <span class="w-8 h-0.5 bg-amber-500"></span>
+              <span data-i18n="footer.contact">聯絡資訊</span>
+            </h4>
+            <div class="space-y-4">
+              <a href="mailto:service.traveldays@gmail.com" class="flex items-center gap-3 text-amber-300 hover:text-white transition-colors">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                <span class="text-sm break-all">service.traveldays@gmail.com</span>
+              </a>
+              <a href="https://lin.ee/pGrA7Ej" target="_blank" class="flex items-center gap-3 text-amber-300 hover:text-white transition-colors">
+                <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+                </svg>
+                LINE: @fgk8695x
+              </a>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-            <span class="w-8 h-0.5 bg-amber-500"></span>
-            <span data-i18n="footer.registration">営業登記</span>
-          </h4>
-          <div class="text-amber-400/80 text-sm space-y-2">
-            <p class="text-white font-semibold">DAIDODO合同会社</p>
-            <p>大阪市中央区上本町西3−3−２</p>
-            <p>大阪戦略特区民泊</p>
-            <p>旅館業法 簡易宿所</p>
-            <p>住宅宿泊管理業者</p>
-            <p class="text-amber-500" data-i18n="footer.legal.note">旅行日民宿均為合法經營・安心入住</p>
+          <!-- 営業登記 -->
+          <div style="padding-left: 4rem;">
+            <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <span class="w-8 h-0.5 bg-amber-500"></span>
+              <span data-i18n="footer.registration">営業登記</span>
+            </h4>
+            <div class="text-amber-400/80 text-sm space-y-2">
+              <p>大阪戦略特区民泊</p>
+              <p>旅館業法 簡易宿所</p>
+              <p>住宅宿泊管理業者</p>
+              <p class="text-amber-500 mt-3" data-i18n="footer.legal.note">旅行日民宿均為合法經營・安心入住</p>
+            </div>
+          </div>
+
+          <!-- 公司資訊 -->
+          <div style="padding-left: 4rem;">
+            <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <span class="w-8 h-0.5 bg-amber-500"></span>
+              <span data-i18n="footer.company">公司資訊</span>
+            </h4>
+            <div class="text-amber-400/80 text-sm space-y-2">
+              <p class="text-white font-semibold">DAIDODO合同会社</p>
+              <p style="white-space: nowrap;">大阪市中央区上本町西3−3−２</p>
+            </div>
           </div>
         </div>
       </div>
