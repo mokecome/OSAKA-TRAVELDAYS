@@ -798,6 +798,65 @@
       width: 20px;
       height: 20px;
     }
+
+    /* Page language selector (nav) */
+    .lang-nav-selector {
+      display: flex;
+      border: 1px solid rgba(139, 69, 19, 0.3);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .lang-nav-btn {
+      padding: 4px 10px;
+      background: transparent;
+      border: none;
+      font-size: 12px;
+      font-weight: 500;
+      color: #92400e;
+      cursor: pointer;
+      transition: all 0.2s;
+      line-height: 1.4;
+    }
+
+    .lang-nav-btn.active {
+      background: #92400e;
+      color: white;
+      font-weight: 600;
+    }
+
+    .lang-nav-btn:hover:not(.active) {
+      background: rgba(139, 69, 19, 0.1);
+    }
+
+    /* Chatbot language selector */
+    .lang-selector {
+      display: flex;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .lang-sel-btn {
+      padding: 4px 8px;
+      background: transparent;
+      border: none;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.65);
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+      font-weight: 500;
+    }
+
+    .lang-sel-btn.active {
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      font-weight: 700;
+    }
+
+    .lang-sel-btn:hover:not(.active) {
+      color: rgba(255, 255, 255, 0.9);
+    }
   </style>
 
   <!-- Structured Data: Organization + LodgingBusiness -->
@@ -921,15 +980,22 @@
           </div>
         </a>
         <nav class="hidden md:flex items-center space-x-10">
-          <a href="#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">房源一覽</a>
-          <a href="#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">關於我們</a>
-          <a href="#contact" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">聯絡我們</a>
+          <a href="#properties" id="navProperties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">房源一覽</a>
+          <a href="#about" id="navAbout" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">關於我們</a>
+          <a href="#contact" id="navContact" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">聯絡我們</a>
         </nav>
+        <div class="flex items-center gap-3">
+          <div class="lang-nav-selector" id="pageLangSelector">
+            <button class="lang-nav-btn active" data-lang="zh-TW">中</button>
+            <button class="lang-nav-btn" data-lang="ja">日</button>
+            <button class="lang-nav-btn" data-lang="en">EN</button>
+          </div>
         <button class="md:hidden p-2 text-amber-800">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
+        </div>
       </div>
     </div>
   </header>
@@ -951,13 +1017,13 @@
       <p class="text-xl sm:text-2xl md:text-3xl text-white/90 mb-4 font-light animate-fadeInUp" style="animation-delay: 0.2s;">
         OSAKA TRAVELDAYS
       </p>
-      <p class="text-base sm:text-lg text-white/70 max-w-xl mx-auto mb-10 animate-fadeInUp" style="animation-delay: 0.3s;">
+      <p id="heroDesc" class="text-base sm:text-lg text-white/70 max-w-xl mx-auto mb-10 animate-fadeInUp" style="animation-delay: 0.3s;">
         精選大阪各區優質民宿・包棟住宿・公寓式酒店<br class="hidden sm:block">
         體驗最道地的日本生活
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fadeInUp" style="animation-delay: 0.4s;">
         <a href="#properties" class="btn-primary">
-          <span>瀏覽房源</span>
+          <span id="heroBrowse">瀏覽房源</span>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>
@@ -978,19 +1044,19 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
         <div class="animate-scaleIn">
           <p id="statProperties" class="text-4xl md:text-5xl font-serif text-amber-800 mb-2">10</p>
-          <p class="text-amber-600 text-sm">精選房源</p>
+          <p id="statPropLabel" class="text-amber-600 text-sm">精選房源</p>
         </div>
         <div class="animate-scaleIn" style="animation-delay: 0.1s;">
           <p id="statRegions" class="text-4xl md:text-5xl font-serif text-amber-800 mb-2">4</p>
-          <p class="text-amber-600 text-sm">熱門地區</p>
+          <p id="statRegLabel" class="text-amber-600 text-sm">熱門地區</p>
         </div>
         <div class="animate-scaleIn" style="animation-delay: 0.2s;">
           <p class="text-4xl md:text-5xl font-serif text-amber-800 mb-2">24h</p>
-          <p class="text-amber-600 text-sm">客服支援</p>
+          <p id="stat24hLabel" class="text-amber-600 text-sm">客服支援</p>
         </div>
         <div class="animate-scaleIn" style="animation-delay: 0.3s;">
           <p class="text-4xl md:text-5xl font-serif text-amber-800 mb-2">100%</p>
-          <p class="text-amber-600 text-sm">滿意保證</p>
+          <p id="statSatLabel" class="text-amber-600 text-sm">滿意保證</p>
         </div>
       </div>
     </div>
@@ -1682,7 +1748,7 @@
               <p class="text-amber-400 text-sm tracking-widest">OSAKA TRAVELDAYS</p>
             </div>
           </div>
-          <p class="text-amber-300/80 leading-relaxed max-w-md">
+          <p id="footerDesc" class="text-amber-300/80 leading-relaxed max-w-md">
             精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。無論是家庭旅遊、朋友出遊或商務出差，都能找到最適合的住宿選擇。
           </p>
         </div>
@@ -1690,7 +1756,7 @@
         <div>
           <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
             <span class="w-8 h-0.5 bg-amber-500"></span>
-            聯絡資訊
+            <span id="footerContact">聯絡資訊</span>
           </h4>
           <div class="space-y-4">
             <a href="mailto:service.traveldays@gmail.com" class="flex items-center gap-3 text-amber-300 hover:text-white transition-colors">
@@ -1711,22 +1777,26 @@
         <div>
           <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
             <span class="w-8 h-0.5 bg-amber-500"></span>
-            營業登記
+            <span id="footerBiz">營業登記</span>
           </h4>
           <div class="text-amber-400/80 text-sm space-y-2">
             <p>大阪戦略特区民泊</p>
             <p>旅館業法 簡易宿所</p>
             <p>住宅宿泊管理業者</p>
-            <p class="text-amber-500">旅行日民宿均為合法經營・安心入住</p>
+            <p class="text-amber-500" id="footerLegal">旅行日民宿均為合法經營・安心入住</p>
+          </div>
+          <div class="mt-6 pt-5 border-t border-amber-800/40 text-amber-300/70 text-sm space-y-1">
+            <p class="font-semibold text-amber-200">DAIDODO合同会社</p>
+            <p>大阪市中央区上本町西3−3−２</p>
           </div>
         </div>
       </div>
 
       <div class="border-t border-amber-800/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p class="text-amber-500/80 text-sm">© 2025 大阪旅行日民宿 OSAKA TRAVELDAYS. All rights reserved.</p>
+        <p id="footerCopyright" class="text-amber-500/80 text-sm">© 2025 大阪旅行日民宿 OSAKA TRAVELDAYS. All rights reserved.</p>
         <div class="flex items-center gap-6">
-          <a href="#" class="text-amber-400 hover:text-white transition-colors text-sm">隱私政策</a>
-          <a href="#" class="text-amber-400 hover:text-white transition-colors text-sm">使用條款</a>
+          <a href="#" id="footerPrivacy" class="text-amber-400 hover:text-white transition-colors text-sm">隱私政策</a>
+          <a href="#" id="footerTerms" class="text-amber-400 hover:text-white transition-colors text-sm">使用條款</a>
         </div>
       </div>
     </div>
@@ -1752,7 +1822,11 @@
         </div>
       </div>
       <div class="chat-header-actions">
-        <button class="lang-toggle" id="langToggle">日本語</button>
+        <div class="lang-selector" id="langSelector">
+          <button class="lang-sel-btn active" data-lang="zh-TW">中</button>
+          <button class="lang-sel-btn" data-lang="ja">日</button>
+          <button class="lang-sel-btn" data-lang="en">EN</button>
+        </div>
         <button class="close-btn" id="closeChat">
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -1834,96 +1908,109 @@
 
       // FAQ Data
       categories: [
-        { id: 'booking', name: { 'zh-TW': '預訂付款', 'ja': '予約・支払' }, icon: '📅' },
-        { id: 'checkin', name: { 'zh-TW': '入住設施', 'ja': '入住・設備' }, icon: '🔑' },
+        { id: 'booking', name: { 'zh-TW': '預訂付款', 'ja': '予約・支払', 'en': 'Booking & Payment' }, icon: '📅' },
+        { id: 'checkin', name: { 'zh-TW': '入住設施', 'ja': '入住・設備', 'en': 'Check-in & Facilities' }, icon: '🔑' },
       ],
 
       faqs: [
         {
           id: 'booking-1',
           categoryId: 'booking',
-          question: { 'zh-TW': '如何預訂？', 'ja': '予約方法は？' },
+          question: { 'zh-TW': '如何預訂？', 'ja': '予約方法は？', 'en': 'How to book?' },
           answer: {
             'zh-TW': '透過 Airbnb 預訂，或 LINE（@fgk8695x）/ Email 聯繫我們。最少需訂 2 晚。',
-            'ja': 'Airbnbで予約、またはLINE（@fgk8695x）/ Emailでお問い合わせください。最低2泊から。'
+            'ja': 'Airbnbで予約、またはLINE（@fgk8695x）/ Emailでお問い合わせください。最低2泊から。',
+            'en': 'Book via Airbnb, or contact us via LINE (@fgk8695x) / Email. Minimum 2 nights.'
           },
-          keywords: { 'zh-TW': '預訂 訂房 預約 怎麼訂 幾晚', 'ja': '予約 予約方法 何泊' },
+          keywords: { 'zh-TW': '預訂 訂房 預約 怎麼訂 幾晚', 'ja': '予約 予約方法 何泊', 'en': 'book booking reservation how nights minimum' },
           priority: 10
         },
         {
           id: 'booking-2',
           categoryId: 'booking',
-          question: { 'zh-TW': '付款方式？', 'ja': '支払い方法は？' },
+          question: { 'zh-TW': '付款方式？', 'ja': '支払い方法は？', 'en': 'Payment methods?' },
           answer: {
             'zh-TW': 'Airbnb 支援信用卡、PayPal、Apple Pay / Google Pay。直接預訂請聯繫我們。',
-            'ja': 'Airbnbではクレジットカード、PayPal、Apple Pay / Google Pay対応。直接予約はお問い合わせください。'
+            'ja': 'Airbnbではクレジットカード、PayPal、Apple Pay / Google Pay対応。直接予約はお問い合わせください。',
+            'en': 'Airbnb accepts credit cards, PayPal, Apple Pay / Google Pay. Contact us for direct booking.'
           },
-          keywords: { 'zh-TW': '付款 信用卡 支付', 'ja': '支払い クレジットカード' },
+          keywords: { 'zh-TW': '付款 信用卡 支付', 'ja': '支払い クレジットカード', 'en': 'payment credit card PayPal Apple Pay Google Pay' },
           priority: 8
         },
         {
           id: 'booking-3',
           categoryId: 'booking',
-          question: { 'zh-TW': '取消或改期？', 'ja': 'キャンセル・日程変更は？' },
+          question: { 'zh-TW': '取消或改期？', 'ja': 'キャンセル・日程変更は？', 'en': 'Cancellation or date change?' },
           answer: {
             'zh-TW': '入住 14 天前可免費取消，之後依時間收取費用。改期請提前聯繫，詳見 Airbnb 頁面。',
-            'ja': '14日前まで無料キャンセル、以降は時期により費用が発生します。詳細はAirbnbページへ。'
+            'ja': '14日前まで無料キャンセル、以降は時期により費用が発生します。詳細はAirbnbページへ。',
+            'en': 'Free cancellation up to 14 days before check-in; fees apply after. Contact us for date changes. See Airbnb for details.'
           },
-          keywords: { 'zh-TW': '取消 退款 更改 改期', 'ja': 'キャンセル 返金 変更' },
+          keywords: { 'zh-TW': '取消 退款 更改 改期', 'ja': 'キャンセル 返金 変更', 'en': 'cancel cancellation refund change date' },
           priority: 9
         },
         {
           id: 'checkin-1',
           categoryId: 'checkin',
-          question: { 'zh-TW': '入住/退房時間？', 'ja': 'チェックイン・アウト時間は？' },
+          question: { 'zh-TW': '入住/退房時間？', 'ja': 'チェックイン・アウト時間は？', 'en': 'Check-in / check-out time?' },
           answer: {
             'zh-TW': '入住 15:00 後，退房 10:00 前。自助式密碼鎖入住，入住前會傳送密碼。',
-            'ja': 'チェックイン15:00以降、チェックアウト10:00まで。暗証番号式セルフチェックインです。'
+            'ja': 'チェックイン15:00以降、チェックアウト10:00まで。暗証番号式セルフチェックインです。',
+            'en': 'Check-in from 15:00, check-out by 10:00. Self check-in with digital lock. Password sent before arrival.'
           },
-          keywords: { 'zh-TW': '入住 退房 時間 幾點 密碼 鑰匙', 'ja': 'チェックイン チェックアウト 時間 暗証番号' },
+          keywords: { 'zh-TW': '入住 退房 時間 幾點 密碼 鑰匙', 'ja': 'チェックイン チェックアウト 時間 暗証番号', 'en': 'check-in check-out time password key arrival' },
           priority: 10
         },
         {
           id: 'checkin-2',
           categoryId: 'checkin',
-          question: { 'zh-TW': '有哪些設施？', 'ja': 'どんな設備がありますか？' },
+          question: { 'zh-TW': '有哪些設施？', 'ja': 'どんな設備がありますか？', 'en': 'What facilities are available?' },
           answer: {
             'zh-TW': 'WiFi、廚房、洗衣機、空調、毛巾及沐浴用品。詳情請查看各房源頁面。',
-            'ja': 'WiFi、キッチン、洗濯機、エアコン、タオル・アメニティ完備。詳細は各物件ページへ。'
+            'ja': 'WiFi、キッチン、洗濯機、エアコン、タオル・アメニティ完備。詳細は各物件ページへ。',
+            'en': 'WiFi, kitchen, washing machine, air conditioning, towels and toiletries. See each property page for details.'
           },
-          keywords: { 'zh-TW': '設施 設備 WiFi 廚房 洗衣機', 'ja': '設備 WiFi キッチン 洗濯機' },
+          keywords: { 'zh-TW': '設施 設備 WiFi 廚房 洗衣機', 'ja': '設備 WiFi キッチン 洗濯機', 'en': 'facilities WiFi kitchen washing machine amenities towels' },
           priority: 8
         },
         {
           id: 'checkin-3',
           categoryId: 'checkin',
-          question: { 'zh-TW': '可以寄放行李嗎？', 'ja': '荷物を預けられますか？' },
+          question: { 'zh-TW': '可以寄放行李嗎？', 'ja': '荷物を預けられますか？', 'en': 'Can I store luggage?' },
           answer: {
-            'zh-TW': '可以，退房後可寄放至 18:00，請提前聯繫確認。',
-            'ja': 'はい、チェックアウト後18:00までお預かり可能です。事前にご連絡ください。'
+            'zh-TW': '只能放在下午一點',
+            'ja': '午後1時のみお預かり可能です。',
+            'en': 'Luggage storage is only available until 1:00 PM.'
           },
-          keywords: { 'zh-TW': '行李 寄放 寄存', 'ja': '荷物 預ける' },
+          keywords: { 'zh-TW': '行李 寄放 寄存', 'ja': '荷物 預ける', 'en': 'luggage storage baggage store' },
           priority: 7
         }
       ],
 
       texts: {
-        title: { 'zh-TW': '旅行日客服', 'ja': '旅行日サポート' },
-        placeholder: { 'zh-TW': '請輸入您的問題...', 'ja': 'ご質問を入力してください...' },
+        title: { 'zh-TW': '旅行日客服', 'ja': '旅行日サポート', 'en': 'Traveldays Support' },
+        placeholder: { 'zh-TW': '請輸入您的問題...', 'ja': 'ご質問を入力してください...', 'en': 'Ask a question...' },
         welcome: {
           'zh-TW': '您好！歡迎來到大阪旅行日民宿 🏠\n請問有什麼可以幫助您的嗎？',
-          'ja': 'こんにちは！大阪旅行日民宿へようこそ 🏠\nご質問がございましたらお気軽にどうぞ！'
+          'ja': 'こんにちは！大阪旅行日民宿へようこそ 🏠\nご質問がございましたらお気軽にどうぞ！',
+          'en': 'Hello! Welcome to Osaka Traveldays 🏠\nHow can we help you today?'
         },
         noMatch: {
           'zh-TW': '抱歉，我沒有找到相關答案。您可以：\n• 選擇下方分類瀏覽\n• 透過 LINE 聯繫我們：@fgk8695x\n• 發郵件至：service.traveldays@gmail.com',
-          'ja': '申し訳ございません、回答が見つかりませんでした。\n• 下のカテゴリーから選択してください\n• LINEでお問い合わせ：@fgk8695x\n• メール：service.traveldays@gmail.com'
+          'ja': '申し訳ございません、回答が見つかりませんでした。\n• 下のカテゴリーから選択してください\n• LINEでお問い合わせ：@fgk8695x\n• メール：service.traveldays@gmail.com',
+          'en': "Sorry, I couldn't find a matching answer. You can:\n• Browse the categories below\n• Contact us via LINE: @fgk8695x\n• Email: service.traveldays@gmail.com"
         },
-        langButton: { 'zh-TW': '日本語', 'ja': '中文' },
-        subtitle: { 'zh-TW': '隨時為您服務', 'ja': 'いつでもお手伝いします' },
-        learnMore: { 'zh-TW': '瞭解更多', 'ja': 'もっと詳しく' },
+        subtitle: { 'zh-TW': '隨時為您服務', 'ja': 'いつでもお手伝いします', 'en': 'Always here to help' },
+        learnMore: { 'zh-TW': '瞭解更多', 'ja': 'もっと詳しく', 'en': 'Learn more' },
         qrcodeMessage: {
           'zh-TW': '掃描下方 QR Code，加入我們的 LINE 官方帳號，即時聯繫客服！\nLINE ID: @fgk8695x',
-          'ja': '下のQRコードをスキャンして、LINE公式アカウントを追加してください！\nLINE ID: @fgk8695x'
+          'ja': '下のQRコードをスキャンして、LINE公式アカウントを追加してください！\nLINE ID: @fgk8695x',
+          'en': 'Scan the QR code below to add our LINE official account!\nLINE ID: @fgk8695x'
+        },
+        categoryIntro: {
+          'zh-TW': (name) => `以下是「${name}」的常見問題：`,
+          'ja': (name) => `「${name}」に関するご質問：`,
+          'en': (name) => `Here are some questions about "${name}":`
         }
       },
 
@@ -1935,7 +2022,6 @@
           chatIcon: document.getElementById('chatIcon'),
           closeIcon: document.getElementById('closeIcon'),
           closeChat: document.getElementById('closeChat'),
-          langToggle: document.getElementById('langToggle'),
           chatTitle: document.getElementById('chatTitle'),
           chatSubtitle: document.getElementById('chatSubtitle'),
           chatMessages: document.getElementById('chatMessages'),
@@ -1952,13 +2038,23 @@
       bindEvents() {
         this.elements.chatBtn.addEventListener('click', () => this.toggleChat());
         this.elements.closeChat.addEventListener('click', () => this.toggleChat());
-        this.elements.langToggle.addEventListener('click', () => this.toggleLanguage());
         this.elements.sendBtn.addEventListener('click', () => this.sendMessage());
         this.elements.chatInput.addEventListener('keypress', (e) => {
           if (e.key === 'Enter') this.sendMessage();
         });
         this.elements.chatInput.addEventListener('input', () => {
           this.elements.sendBtn.disabled = !this.elements.chatInput.value.trim();
+        });
+
+        // Chatbot lang selector buttons
+        document.querySelectorAll('.lang-sel-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (typeof setPageLang === 'function') {
+              setPageLang(btn.dataset.lang);
+            } else {
+              this.setLanguage(btn.dataset.lang);
+            }
+          });
         });
 
         // Close on Escape
@@ -1986,14 +2082,19 @@
         }
       },
 
-      // Toggle Language
-      toggleLanguage() {
-        this.language = this.language === 'zh-TW' ? 'ja' : 'zh-TW';
+      // Set Language
+      setLanguage(lang) {
+        if (this.language === lang) return;
+        this.language = lang;
+
+        // Update chatbot lang buttons
+        document.querySelectorAll('.lang-sel-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
 
         // Update UI
         this.elements.chatTitle.textContent = this.texts.title[this.language];
         this.elements.chatSubtitle.textContent = this.texts.subtitle[this.language];
-        this.elements.langToggle.textContent = this.texts.langButton[this.language];
         this.elements.chatInput.placeholder = this.texts.placeholder[this.language];
 
         this.renderCategories();
@@ -2035,9 +2136,8 @@
 
         if (faqs.length > 0 && cat) {
           const quickReplies = faqs.slice(0, 3).map(f => f.id);
-          const intro = this.language === 'zh-TW'
-            ? `以下是「${cat.name[this.language]}」的常見問題：`
-            : `「${cat.name[this.language]}」に関するご質問：`;
+          const introFn = this.texts.categoryIntro[this.language] || this.texts.categoryIntro['zh-TW'];
+          const intro = introFn(cat.name[this.language]);
           this.addBotMessage(intro, quickReplies);
         }
 
@@ -2220,6 +2320,67 @@
 
     // Initialize chatbot
     FAQChatbot.init();
+
+    // ======================================
+    // Page-level i18n (中文 / 日本語 / English)
+    // ======================================
+    const PageI18n = {
+      translations: {
+        navProperties:  { 'zh-TW': '房源一覽',       'ja': '物件一覧',           'en': 'Properties' },
+        navAbout:       { 'zh-TW': '關於我們',       'ja': '私たちについて',     'en': 'About Us' },
+        navContact:     { 'zh-TW': '聯絡我們',       'ja': 'お問い合わせ',       'en': 'Contact' },
+        heroDesc: {
+          'zh-TW': '精選大阪各區優質民宿・包棟住宿・公寓式酒店<br class="hidden sm:block">體驗最道地的日本生活',
+          'ja':    '大阪各エリアの厳選民泊・貸切住宅・サービスアパート<br class="hidden sm:block">地元の日本の暮らしを体験',
+          'en':    'Carefully Selected Guesthouses & Apartments Across Osaka<br class="hidden sm:block">Experience Authentic Japanese Living'
+        },
+        heroBrowse:     { 'zh-TW': '瀏覽房源',       'ja': '物件を見る',         'en': 'Browse Properties' },
+        statPropLabel:  { 'zh-TW': '精選房源',       'ja': '厳選物件',           'en': 'Properties' },
+        statRegLabel:   { 'zh-TW': '熱門地區',       'ja': '人気エリア',         'en': 'Popular Areas' },
+        stat24hLabel:   { 'zh-TW': '客服支援',       'ja': 'サポート',           'en': 'Support' },
+        statSatLabel:   { 'zh-TW': '滿意保證',       'ja': '満足保証',           'en': 'Satisfaction' },
+        footerDesc: {
+          'zh-TW': '精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。無論是家庭旅遊、朋友出遊或商務出差，都能找到最適合的住宿選擇。',
+          'ja':    '大阪各エリアの厳選民泊をご提供。ご家族旅行・グループ・出張など、あらゆるニーズに対応した最適な宿泊先をご用意しています。',
+          'en':    'Carefully selected guesthouses across Osaka to create unforgettable travel experiences. Perfect for families, groups, and business trips.'
+        },
+        footerContact:  { 'zh-TW': '聯絡資訊',       'ja': 'お問い合わせ',       'en': 'Contact' },
+        footerBiz:      { 'zh-TW': '營業登記',       'ja': '営業登録',           'en': 'Registration' },
+        footerLegal:    { 'zh-TW': '旅行日民宿均為合法經營・安心入住', 'ja': '旅行日民宿はすべて合法運営・安心してご利用ください', 'en': 'All Traveldays properties are legally registered & safe.' },
+        footerPrivacy:  { 'zh-TW': '隱私政策',       'ja': 'プライバシーポリシー', 'en': 'Privacy Policy' },
+        footerTerms:    { 'zh-TW': '使用條款',       'ja': '利用規約',           'en': 'Terms of Use' },
+        footerCopyright:{ 'zh-TW': '© 2025 大阪旅行日民宿 OSAKA TRAVELDAYS. All rights reserved.', 'ja': '© 2025 大阪旅行日民宿 OSAKA TRAVELDAYS. All rights reserved.', 'en': '© 2025 Osaka Traveldays. All rights reserved.' }
+      }
+    };
+
+    // htmlElements: use innerHTML; others: use textContent
+    const htmlElements = new Set(['heroDesc']);
+
+    function setPageLang(lang) {
+      // Update nav lang buttons (both page nav and chatbot selector)
+      document.querySelectorAll('.lang-nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+
+      // Sync chatbot language
+      FAQChatbot.setLanguage(lang);
+
+      // Apply text translations
+      Object.entries(PageI18n.translations).forEach(([key, vals]) => {
+        const el = document.getElementById(key);
+        if (!el || !vals[lang]) return;
+        if (htmlElements.has(key)) {
+          el.innerHTML = vals[lang];
+        } else {
+          el.textContent = vals[lang];
+        }
+      });
+    }
+
+    // Bind page lang selector buttons
+    document.querySelectorAll('.lang-nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => setPageLang(btn.dataset.lang));
+    });
   </script>
   <script>
     // Dynamic Properties Renderer
