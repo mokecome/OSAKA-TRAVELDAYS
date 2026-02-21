@@ -205,6 +205,16 @@ const upload = multer({
 function getPropertyWithImages(prop) {
   if (!prop) return null;
   prop.images = db.prepare('SELECT id, propertyId, url, isLocal, filename, sortOrder FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(prop.id);
+  prop.images = prop.images.map(img => {
+    if (img.isLocal && img.url) {
+      try {
+        const filePath = path.join(__dirname, img.url.replace(/^\//, ''));
+        const mtime = Math.floor(fs.statSync(filePath).mtimeMs / 1000);
+        img.url = img.url + '?' + mtime;
+      } catch (e) {}
+    }
+    return img;
+  });
   prop.quickInfo = JSON.parse(prop.quickInfo || '[]');
   prop.amenities = JSON.parse(prop.amenities || '[]');
   prop.spaceIntro = JSON.parse(prop.spaceIntro || '[]');
@@ -446,12 +456,7 @@ app.get('/api/regions', (req, res) => {
   const regions = db.prepare('SELECT * FROM regions ORDER BY sortOrder ASC').all();
   for (const region of regions) {
     const props = db.prepare('SELECT * FROM properties WHERE regionId = ? ORDER BY createdAt ASC').all(region.id);
-    props.forEach(p => {
-      p.images = db.prepare('SELECT id, propertyId, url, isLocal, filename, sortOrder FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(p.id);
-      p.quickInfo = JSON.parse(p.quickInfo || '[]');
-      p.amenities = JSON.parse(p.amenities || '[]');
-      p.spaceIntro = JSON.parse(p.spaceIntro || '[]');
-    });
+    props.forEach(p => { getPropertyWithImages(p); });
     region.properties = props;
   }
   res.json(regions);
