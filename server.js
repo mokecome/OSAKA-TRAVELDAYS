@@ -240,8 +240,8 @@ try { db.exec("ALTER TABLE properties ADD COLUMN regionId INTEGER DEFAULT NULL")
         q: { 'zh-TW': '大阪旅行日民宿有哪些地區的房源？', 'ja': 'どのエリアに物件がありますか？', 'en': 'Which areas do you have properties in?' },
         a: {
           'zh-TW': '我們的房源遍布大阪熱門地區，包括<strong>大正區</strong>（小沖繩風情）、<strong>心齋橋/日本橋/難波</strong>（購物美食中心）、<strong>住之江區</strong>（寧靜住宅區）、<strong>西九條/九條區/福島區</strong>（USJ交通樞紐）。所有房源均鄰近車站，方便前往各大景點。',
-          'ja': '我們的房源遍布大阪熱門地區，包括<strong>大正區</strong>（小沖繩風情）、<strong>心齋橋/日本橋/難波</strong>（購物美食中心）、<strong>住之江區</strong>（寧靜住宅區）、<strong>西九條/九條區/福島區</strong>（USJ交通樞紐）。所有房源均鄰近車站，方便前往各大景點。',
-          'en': '我們的房源遍布大阪熱門地區，包括<strong>大正區</strong>（小沖繩風情）、<strong>心齋橋/日本橋/難波</strong>（購物美食中心）、<strong>住之江區</strong>（寧靜住宅區）、<strong>西九條/九條區/福島區</strong>（USJ交通樞紐）。所有房源均鄰近車站，方便前往各大景點。'
+          'ja': '大阪の人気エリア（大正区、心斎橋・難波・日本橋、住之江区、西九条・九条・福島区）に物件があります。',
+          'en': 'Our properties are located in popular Osaka areas including Taisho Ward, Shinsaibashi/Namba/Nipponbashi, Suminoe Ward, and Nishi-Kujo/Kujo/Fukushima areas.'
         }
       },
       {
@@ -261,8 +261,8 @@ try { db.exec("ALTER TABLE properties ADD COLUMN regionId INTEGER DEFAULT NULL")
         }
       }
     ])],
-    ['footer.email', JSON.stringify({ value: 'service.traveldays@gmail.com' })],
-    ['footer.line', JSON.stringify({ value: '@fgk8695x' })],
+    ['footer.email', JSON.stringify('service.traveldays@gmail.com')],
+    ['footer.line', JSON.stringify('@fgk8695x')],
     ['footer.company', JSON.stringify({
       'zh-TW': 'DAIDODO合同会社',
       'ja': 'DAIDODO合同会社',
@@ -817,6 +817,9 @@ app.post('/api/settings', requireAuth, (req, res) => {
   const { key, value } = req.body;
   if (!key || typeof key !== 'string' || key.trim() === '') {
     return res.status(400).json({ error: 'key must be a non-empty string' });
+  }
+  if (value === undefined) {
+    return res.status(400).json({ error: 'value is required' });
   }
   db.prepare(`INSERT INTO site_settings (key, value, updatedAt) VALUES (?, ?, CURRENT_TIMESTAMP)
     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updatedAt = CURRENT_TIMESTAMP`)
