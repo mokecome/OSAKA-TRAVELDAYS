@@ -238,7 +238,7 @@
             <span class="text-amber-400 text-sm ml-2">OSAKA TRAVELDAYS</span>
           </div>
         </div>
-        <p class="text-amber-500 text-sm">&copy; 2025 大阪旅行日民宿. All rights reserved.</p>
+        <p class="text-amber-500 text-sm">&copy; 2026 大阪旅行日民宿. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -567,7 +567,7 @@
         html += '<section class="py-16 lg:py-24 bg-gradient-to-br from-amber-800 via-amber-900 to-amber-950">' +
           '<div class="container mx-auto px-4 lg:px-8 text-center">' +
           '<h2 class="text-3xl md:text-4xl font-serif text-white mb-4">選擇入住日期</h2>' +
-          '<p class="text-amber-200 mb-8 max-w-lg mx-auto">點擊下方按鈕前往 Airbnb 選擇您的入住日期並完成預訂</p>' +
+          '<p class="text-amber-200 mb-8 max-w-lg mx-auto">點擊下方按鈕選擇你的入住日期完成預訂</p>' +
           '<a href="' + esc(airbnbTrackUrl) + '" target="_blank" rel="noopener" class="btn-primary text-lg px-12 py-4 bg-white text-amber-900 hover:bg-amber-50 airbnb-cta">' +
           '<span>立即預訂</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
           '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></div></section>';
@@ -576,24 +576,6 @@
       document.getElementById('loadingState').remove();
       document.getElementById('mainContent').innerHTML = html;
 
-      // ========== Sticky Mobile Booking Button ==========
-      if (p.airbnbUrl) {
-        var stickyBar = document.createElement('div');
-        stickyBar.id = 'stickyBooking';
-        stickyBar.className = 'fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-t border-amber-200 p-3 shadow-lg lg:hidden';
-        stickyBar.style.display = 'none';
-        stickyBar.innerHTML = '<div class="flex items-center justify-between max-w-lg mx-auto">' +
-          '<div class="flex-1 mr-3"><p class="font-bold text-amber-900 text-sm truncate">' + esc(p.name) + '</p>' +
-          '<p class="text-amber-600 text-xs">前往 Airbnb 預訂</p></div>' +
-          '<a href="' + esc(airbnbTrackUrl) + '" target="_blank" rel="noopener" class="btn-primary px-6 py-3 text-sm flex-shrink-0 airbnb-cta">' +
-          '<span>立即預訂</span></a></div>';
-        document.body.appendChild(stickyBar);
-
-        window.addEventListener('scroll', function() {
-          var sticky = document.getElementById('stickyBooking');
-          if (sticky) sticky.style.display = window.scrollY > 400 ? 'block' : 'none';
-        });
-      }
 
       // ========== Airbnb Click Tracking ==========
       document.addEventListener('click', function(e) {

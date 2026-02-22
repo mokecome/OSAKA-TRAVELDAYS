@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>使用條款 | 大阪旅行日民宿</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .lang-btn {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      color: #fcd34d;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .lang-btn:hover { color: #fff; }
+    .lang-btn.active {
+      background: #d97706;
+      color: #fff;
+      border-color: #d97706;
+    }
+    .section-heading {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-heading::before {
+      content: '';
+      display: inline-block;
+      width: 2rem;
+      height: 2px;
+      background: #d97706;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body class="bg-amber-50 text-stone-800 min-h-screen flex flex-col">
+
+  <!-- Top Nav -->
+  <nav class="bg-amber-900 text-white py-4 px-6">
+    <div class="container mx-auto max-w-5xl flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition">
+        <img src="images/logo.png" alt="Logo" class="w-10 h-10 object-contain">
+        <div>
+          <div class="font-serif text-base text-white">大阪旅行日民宿</div>
+          <div class="text-amber-400 text-xs tracking-widest">OSAKA TRAVELDAYS</div>
+        </div>
+      </a>
+      <div class="flex items-center gap-4">
+        <div class="flex gap-1">
+          <button class="lang-btn" data-lang="zh-TW">繁中</button>
+          <button class="lang-btn" data-lang="ja">日文</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+        <a href="index.html" class="text-amber-300 hover:text-white text-sm transition-colors ml-2" data-i18n="nav.back">← 返回首頁</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-1 container mx-auto max-w-3xl px-6 py-16">
+    <h1 class="text-3xl font-serif font-bold text-amber-900 mb-2" data-i18n="title">使用條款</h1>
+    <p class="text-stone-500 text-sm mb-12" data-i18n="updated">最後更新：2026年2月</p>
+
+    <div class="space-y-10">
+
+      <!-- Section 1 -->
+      <section>
+        <h2 class="section-heading" data-i18n="s1.title">1. 服務說明</h2>
+        <p class="text-stone-600 leading-relaxed" data-i18n="s1.body">大阪旅行日民宿（OSAKA TRAVELDAYS）由 DAIDODO合同会社 經營，提供位於大阪市各區的短期住宿民宿服務。所有物件均依日本相關法規合法登記，包括大阪戦略特区民泊、旅館業法簡易宿所及住宅宿泊管理業者等資格。</p>
+      </section>
+
+      <!-- Section 2 -->
+      <section>
+        <h2 class="section-heading" data-i18n="s2.title">2. 預訂與付款</h2>
+        <p class="text-stone-600 leading-relaxed" data-i18n="s2.body">最短住宿期間為2晚。您可透過 Airbnb 平台或直接聯絡我們進行預訂。接受付款方式包括信用卡、PayPal、Apple Pay 及 Google Pay。完成預訂即視為同意本使用條款。預訂確認後，我們將提供入住所需的門鎖密碼及相關資訊。</p>
+      </section>
+
+      <!-- Section 3 -->
+      <section>
+        <h2 class="section-heading" data-i18n="s3.title">3. 取消政策</h2>
+        <p class="text-stone-600 leading-relaxed" data-i18n="s3.body">於入住日14天前取消可享免費退款。14天內取消將依距入住日遠近收取相應費用。如需更改入住日期，請透過 LINE 或 Email 與我們聯絡，我們將盡力協助安排。詳細取消條款請參閱 Airbnb 上的房源說明。</p>
+      </section>
+
+      <!-- Section 4 -->
+      <section>
+        <h2 class="section-heading" data-i18n="s4.title">4. 入住規則</h2>
+        <p class="text-stone-600 leading-relaxed mb-3" data-i18n="s4.body">為維護所有住客及鄰里的生活品質，請遵守以下規則：</p>
+        <ul class="text-stone-600 text-sm space-y-2 list-none pl-4">
+          <li data-i18n="s4.r1">• 全面禁菸（室內外）</li>
+          <li data-i18n="s4.r2">• 禁止攜帶寵物</li>
+          <li data-i18n="s4.r3">• 禁止舉辦派對或聚會活動</li>
+          <li data-i18n="s4.r4">• 請於晚間10點後保持安靜，避免影響鄰居</li>
+          <li data-i18n="s4.r5">• 入住時間 15:00 起；退房時間 10:00 前</li>
+          <li data-i18n="s4.r6">• 行李寄放僅限至下午1點</li>
+        </ul>
+      </section>
+
+      <!-- Section 5 -->
+      <section>
+        <h2 class="section-heading" data-i18n="s5.title">5. 責任限制</h2>
+        <p class="text-stone-600 leading-relaxed" data-i18n="s5.body">我們不對住客的個人財物遺失、損壞或被竊負責。建議您購買旅遊保險以保障自身權益。因不可抗力（如天災、緊急公共衛生事件）導致的訂單異動，我們將盡力協助處理，但恕無法保證全額退款。</p>
+      </section>
+
+      <!-- Section 6 -->
+      <section>
+        <h2 class="section-heading" data-i18n="s6.title">6. 爭議處理</h2>
+        <p class="text-stone-600 leading-relaxed" data-i18n="s6.body">本使用條款受日本法律管轄。如發生爭議，雙方應優先以協商方式解決。若協商不成，以大阪地方法院為第一審管轄法院。</p>
+      </section>
+
+      <!-- Section 7 -->
+      <section>
+        <h2 class="section-heading" data-i18n="s7.title">7. 聯絡方式</h2>
+        <p class="text-stone-600 leading-relaxed mb-3" data-i18n="s7.body">如對本使用條款有任何疑問，請透過以下方式聯絡我們：</p>
+        <ul class="text-stone-600 text-sm space-y-1">
+          <li>Email: <a href="mailto:service.traveldays@gmail.com" class="text-amber-700 hover:underline">service.traveldays@gmail.com</a></li>
+          <li>LINE: <a href="https://lin.ee/pGrA7Ej" target="_blank" class="text-amber-700 hover:underline">@fgk8695x</a></li>
+          <li data-i18n="s7.company">公司名稱：DAIDODO合同会社</li>
+          <li data-i18n="s7.address">地址：大阪市中央区上本町西3−3−２</li>
+        </ul>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-amber-900 text-amber-300/80 text-center py-6 text-sm mt-auto">
+    © 2026 大阪旅行日民宿 OSAKA TRAVELDAYS. All rights reserved.
+  </footer>
+
+  <script>
+    var TRANSLATIONS = {
+      'zh-TW': {
+        'nav.back': '← 返回首頁',
+        'title': '使用條款',
+        'updated': '最後更新：2026年2月',
+        's1.title': '1. 服務說明',
+        's1.body': '大阪旅行日民宿（OSAKA TRAVELDAYS）由 DAIDODO合同会社 經營，提供位於大阪市各區的短期住宿民宿服務。所有物件均依日本相關法規合法登記，包括大阪戦略特区民泊、旅館業法簡易宿所及住宅宿泊管理業者等資格。',
+        's2.title': '2. 預訂與付款',
+        's2.body': '最短住宿期間為2晚。您可透過 Airbnb 平台或直接聯絡我們進行預訂。接受付款方式包括信用卡、PayPal、Apple Pay 及 Google Pay。完成預訂即視為同意本使用條款。預訂確認後，我們將提供入住所需的門鎖密碼及相關資訊。',
+        's3.title': '3. 取消政策',
+        's3.body': '於入住日14天前取消可享免費退款。14天內取消將依距入住日遠近收取相應費用。如需更改入住日期，請透過 LINE 或 Email 與我們聯絡，我們將盡力協助安排。詳細取消條款請參閱 Airbnb 上的房源說明。',
+        's4.title': '4. 入住規則',
+        's4.body': '為維護所有住客及鄰里的生活品質，請遵守以下規則：',
+        's4.r1': '• 全面禁菸（室內外）',
+        's4.r2': '• 禁止攜帶寵物',
+        's4.r3': '• 禁止舉辦派對或聚會活動',
+        's4.r4': '• 請於晚間10點後保持安靜，避免影響鄰居',
+        's4.r5': '• 入住時間 15:00 起；退房時間 10:00 前',
+        's4.r6': '• 行李寄放僅限至下午1點',
+        's5.title': '5. 責任限制',
+        's5.body': '我們不對住客的個人財物遺失、損壞或被竊負責。建議您購買旅遊保險以保障自身權益。因不可抗力（如天災、緊急公共衛生事件）導致的訂單異動，我們將盡力協助處理，但恕無法保證全額退款。',
+        's6.title': '6. 爭議處理',
+        's6.body': '本使用條款受日本法律管轄。如發生爭議，雙方應優先以協商方式解決。若協商不成，以大阪地方法院為第一審管轄法院。',
+        's7.title': '7. 聯絡方式',
+        's7.body': '如對本使用條款有任何疑問，請透過以下方式聯絡我們：',
+        's7.company': '公司名稱：DAIDODO合同会社',
+        's7.address': '地址：大阪市中央区上本町西3−3−２'
+      },
+      'ja': {
+        'nav.back': '← ホームに戻る',
+        'title': '利用規約',
+        'updated': '最終更新：2026年2月',
+        's1.title': '1. サービス概要',
+        's1.body': '大阪旅行日民宿（OSAKA TRAVELDAYS）はDAIDODO合同会社が運営し、大阪市各エリアの短期宿泊民泊サービスを提供しています。全物件は大阪戦略特区民泊・旅館業法簡易宿所・住宅宿泊管理業者として日本の関連法規に基づき合法的に登録されています。',
+        's2.title': '2. 予約と支払い',
+        's2.body': '最短宿泊期間は2泊です。Airbnbプラットフォームまたは直接お問い合わせにてご予約いただけます。クレジットカード・PayPal・Apple Pay・Google Payでのお支払いに対応しております。ご予約完了をもって本利用規約に同意いただいたものとみなします。予約確定後、チェックインに必要な暗証番号等をお知らせいたします。',
+        's3.title': '3. キャンセルポリシー',
+        's3.body': 'チェックイン14日前までのキャンセルは無料です。14日以内のキャンセルはチェックインまでの日数に応じたキャンセル料が発生します。日程変更をご希望の場合はLINEまたはメールでご連絡ください。詳細はAirbnb上の物件ページをご確認ください。',
+        's4.title': '4. 宿泊ルール',
+        's4.body': '全てのお客様と近隣の方々の生活環境を守るため、以下のルールをお守りください：',
+        's4.r1': '• 全面禁煙（室内・屋外含む）',
+        's4.r2': '• ペットの同伴禁止',
+        's4.r3': '• パーティー・集会の開催禁止',
+        's4.r4': '• 夜22時以降は静粛にし、近隣への騒音にご配慮ください',
+        's4.r5': '• チェックイン 15:00〜；チェックアウト 10:00まで',
+        's4.r6': '• 荷物のお預かりはチェックアウト後13:00まで',
+        's5.title': '5. 免責事項',
+        's5.body': '宿泊客の個人財物の紛失・破損・盗難については責任を負いかねます。旅行保険へのご加入をお勧めします。天災・感染症拡大等の不可抗力によるご予約変更については可能な限り対応いたしますが、全額返金をお約束することはできません。',
+        's6.title': '6. 紛争解決',
+        's6.body': '本利用規約は日本法に準拠します。紛争が生じた場合、まず協議による解決を試みるものとします。協議が整わない場合は、大阪地方裁判所を第一審の専属的合意管轄裁判所とします。',
+        's7.title': '7. お問い合わせ',
+        's7.body': '本利用規約に関するご質問は、以下の方法でお問い合わせください：',
+        's7.company': '会社名：DAIDODO合同会社',
+        's7.address': '住所：大阪市中央区上本町西3−3−２'
+      },
+      'en': {
+        'nav.back': '← Back to Home',
+        'title': 'Terms of Use',
+        'updated': 'Last updated: February 2026',
+        's1.title': '1. Service Description',
+        's1.body': 'Osaka TravelDays (大阪旅行日民宿) is operated by DAIDODO Godo Kaisha, providing short-term guesthouse accommodation across various areas of Osaka City. All properties are legally registered under Japanese regulations, including the Osaka Strategic Special Zone for Private Lodging, the Inn Business Act (Simple Lodging), and the Private Lodging Management Business.',
+        's2.title': '2. Booking and Payment',
+        's2.body': 'The minimum stay is 2 nights. Bookings can be made via the Airbnb platform or by contacting us directly. We accept credit cards, PayPal, Apple Pay, and Google Pay. Completing a booking constitutes acceptance of these Terms of Use. Upon booking confirmation, we will provide the door lock code and other check-in information.',
+        's3.title': '3. Cancellation Policy',
+        's3.body': 'Free cancellation is available up to 14 days before check-in. Cancellations made within 14 days will incur fees based on how close to the check-in date. To reschedule your stay, please contact us via LINE or Email. Please refer to the Airbnb listing for full cancellation policy details.',
+        's4.title': '4. House Rules',
+        's4.body': 'To maintain quality of life for all guests and neighbors, please observe the following rules:',
+        's4.r1': '• No smoking anywhere (indoors and outdoors)',
+        's4.r2': '• No pets allowed',
+        's4.r3': '• No parties or group gatherings',
+        's4.r4': '• Please keep noise to a minimum after 10 PM out of consideration for neighbors',
+        's4.r5': '• Check-in from 15:00; check-out by 10:00',
+        's4.r6': '• Luggage storage available until 13:00 after check-out',
+        's5.title': '5. Limitation of Liability',
+        's5.body': 'We are not responsible for loss, damage, or theft of guests\' personal belongings. We recommend purchasing travel insurance for your own protection. In cases of force majeure (such as natural disasters or public health emergencies), we will do our best to assist with booking changes but cannot guarantee full refunds.',
+        's6.title': '6. Dispute Resolution',
+        's6.body': 'These Terms of Use are governed by the laws of Japan. In the event of a dispute, both parties shall first attempt to resolve it through negotiation. If negotiation fails, the Osaka District Court shall have exclusive jurisdiction as the court of first instance.',
+        's7.title': '7. Contact Us',
+        's7.body': 'If you have any questions about these Terms of Use, please contact us through:',
+        's7.company': 'Company: DAIDODO Godo Kaisha',
+        's7.address': 'Address: 3-3-2 Uehommachi Nishi, Chuo-ku, Osaka'
+      }
+    };
+
+    function setLanguage(lang) {
+      if (!TRANSLATIONS[lang]) return;
+      localStorage.setItem('lang', lang);
+      document.documentElement.lang = lang === 'zh-TW' ? 'zh-TW' : lang === 'ja' ? 'ja' : 'en';
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var key = el.dataset.i18n;
+        var text = TRANSLATIONS[lang][key];
+        if (text !== undefined) el.textContent = text;
+      });
+      var titles = {
+        'zh-TW': '使用條款 | 大阪旅行日民宿',
+        'ja': '利用規約 | 大阪旅行日民宿',
+        'en': 'Terms of Use | Osaka TravelDays'
+      };
+      document.title = titles[lang];
+      document.querySelectorAll('.lang-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+    }
+
+    document.querySelectorAll('.lang-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() { setLanguage(btn.dataset.lang); });
+    });
+
+    (function() {
+      var saved = localStorage.getItem('lang') || 'zh-TW';
+      setLanguage(saved);
+    })();
+  </script>
+</body>
+</html>
