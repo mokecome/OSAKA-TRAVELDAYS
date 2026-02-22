@@ -688,6 +688,9 @@ app.get('/rooms/:id.html', (req, res) => {
   html = html.replace(/<title>[^<]*<\/title>/, seoHead);
   // Inject SSR content after the loading div
   html = html.replace('</main>', ssrContent + '\n  </main>');
+  // Inject full multilingual property data for client-side language switching
+  const propDataScript = `<script>window.__PROPERTY_DATA = ${JSON.stringify(p)};</script>`;
+  html = html.replace('</body>', propDataScript + '\n</body>');
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(html);
@@ -933,6 +936,7 @@ app.get('/api/properties/:id/availability', async (req, res) => {
 // Create or update property
 app.post('/api/properties', requireAuth, (req, res) => {
   const p = req.body;
+  const ml = (v) => v && typeof v === 'object' && !Array.isArray(v) ? JSON.stringify(v) : (v || '');
   if (!p.id || !p.name) return res.status(400).json({ error: 'ID and name are required' });
 
   // Validate regionId before touching the DB
@@ -954,13 +958,13 @@ app.post('/api/properties', requireAuth, (req, res) => {
         quickInfo=?, amenities=?, spaceIntro=?, nearestStation=?, ical_url=?,
         updatedAt=datetime('now','localtime')
         WHERE id=?`).run(
-        p.name, p.type || '包棟民宿', p.regionId || null, regionZh, regionEn, regionDesc,
-        p.badge || '', p.secondaryBadge || '', p.shortDesc || '', p.address || '',
-        p.transportInfo || '', p.introduction || '', p.videoUrl || '', p.mapEmbedUrl || '',
+        ml(p.name), p.type || '包棟民宿', p.regionId || null, regionZh, regionEn, regionDesc,
+        ml(p.badge), ml(p.secondaryBadge), ml(p.shortDesc), ml(p.address),
+        ml(p.transportInfo), ml(p.introduction), p.videoUrl || '', p.mapEmbedUrl || '',
         p.airbnbUrl || '', p.capacity || '', p.size || '', p.checkIn || '下午3點以後',
-        p.checkOut || '上午10點之前', p.transportDetail || '',
+        p.checkOut || '上午10點之前', ml(p.transportDetail),
         JSON.stringify(p.quickInfo || []), JSON.stringify(p.amenities || []),
-        JSON.stringify(p.spaceIntro || []), p.nearestStation || '', p.icalUrl || '', p.id
+        JSON.stringify(p.spaceIntro || []), ml(p.nearestStation), p.icalUrl || '', p.id
       );
       // Clear iCal cache so next availability request re-fetches
       icalCache.delete(p.id);
@@ -970,13 +974,13 @@ app.post('/api/properties', requireAuth, (req, res) => {
         airbnbUrl, capacity, size, checkIn, checkOut, transportDetail, quickInfo,
         amenities, spaceIntro, nearestStation, ical_url)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
-        p.id, p.name, p.type || '包棟民宿', p.regionId || null, regionZh, regionEn, regionDesc,
-        p.badge || '', p.secondaryBadge || '', p.shortDesc || '', p.address || '',
-        p.transportInfo || '', p.introduction || '', p.videoUrl || '', p.mapEmbedUrl || '',
+        p.id, ml(p.name), p.type || '包棟民宿', p.regionId || null, regionZh, regionEn, regionDesc,
+        ml(p.badge), ml(p.secondaryBadge), ml(p.shortDesc), ml(p.address),
+        ml(p.transportInfo), ml(p.introduction), p.videoUrl || '', p.mapEmbedUrl || '',
         p.airbnbUrl || '', p.capacity || '', p.size || '', p.checkIn || '下午3點以後',
-        p.checkOut || '上午10點之前', p.transportDetail || '', JSON.stringify(p.quickInfo || []),
+        p.checkOut || '上午10點之前', ml(p.transportDetail), JSON.stringify(p.quickInfo || []),
         JSON.stringify(p.amenities || []), JSON.stringify(p.spaceIntro || []),
-        p.nearestStation || '', p.icalUrl || ''
+        ml(p.nearestStation), p.icalUrl || ''
       );
     }
 
