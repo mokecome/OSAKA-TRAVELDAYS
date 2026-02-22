@@ -151,6 +151,12 @@ db.exec(`
     description TEXT DEFAULT '',
     sortOrder INTEGER DEFAULT 0
   );
+
+  CREATE TABLE IF NOT EXISTS site_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // Migrate existing DB: add new columns if missing
@@ -177,6 +183,99 @@ try { db.exec("ALTER TABLE properties ADD COLUMN regionId INTEGER DEFAULT NULL")
       db.prepare("UPDATE properties SET regionId = ? WHERE regionZh = ? AND regionId IS NULL").run(regionId, o.regionZh);
     }
     console.log(`  Migrated ${orphans.length} region(s) from existing properties`);
+  }
+}
+
+// ==================== SITE SETTINGS DEFAULTS ====================
+{
+  const insertSetting = db.prepare('INSERT OR IGNORE INTO site_settings (key, value) VALUES (?, ?)');
+  const defaults = [
+    ['hero.image', JSON.stringify({ url: '/images/hero.jpg' })],
+    ['hero.title', JSON.stringify({
+      'zh-TW': '大阪旅行日民宿',
+      'ja': '大阪トラベルデイズ民宿',
+      'en': 'Osaka TravelDays Guesthouse'
+    })],
+    ['hero.subtitle', JSON.stringify({
+      'zh-TW': 'OSAKA TRAVELDAYS',
+      'ja': 'OSAKA TRAVELDAYS',
+      'en': 'OSAKA TRAVELDAYS'
+    })],
+    ['hero.desc', JSON.stringify({
+      'zh-TW': '精選大阪各區優質民宿・包棟住宿・公寓式酒店\n體驗最道地的日本生活',
+      'ja': '大阪各エリアの厳選民泊・丸ごと貸切・サービスアパートメント\n本場の日本生活を体験',
+      'en': 'Curated Osaka guesthouses, entire-home rentals & serviced apartments\nExperience authentic Japanese living'
+    })],
+    ['hero.cta', JSON.stringify({
+      'zh-TW': '瀏覽房源',
+      'ja': '物件を見る',
+      'en': 'View Properties'
+    })],
+    ['faq.items', JSON.stringify([
+      {
+        q: { 'zh-TW': '如何預訂大阪旅行日民宿？', 'ja': '大阪旅行日民宿の予約方法は？', 'en': 'How do I book?' },
+        a: {
+          'zh-TW': '透過 Airbnb 預訂，或透過 LINE（@fgk8695x）/ Email（service.traveldays@gmail.com）聯繫我們進行直接預訂。最少需訂 2 晚，支援信用卡、PayPal、Apple Pay / Google Pay 等付款方式。',
+          'ja': 'Airbnbでご予約いただくか、LINE（@fgk8695x）/ Email（service.traveldays@gmail.com）でご連絡ください。最低2泊から。クレジットカード・PayPal・Apple Pay / Google Pay対応。',
+          'en': 'Book via Airbnb, or contact us via LINE (@fgk8695x) / Email (service.traveldays@gmail.com) for direct booking. Minimum 2 nights. Accepts credit card, PayPal, Apple Pay / Google Pay.'
+        }
+      },
+      {
+        q: { 'zh-TW': '入住和退房時間是幾點？', 'ja': 'チェックイン・チェックアウト時間は？', 'en': 'What are the check-in and check-out times?' },
+        a: {
+          'zh-TW': '入住時間為下午 3 點（15:00）以後，退房時間為上午 10 點（10:00）之前。我們採用自助式密碼鎖入住，入住前會將密碼傳送給您，讓您隨時輕鬆入住。',
+          'ja': 'チェックインは15:00以降、チェックアウトは10:00まで。暗証番号式セルフチェックインで、入室前にパスワードをお送りします。',
+          'en': 'Check-in from 15:00, check-out by 10:00. We use self check-in with a code lock — your access code will be sent before arrival.'
+        }
+      },
+      {
+        q: { 'zh-TW': '民宿提供哪些設施和服務？', 'ja': 'どんな設備・サービスがありますか？', 'en': 'What amenities and services are included?' },
+        a: {
+          'zh-TW': '所有房源均配備免費 WiFi、廚房設備、洗衣機、空調、吹風機、毛巾及沐浴用品等基本生活設施。部分房源另提供停車場、浴缸、私人庭院等。詳細設施請參考各房源頁面。',
+          'ja': '全物件に無料WiFi・キッチン・洗濯機・エアコン・ドライヤー・タオル・アメニティを完備。一部物件は駐車場・バスタブ・専用庭あり。詳細は各物件ページへ。',
+          'en': 'All properties include free WiFi, kitchen, washer, AC, hair dryer, towels and toiletries. Some properties also offer parking, bathtub, and private garden. See each listing for details.'
+        }
+      },
+      {
+        q: { 'zh-TW': '大阪旅行日民宿有哪些地區的房源？', 'ja': 'どのエリアに物件がありますか？', 'en': 'Which areas do you have properties in?' },
+        a: {
+          'zh-TW': '我們的房源遍布大阪熱門地區，包括<strong>大正區</strong>（小沖繩風情）、<strong>心齋橋/日本橋/難波</strong>（購物美食中心）、<strong>住之江區</strong>（寧靜住宅區）、<strong>西九條/九條區/福島區</strong>（USJ交通樞紐）。所有房源均鄰近車站，方便前往各大景點。',
+          'ja': '我們的房源遍布大阪熱門地區，包括<strong>大正區</strong>（小沖繩風情）、<strong>心齋橋/日本橋/難波</strong>（購物美食中心）、<strong>住之江區</strong>（寧靜住宅區）、<strong>西九條/九條區/福島區</strong>（USJ交通樞紐）。所有房源均鄰近車站，方便前往各大景點。',
+          'en': '我們的房源遍布大阪熱門地區，包括<strong>大正區</strong>（小沖繩風情）、<strong>心齋橋/日本橋/難波</strong>（購物美食中心）、<strong>住之江區</strong>（寧靜住宅區）、<strong>西九條/九條區/福島區</strong>（USJ交通樞紐）。所有房源均鄰近車站，方便前往各大景點。'
+        }
+      },
+      {
+        q: { 'zh-TW': '可以取消預訂或改期嗎？', 'ja': 'キャンセル・日程変更はできますか？', 'en': 'Can I cancel or reschedule?' },
+        a: {
+          'zh-TW': '入住 14 天前可免費取消，之後將依距離入住日的時間收取相應費用。如需改期，請盡早透過 LINE 或 Email 聯繫我們協助處理。詳細取消政策請參考 Airbnb 預訂頁面。',
+          'ja': '14日前まで無料キャンセル、以降は時期により費用が発生します。日程変更はLINEまたはEmailでお早めにご連絡ください。詳細はAirbnbページをご確認ください。',
+          'en': 'Free cancellation up to 14 days before check-in. Fees apply after that based on how close to the check-in date. Contact us via LINE or Email for rescheduling. See the Airbnb listing for the full cancellation policy.'
+        }
+      },
+      {
+        q: { 'zh-TW': '退房後可以寄放行李嗎？', 'ja': 'チェックアウト後、荷物を預けられますか？', 'en': 'Can I store luggage after check-out?' },
+        a: {
+          'zh-TW': '只能放到下午一點。',
+          'ja': '午後1時まで荷物をお預かりできます。',
+          'en': 'Luggage can only be stored until 1 PM.'
+        }
+      }
+    ])],
+    ['footer.email', JSON.stringify({ value: 'service.traveldays@gmail.com' })],
+    ['footer.line', JSON.stringify({ value: '@fgk8695x' })],
+    ['footer.company', JSON.stringify({
+      'zh-TW': 'DAIDODO合同会社',
+      'ja': 'DAIDODO合同会社',
+      'en': 'DAIDODO LLC'
+    })],
+    ['footer.address', JSON.stringify({
+      'zh-TW': '大阪市中央区上本町西3−3−２',
+      'ja': '大阪市中央区上本町西3−3−２',
+      'en': 'Uehonmachinis3-3-2, Chuo-ku, Osaka'
+    })]
+  ];
+  for (const [key, value] of defaults) {
+    insertSetting.run(key, value);
   }
 }
 
@@ -695,6 +794,34 @@ app.post('/api/import', requireAuth, (req, res) => {
 
   importAll(data);
   res.json({ success: true, count: data.length });
+});
+
+// ---- SITE SETTINGS ----
+
+// Get all settings (public)
+app.get('/api/settings', (req, res) => {
+  const rows = db.prepare('SELECT key, value FROM site_settings').all();
+  const result = {};
+  for (const row of rows) {
+    try {
+      result[row.key] = JSON.parse(row.value);
+    } catch (e) {
+      result[row.key] = row.value;
+    }
+  }
+  res.json(result);
+});
+
+// Update a setting (auth required)
+app.post('/api/settings', requireAuth, (req, res) => {
+  const { key, value } = req.body;
+  if (!key || typeof key !== 'string' || key.trim() === '') {
+    return res.status(400).json({ error: 'key must be a non-empty string' });
+  }
+  db.prepare(`INSERT INTO site_settings (key, value, updatedAt) VALUES (?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value, updatedAt = CURRENT_TIMESTAMP`)
+    .run(key.trim(), JSON.stringify(value));
+  res.json({ success: true });
 });
 
 // ==================== START ====================
