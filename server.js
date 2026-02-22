@@ -578,30 +578,33 @@ app.get('/rooms/:id.html', (req, res) => {
   const fullCoverUrl = coverImage.startsWith('http') ? coverImage : `${SITE_URL}/${coverImage}`;
   const pageUrl = `${SITE_URL}/rooms/${propertyId}.html`;
 
-  // Build meta description
+  // Build meta description (always zh-TW for SEO)
+  const _nameZh = localizeField(p.name, 'zh-TW');
+  const _transportInfoZh = localizeField(p.transportInfo, 'zh-TW');
+  const _introductionZh = localizeField(p.introduction, 'zh-TW');
   const descParts = [];
-  if (p.name) descParts.push(p.name);
+  if (_nameZh) descParts.push(_nameZh);
   if (p.regionZh) descParts.push(`位於大阪${p.regionZh}`);
-  if (p.transportInfo) descParts.push(p.transportInfo);
+  if (_transportInfoZh) descParts.push(_transportInfoZh);
   if (p.capacity) descParts.push(p.capacity);
-  const introSnippet = p.introduction ? stripHtmlForMeta(p.introduction).substring(0, 100) : '';
+  const introSnippet = _introductionZh ? stripHtmlForMeta(_introductionZh).substring(0, 100) : '';
   if (introSnippet) descParts.push(introSnippet);
   const metaDescription = descParts.join('。').substring(0, 160);
 
   // Build amenities text for structured data
   const amenityList = (p.amenities || []).join(', ');
 
-  // JSON-LD structured data
+  // JSON-LD structured data (always zh-TW for SEO)
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LodgingBusiness",
-    "name": p.name,
+    "name": _nameZh,
     "description": metaDescription,
     "url": pageUrl,
     "image": fullCoverUrl,
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": p.address || '',
+      "streetAddress": localizeField(p.address, 'zh-TW') || '',
       "addressLocality": "大阪市",
       "addressRegion": "大阪府",
       "addressCountry": "JP"
@@ -625,7 +628,7 @@ app.get('/rooms/:id.html', (req, res) => {
       },
       "result": {
         "@type": "LodgingReservation",
-        "name": `預訂 ${p.name}`
+        "name": `預訂 ${_nameZh}`
       }
     } : undefined
   };
@@ -637,21 +640,22 @@ app.get('/rooms/:id.html', (req, res) => {
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "首頁", "item": SITE_URL },
       { "@type": "ListItem", "position": 2, "name": p.regionZh || "房源", "item": `${SITE_URL}/#properties` },
-      { "@type": "ListItem", "position": 3, "name": p.name, "item": pageUrl }
+      { "@type": "ListItem", "position": 3, "name": _nameZh, "item": pageUrl }
     ]
   };
 
-  // Build SSR content (visible to crawlers even without JS)
+  // Build SSR content (visible to crawlers even without JS; always zh-TW)
+  const _addressZh = localizeField(p.address, 'zh-TW');
   const ssrContent = `
     <noscript>
       <article class="container mx-auto px-4 py-20 max-w-4xl">
-        <h1 class="text-3xl font-bold text-amber-900 mb-4">${escHtml(p.name)}</h1>
+        <h1 class="text-3xl font-bold text-amber-900 mb-4">${escHtml(_nameZh)}</h1>
         ${p.regionZh ? `<p class="text-amber-600 mb-2">地區：${escHtml(p.regionZh)}</p>` : ''}
-        ${p.transportInfo ? `<p class="text-amber-700 mb-4">${escHtml(p.transportInfo)}</p>` : ''}
+        ${_transportInfoZh ? `<p class="text-amber-700 mb-4">${escHtml(_transportInfoZh)}</p>` : ''}
         ${p.capacity ? `<p class="mb-2">容納人數：${escHtml(p.capacity)}</p>` : ''}
-        ${p.address ? `<p class="mb-2">地址：${escHtml(p.address)}</p>` : ''}
-        ${coverImage ? `<img src="${escHtml(coverImage)}" alt="${escHtml(p.name)} - 大阪民宿" style="max-width:100%;height:auto;">` : ''}
-        ${p.introduction ? `<div class="mt-6"><h2 class="text-xl font-bold mb-2">房源介紹</h2><p>${escHtml(p.introduction)}</p></div>` : ''}
+        ${_addressZh ? `<p class="mb-2">地址：${escHtml(_addressZh)}</p>` : ''}
+        ${coverImage ? `<img src="${escHtml(coverImage)}" alt="${escHtml(_nameZh)} - 大阪民宿" style="max-width:100%;height:auto;">` : ''}
+        ${_introductionZh ? `<div class="mt-6"><h2 class="text-xl font-bold mb-2">房源介紹</h2><p>${escHtml(_introductionZh)}</p></div>` : ''}
         ${amenityList ? `<div class="mt-4"><h2 class="text-xl font-bold mb-2">設備服務</h2><p>${escHtml(amenityList)}</p></div>` : ''}
         ${p.airbnbUrl ? `<div class="mt-6"><a href="${escHtml(p.airbnbUrl)}" rel="noopener" class="btn-primary">立即預訂</a></div>` : ''}
       </article>
@@ -659,13 +663,13 @@ app.get('/rooms/:id.html', (req, res) => {
 
   // Inject into template
   const seoHead = `
-  <title>${escHtml(p.name)} | 大阪旅行日民宿 OSAKA TRAVELDAYS</title>
+  <title>${escHtml(_nameZh)} | 大阪旅行日民宿 OSAKA TRAVELDAYS</title>
   <meta name="description" content="${escHtml(metaDescription)}">
   <link rel="canonical" href="${pageUrl}">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="${escHtml(p.name)} | 大阪旅行日民宿">
+  <meta property="og:title" content="${escHtml(_nameZh)} | 大阪旅行日民宿">
   <meta property="og:description" content="${escHtml(metaDescription)}">
   <meta property="og:image" content="${escHtml(fullCoverUrl)}">
   <meta property="og:url" content="${pageUrl}">
@@ -674,13 +678,13 @@ app.get('/rooms/:id.html', (req, res) => {
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${escHtml(p.name)} | 大阪旅行日民宿">
+  <meta name="twitter:title" content="${escHtml(_nameZh)} | 大阪旅行日民宿">
   <meta name="twitter:description" content="${escHtml(metaDescription)}">
   <meta name="twitter:image" content="${escHtml(fullCoverUrl)}">
 
   <!-- Structured Data -->
-  <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
-  <script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>`;
+  <script type="application/ld+json">${JSON.stringify(jsonLd).replace(/<\/script>/gi, '<\\/script>')}</script>
+  <script type="application/ld+json">${JSON.stringify(breadcrumbLd).replace(/<\/script>/gi, '<\\/script>')}</script>`;
 
   // Replace in template
   let html = roomTemplate;
