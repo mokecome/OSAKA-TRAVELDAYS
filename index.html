@@ -1080,7 +1080,7 @@
       </div>
     </div>
 
-    <div id="propertiesContainer" style="display:none;"></div>
+    <div id="propertiesContainer"><!-- SSR_PROPERTIES_PLACEHOLDER --></div>
 
     <div id="staticProperties">
     <!-- 大正區 -->
@@ -2509,6 +2509,19 @@
         });
         renderFilterBar(staticRegions);
       })();
+
+      // If server pre-rendered the properties, hydrate from SSR data (skip API fetch)
+      if (window.__SSR_REGIONS && window.__SSR_REGIONS.length > 0) {
+        var container = document.getElementById('propertiesContainer');
+        // Content already in DOM from SSR; just wire up filter + animations
+        var activeRegions = window.__SSR_REGIONS; // lightweight summary already filtered
+        renderFilterBar(activeRegions);
+        container.querySelectorAll('.animate-fadeInUp, .animate-scaleIn').forEach(function(el) {
+          el.style.animationPlayState = 'paused';
+          observer.observe(el);
+        });
+        return; // skip fetch
+      }
 
       // Fetch regions from API
       fetch('/api/regions')

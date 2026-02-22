@@ -340,6 +340,83 @@ function parseIcal(icsText) {
 
 const icalCache = new Map(); // propertyId -> { blockedDates, fetchedAt }
 
+// ==================== SSR RENDERER ====================
+
+function escHtml(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+const HOUSE_ICON_SVG = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>';
+const APARTMENT_ICON_SVG = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/></svg>';
+
+function ssrRenderCard(property, delay) {
+  const coverUrl = (property.images && property.images.length > 0) ? property.images[0].url || '' : '';
+  const badgeIcon = (property.badge === '公寓式民宿' || property.type === '公寓式民宿') ? APARTMENT_ICON_SVG : HOUSE_ICON_SVG;
+  const delayAttr = delay > 0 ? ` style="animation-delay: ${delay}s;"` : '';
+
+  return `<div class="property-card animate-fadeInUp"${delayAttr}>` +
+    `<div class="relative aspect-[4/3] overflow-hidden">` +
+      `<img src="${escHtml(coverUrl)}" alt="${escHtml(property.name)}" loading="lazy" class="w-full h-full object-cover card-image">` +
+      `<div class="image-overlay"></div>` +
+      `<div class="absolute top-4 left-4"><span class="badge">${badgeIcon} ${escHtml(property.badge)}</span></div>` +
+      (property.secondaryBadge ? `<div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5"><span class="text-amber-800 font-bold text-sm">${escHtml(property.secondaryBadge)}</span></div>` : '') +
+    `</div>` +
+    `<div class="p-6 flex flex-col flex-1">` +
+      `<h3 class="font-bold text-xl text-amber-900 mb-1">${escHtml(property.name)}</h3>` +
+      `<p class="text-amber-500 text-sm mb-4">${escHtml(property.shortDesc)}</p>` +
+      `<div class="space-y-1 mb-5">` +
+        `<div class="info-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>${escHtml(property.address)}</span></div>` +
+        `<div class="info-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span>${escHtml(property.transportInfo)}</span></div>` +
+      `</div>` +
+      `<a href="rooms/${escHtml(property.id)}.html" class="btn-primary w-full mt-auto"><span>查看詳情</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></a>` +
+    `</div>` +
+  `</div>`;
+}
+
+function ssrRenderRegion(region, properties, isOdd) {
+  const bgClass = isOdd ? 'bg-gradient-to-b from-amber-50/50 to-white' : 'bg-white';
+  const count = properties.length;
+  let gridClass;
+  if (count === 1) gridClass = 'flex justify-center';
+  else if (count === 2) gridClass = 'grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto';
+  else if (count <= 4) gridClass = `grid grid-cols-1 md:grid-cols-${count} gap-8 max-w-6xl mx-auto`;
+  else gridClass = 'flex flex-wrap justify-center gap-8 max-w-6xl mx-auto';
+
+  let cardsHtml = '';
+  for (let i = 0; i < count; i++) {
+    const delay = i * 0.1;
+    if (count === 1) cardsHtml += `<div class="w-full max-w-sm">${ssrRenderCard(properties[i], delay)}</div>`;
+    else if (count >= 5) cardsHtml += `<div class="w-full md:w-[calc(33.333%-1.4rem)]">${ssrRenderCard(properties[i], delay)}</div>`;
+    else cardsHtml += ssrRenderCard(properties[i], delay);
+  }
+
+  return `<div class="py-16 lg:py-20 ${bgClass}" data-region-id="${escHtml(String(region.id))}">` +
+    `<div class="container mx-auto px-4 lg:px-8">` +
+      `<div class="text-center mb-14">` +
+        `<span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">${escHtml(region.nameEn)}</span>` +
+        `<h2 class="text-2xl md:text-3xl lg:text-4xl font-serif text-amber-900 section-title">${escHtml(region.nameZh)}</h2>` +
+        (region.description ? `<p class="text-amber-600 mt-4 max-w-lg mx-auto">${escHtml(region.description)}</p>` : '') +
+      `</div>` +
+      `<div class="${gridClass}">${cardsHtml}</div>` +
+    `</div>` +
+  `</div>`;
+}
+
+function ssrRenderAllRegions(regions) {
+  const activeRegions = regions.filter(r => r.properties && r.properties.length > 0);
+  let html = '';
+  activeRegions.forEach((region, idx) => {
+    html += ssrRenderRegion(region, region.properties, idx % 2 === 0);
+  });
+  return html;
+}
+
+let ssrCache = null; // string | null — invalidated on property/region changes
+
+function invalidateSSRCache() {
+  ssrCache = null;
+}
+
 // ==================== HELPERS ====================
 
 /** Safely parse a JSON string, returning fallback (default []) on failure. */
@@ -566,6 +643,62 @@ app.get('/sitemap.xml', (req, res) => {
   res.send(xml);
 });
 
+// ==================== HOMEPAGE SSR ====================
+
+app.get('/', (req, res) => {
+  try {
+    if (!ssrCache) {
+      const regions = db.prepare('SELECT * FROM regions ORDER BY sortOrder ASC').all();
+      for (const region of regions) {
+        const props = db.prepare('SELECT * FROM properties WHERE regionId = ? ORDER BY createdAt ASC').all(region.id);
+        props.forEach(p => { getPropertyWithImages(p); });
+        region.properties = props;
+      }
+
+      const propertiesHtml = ssrRenderAllRegions(regions);
+      const totalProps = regions.reduce((n, r) => n + (r.properties ? r.properties.length : 0), 0);
+      const activeRegionCount = regions.filter(r => r.properties && r.properties.length > 0).length;
+
+      const regionsSummary = regions
+        .filter(r => r.properties && r.properties.length > 0)
+        .map(r => ({ id: r.id, nameZh: r.nameZh, nameEn: r.nameEn }));
+
+      let pageHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+
+      pageHtml = pageHtml.replace(
+        '<!-- SSR_PROPERTIES_PLACEHOLDER -->',
+        propertiesHtml
+      );
+
+      pageHtml = pageHtml.replace(
+        '<div id="staticProperties">',
+        '<div id="staticProperties" style="display:none;">'
+      );
+
+      pageHtml = pageHtml.replace(
+        /(<p id="statProperties"[^>]*>)\d+(<\/p>)/,
+        `$1${totalProps}$2`
+      );
+      pageHtml = pageHtml.replace(
+        /(<p id="statRegions"[^>]*>)\d+(<\/p>)/,
+        `$1${activeRegionCount}$2`
+      );
+
+      const hydrationScript = `<script>window.__SSR_REGIONS=${JSON.stringify(regionsSummary)};<\/script>`;
+      pageHtml = pageHtml.replace('</body>', hydrationScript + '\n</body>');
+
+      ssrCache = pageHtml;
+    }
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.send(ssrCache);
+  } catch (err) {
+    console.error('SSR error:', err.message);
+    res.sendFile(path.join(__dirname, 'index.html'));
+  }
+});
+
 // ==================== STATIC FILES ====================
 
 // Cache headers for static assets
@@ -616,11 +749,13 @@ app.post('/api/regions', requireAuth, (req, res) => {
   if (id) {
     db.prepare('UPDATE regions SET nameZh=?, nameEn=?, description=? WHERE id=?').run(nameZh, nameEn || '', description || '', id);
     const updated = db.prepare('SELECT * FROM regions WHERE id = ?').get(id);
+    invalidateSSRCache();
     return res.json(updated);
   } else {
     const maxOrder = db.prepare('SELECT COALESCE(MAX(sortOrder), -1) as m FROM regions').get().m;
     const info = db.prepare('INSERT INTO regions (nameZh, nameEn, description, sortOrder) VALUES (?,?,?,?)').run(nameZh, nameEn || '', description || '', maxOrder + 1);
     const created = db.prepare('SELECT * FROM regions WHERE id = ?').get(info.lastInsertRowid);
+    invalidateSSRCache();
     return res.json(created);
   }
 });
@@ -644,6 +779,7 @@ app.put('/api/regions/:id/move', requireAuth, (req, res) => {
     db.prepare('UPDATE regions SET sortOrder = ? WHERE id = ?').run(currentRegion.sortOrder, swapRegion.id);
   })();
 
+  invalidateSSRCache();
   res.json({ success: true });
 });
 
@@ -654,6 +790,7 @@ app.delete('/api/regions/:id', requireAuth, (req, res) => {
   if (count > 0) return res.status(400).json({ error: `此區域還有 ${count} 個房源，請先移除房源再刪除區域` });
 
   db.prepare('DELETE FROM regions WHERE id = ?').run(regionId);
+  invalidateSSRCache();
   res.json({ success: true });
 });
 
@@ -762,6 +899,7 @@ app.post('/api/properties', requireAuth, (req, res) => {
 
   transaction();
   const saved = db.prepare('SELECT * FROM properties WHERE id = ?').get(p.id);
+  invalidateSSRCache();
   res.json(getPropertyWithImages(saved));
 });
 
@@ -780,6 +918,7 @@ app.put('/api/properties/:oldId/rename', requireAuth, (req, res) => {
   });
 
   transaction();
+  invalidateSSRCache();
   res.json({ success: true });
 });
 
@@ -799,6 +938,7 @@ app.delete('/api/properties/:id', requireAuth, (req, res) => {
   });
 
   transaction();
+  invalidateSSRCache();
   res.json({ success: true });
 });
 
