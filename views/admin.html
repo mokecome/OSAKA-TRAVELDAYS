@@ -4,34 +4,47 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>後台管理 | 大阪旅行日民宿</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            sidebar: '#1a1a1a',
-            surface: '#f6f6f7',
-            card: '#ffffff',
-            primary: '#008060',
-            'primary-hover': '#006e52',
-            destructive: '#d72c0d',
-            'destructive-hover': '#bc2200',
-            link: '#2c6ecb',
-            'text-primary': '#202223',
-            'text-secondary': '#6d7175',
-            'text-disabled': '#8c9196',
-            'border-default': '#e1e3e5',
-            'border-subdued': '#eaecee',
-            'icon-default': '#5c5f62',
-            'surface-selected': '#f2f7fe',
-            'surface-hover': '#f1f2f3',
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="stylesheet" href="/css/tailwind.min.css">
   <style>
+    /* Design tokens -- single source of truth for Polaris-inspired palette */
+    :root {
+      --c-primary: #008060;
+      --c-primary-dark: #006e52;
+      --c-destructive: #d72c0d;
+      --c-destructive-dark: #bc2200;
+      --c-link: #2c6ecb;
+      --c-surface: #f6f6f7;
+      --c-surface-hover: #f1f2f3;
+      --c-sidebar: #1a1a1a;
+      --c-text-primary: #202223;
+      --c-text-secondary: #6d7175;
+      --c-text-disabled: #8c9196;
+      --c-icon-default: #5c5f62;
+      --c-border: #e1e3e5;
+      --c-border-subdued: #eaecee;
+    }
+
+    /* Tailwind-replacement utility classes */
+    .bg-sidebar { background-color: var(--c-sidebar); }
+    .bg-surface { background-color: var(--c-surface); }
+    .bg-link { background-color: var(--c-link); }
+    .hover\:bg-surface:hover { background-color: var(--c-surface); }
+    .hover\:bg-surface-hover:hover { background-color: var(--c-surface-hover); }
+    .text-primary { color: var(--c-primary); }
+    .text-destructive { color: var(--c-destructive); }
+    .text-link { color: var(--c-link); }
+    .text-text-primary { color: var(--c-text-primary); }
+    .text-text-secondary { color: var(--c-text-secondary); }
+    .text-text-disabled { color: var(--c-text-disabled); }
+    .text-icon-default { color: var(--c-icon-default); }
+    .hover\:text-text-primary:hover { color: var(--c-text-primary); }
+    .hover\:text-destructive:hover { color: var(--c-destructive); }
+    .border-primary { border-color: var(--c-primary); }
+    .border-border-default { border-color: var(--c-border); }
+    .border-border-subdued { border-color: var(--c-border-subdued); }
+    .divide-border-subdued > * + * { border-color: var(--c-border-subdued); }
+
+    /* Base & layout */
     * { box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif; }
     .sidebar-nav-item.active { background: rgba(255,255,255,0.1); }
@@ -42,9 +55,9 @@
       font-size: 14px; animation: slideIn 0.3s ease-out;
       display: flex; align-items: center; gap: 8px;
     }
-    .toast.success { background: #008060; }
-    .toast.error { background: #d72c0d; }
-    .toast.info { background: #2c6ecb; }
+    .toast.success { background: var(--c-primary); }
+    .toast.error { background: var(--c-destructive); }
+    .toast.info { background: var(--c-link); }
     @keyframes slideIn {
       from { opacity: 0; transform: translateX(50px); }
       to { opacity: 1; transform: translateX(0); }
@@ -52,7 +65,7 @@
     .img-thumb { position: relative; }
     .img-thumb:first-child::after {
       content: '封面'; position: absolute; top: 4px; left: 4px;
-      background: #008060; color: white; font-size: 10px;
+      background: var(--c-primary); color: white; font-size: 10px;
       padding: 2px 6px; border-radius: 4px;
     }
     .img-thumb .delete-img {
@@ -72,54 +85,54 @@
     }
     textarea { resize: vertical; }
     .amenity-check:checked + .amenity-label {
-      background: #f2f7fe; border-color: #2c6ecb; color: #1a1c1d;
+      background: #f2f7fe; border-color: var(--c-link); color: #1a1c1d;
     }
     .amenity-label {
       display: flex; align-items: center; gap: 6px;
-      padding: 8px 12px; border: 1px solid #e1e3e5; border-radius: 8px;
+      padding: 8px 12px; border: 1px solid var(--c-border); border-radius: 8px;
       cursor: pointer; font-size: 0.8125rem; transition: all 0.15s;
       user-select: none; background: white;
     }
-    .amenity-label:hover { border-color: #2c6ecb; }
+    .amenity-label:hover { border-color: var(--c-link); }
     .custom-tag {
       display: inline-flex; align-items: center; gap: 4px;
       background: #f2f7fe; color: #1a1c1d; padding: 4px 10px;
       border-radius: 6px; font-size: 0.8rem;
     }
     .custom-tag button {
-      background: none; border: none; cursor: pointer; color: #6d7175;
+      background: none; border: none; cursor: pointer; color: var(--c-text-secondary);
       font-size: 14px; line-height: 1; padding: 0 2px;
     }
-    .custom-tag button:hover { color: #d72c0d; }
+    .custom-tag button:hover { color: var(--c-destructive); }
     input:focus, textarea:focus, select:focus {
-      outline: none; border-color: #2c6ecb; box-shadow: 0 0 0 1px #2c6ecb;
+      outline: none; border-color: var(--c-link); box-shadow: 0 0 0 1px var(--c-link);
     }
     .form-input {
-      width: 100%; padding: 8px 12px; border: 1px solid #e1e3e5;
+      width: 100%; padding: 8px 12px; border: 1px solid var(--c-border);
       border-radius: 8px; font-size: 0.875rem; background: white;
       transition: border-color 0.15s, box-shadow 0.15s;
     }
-    .form-label { display: block; font-size: 0.8125rem; font-weight: 500; color: #202223; margin-bottom: 4px; }
-    .form-hint { font-size: 0.75rem; color: #6d7175; margin-top: 2px; }
+    .form-label { display: block; font-size: 0.8125rem; font-weight: 500; color: var(--c-text-primary); margin-bottom: 4px; }
+    .form-hint { font-size: 0.75rem; color: var(--c-text-secondary); margin-top: 2px; }
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       padding: 8px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 500;
       cursor: pointer; transition: all 0.15s; border: 1px solid transparent;
     }
-    .btn-primary { background: #008060; color: white; border-color: #006e52; }
-    .btn-primary:hover { background: #006e52; }
-    .btn-default { background: white; color: #202223; border-color: #e1e3e5; }
-    .btn-default:hover { background: #f6f6f7; }
-    .btn-destructive { background: white; color: #d72c0d; border-color: #e1e3e5; }
-    .btn-destructive:hover { background: #fef2f2; border-color: #d72c0d; }
-    .btn-destructive-fill { background: #d72c0d; color: white; border-color: #bc2200; }
-    .btn-destructive-fill:hover { background: #bc2200; }
+    .btn-primary { background: var(--c-primary); color: white; border-color: var(--c-primary-dark); }
+    .btn-primary:hover { background: var(--c-primary-dark); }
+    .btn-default { background: white; color: var(--c-text-primary); border-color: var(--c-border); }
+    .btn-default:hover { background: var(--c-surface); }
+    .btn-destructive { background: white; color: var(--c-destructive); border-color: var(--c-border); }
+    .btn-destructive:hover { background: #fef2f2; border-color: var(--c-destructive); }
+    .btn-destructive-fill { background: var(--c-destructive); color: white; border-color: var(--c-destructive-dark); }
+    .btn-destructive-fill:hover { background: var(--c-destructive-dark); }
     .card {
-      background: white; border: 1px solid #e1e3e5; border-radius: 12px;
+      background: white; border: 1px solid var(--c-border); border-radius: 12px;
       overflow: hidden;
     }
     .card-header {
-      padding: 16px 20px; border-bottom: 1px solid #e1e3e5;
+      padding: 16px 20px; border-bottom: 1px solid var(--c-border);
       display: flex; align-items: center; justify-content: space-between;
     }
     .card-body { padding: 20px; }
