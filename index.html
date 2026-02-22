@@ -2339,7 +2339,7 @@
 
         return '<div class="property-card animate-fadeInUp"' + delayAttr + '>' +
           '<div class="relative aspect-[4/3] overflow-hidden">' +
-            '<img src="' + escHtml(coverUrl) + '" alt="' + escHtml(property.name) + '" class="w-full h-full object-cover card-image">' +
+            '<img src="' + escHtml(coverUrl) + '" alt="' + escHtml(property.name) + '" loading="lazy" class="w-full h-full object-cover card-image">' +
             '<div class="image-overlay"></div>' +
             '<div class="absolute top-4 left-4">' +
               '<span class="badge">' +
@@ -2464,7 +2464,9 @@
 
       function filterByRegion(rid) {
         document.querySelectorAll('.region-tab').forEach(function(btn) {
-          btn.classList.toggle('active', btn.dataset.rid === rid);
+          var isActive = btn.dataset.rid === rid;
+          btn.classList.toggle('active', isActive);
+          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
         document.querySelectorAll('[data-region-id]').forEach(function(el) {
           el.style.display = (rid === 'all' || String(el.dataset.regionId) === String(rid)) ? '' : 'none';
@@ -2478,12 +2480,12 @@
 
         var lang = localStorage.getItem('lang') || 'zh-TW';
         var allLabel = (TRANSLATIONS[lang] && TRANSLATIONS[lang]['filter.all']) || '全部';
-        var html = '<button class="region-tab active" data-rid="all" data-i18n="filter.all">' + allLabel + '</button>';
+        var html = '<button class="region-tab active" data-rid="all" data-i18n="filter.all" aria-pressed="true">' + allLabel + '</button>';
 
         for (var i = 0; i < regions.length; i++) {
           var r = regions[i];
           var rid = escHtml(String(r.id));
-          html += '<button class="region-tab" data-rid="' + rid + '">' + escHtml(r.nameZh) + '</button>';
+          html += '<button class="region-tab" data-rid="' + rid + '" aria-pressed="false">' + escHtml(r.nameZh) + '</button>';
         }
 
         tabs.innerHTML = html;
