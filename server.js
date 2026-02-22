@@ -352,31 +352,52 @@ const icalCache = new Map(); // propertyId -> { blockedDates, fetchedAt }
 const HOUSE_ICON_SVG = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>';
 const APARTMENT_ICON_SVG = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/></svg>';
 
-function ssrRenderCard(property, delay) {
+/**
+ * Extract the display value for `lang` from a multilingual field.
+ * Handles: plain string (backward compat), JSON object, or JSON string.
+ */
+function localizeField(val, lang) {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'object') return val[lang] || val['zh-TW'] || '';
+  if (typeof val === 'string' && val.startsWith('{')) {
+    try { const o = JSON.parse(val); return o[lang] || o['zh-TW'] || val; } catch (e) {}
+  }
+  return val;
+}
+
+function ssrRenderCard(property, delay, lang) {
+  lang = lang || 'zh-TW';
+  const name          = localizeField(property.name, lang);
+  const shortDesc     = localizeField(property.shortDesc, lang);
+  const badge         = localizeField(property.badge, lang);
+  const secondaryBadge = localizeField(property.secondaryBadge, lang);
+  const address       = localizeField(property.address, lang);
+  const transportInfo = localizeField(property.transportInfo, lang);
   const coverUrl = (property.images && property.images.length > 0) ? property.images[0].url || '' : '';
-  const badgeIcon = (property.badge === '公寓式民宿' || property.type === '公寓式民宿') ? APARTMENT_ICON_SVG : HOUSE_ICON_SVG;
+  const badgeIcon = (badge === '公寓式民宿' || property.type === '公寓式民宿') ? APARTMENT_ICON_SVG : HOUSE_ICON_SVG;
   const delayAttr = delay > 0 ? ` style="animation-delay: ${delay}s;"` : '';
 
   return `<div class="property-card animate-fadeInUp"${delayAttr}>` +
     `<div class="relative aspect-[4/3] overflow-hidden">` +
-      `<img src="${escHtml(coverUrl)}" alt="${escHtml(property.name)}" loading="lazy" class="w-full h-full object-cover card-image">` +
+      `<img src="${escHtml(coverUrl)}" alt="${escHtml(name)}" loading="lazy" class="w-full h-full object-cover card-image">` +
       `<div class="image-overlay"></div>` +
-      `<div class="absolute top-4 left-4"><span class="badge">${badgeIcon} ${escHtml(property.badge)}</span></div>` +
-      (property.secondaryBadge ? `<div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5"><span class="text-amber-800 font-bold text-sm">${escHtml(property.secondaryBadge)}</span></div>` : '') +
+      `<div class="absolute top-4 left-4"><span class="badge">${badgeIcon} ${escHtml(badge)}</span></div>` +
+      (secondaryBadge ? `<div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5"><span class="text-amber-800 font-bold text-sm">${escHtml(secondaryBadge)}</span></div>` : '') +
     `</div>` +
     `<div class="p-6 flex flex-col flex-1">` +
-      `<h3 class="font-bold text-xl text-amber-900 mb-1">${escHtml(property.name)}</h3>` +
-      `<p class="text-amber-500 text-sm mb-4">${escHtml(property.shortDesc)}</p>` +
+      `<h3 class="font-bold text-xl text-amber-900 mb-1">${escHtml(name)}</h3>` +
+      `<p class="text-amber-500 text-sm mb-4">${escHtml(shortDesc)}</p>` +
       `<div class="space-y-1 mb-5">` +
-        `<div class="info-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>${escHtml(property.address)}</span></div>` +
-        `<div class="info-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span>${escHtml(property.transportInfo)}</span></div>` +
+        `<div class="info-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>${escHtml(address)}</span></div>` +
+        `<div class="info-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span>${escHtml(transportInfo)}</span></div>` +
       `</div>` +
       `<a href="rooms/${escHtml(property.id)}.html" class="btn-primary w-full mt-auto"><span>查看詳情</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></a>` +
     `</div>` +
   `</div>`;
 }
 
-function ssrRenderRegion(region, properties, isOdd) {
+function ssrRenderRegion(region, properties, isOdd, lang) {
+  lang = lang || 'zh-TW';
   const bgClass = isOdd ? 'bg-gradient-to-b from-amber-50/50 to-white' : 'bg-white';
   const count = properties.length;
   let gridClass;
@@ -388,9 +409,9 @@ function ssrRenderRegion(region, properties, isOdd) {
   let cardsHtml = '';
   for (let i = 0; i < count; i++) {
     const delay = i * 0.1;
-    if (count === 1) cardsHtml += `<div class="w-full max-w-sm">${ssrRenderCard(properties[i], delay)}</div>`;
-    else if (count >= 5) cardsHtml += `<div class="w-full md:w-[calc(33.333%-1.4rem)]">${ssrRenderCard(properties[i], delay)}</div>`;
-    else cardsHtml += ssrRenderCard(properties[i], delay);
+    if (count === 1) cardsHtml += `<div class="w-full max-w-sm">${ssrRenderCard(properties[i], delay, lang)}</div>`;
+    else if (count >= 5) cardsHtml += `<div class="w-full md:w-[calc(33.333%-1.4rem)]">${ssrRenderCard(properties[i], delay, lang)}</div>`;
+    else cardsHtml += ssrRenderCard(properties[i], delay, lang);
   }
 
   return `<div class="py-16 lg:py-20 ${bgClass}" data-region-id="${escHtml(String(region.id))}">` +
@@ -409,7 +430,7 @@ function ssrRenderAllRegions(regions) {
   const activeRegions = regions.filter(r => r.properties && r.properties.length > 0);
   let html = '';
   activeRegions.forEach((region, idx) => {
-    html += ssrRenderRegion(region, region.properties, idx % 2 === 0);
+    html += ssrRenderRegion(region, region.properties, idx % 2 === 0, 'zh-TW');
   });
   return html;
 }
