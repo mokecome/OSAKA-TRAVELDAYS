@@ -168,6 +168,12 @@ db.exec(`
     value TEXT NOT NULL,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  CREATE TABLE IF NOT EXISTS ical_cache (
+    property_id TEXT PRIMARY KEY,
+    blocked_dates TEXT NOT NULL DEFAULT '[]',
+    fetched_at INTEGER NOT NULL
+  );
 `);
 
 // Migrate existing DB: add new columns if missing
@@ -345,6 +351,18 @@ function parseIcal(icsText) {
 }
 
 const icalCache = new Map(); // propertyId -> { blockedDates, fetchedAt }
+
+// Warm cache from DB on startup
+(function warmIcalCache() {
+  const rows = db.prepare('SELECT property_id, blocked_dates, fetched_at FROM ical_cache').all();
+  for (const row of rows) {
+    icalCache.set(row.property_id, {
+      blockedDates: JSON.parse(row.blocked_dates || '[]'),
+      fetchedAt: row.fetched_at
+    });
+  }
+  if (rows.length > 0) console.log(`iCal cache warmed: ${rows.length} entries`);
+})();
 
 // ==================== SSR RENDERER ====================
 
@@ -900,7 +918,11 @@ app.get('/api/properties/:id/availability', async (req, res) => {
     if (!response.ok) throw new Error('iCal fetch failed: ' + response.status);
     const text = await response.text();
     const blockedDates = parseIcal(text);
-    icalCache.set(req.params.id, { blockedDates, fetchedAt: Date.now() });
+    const now = Date.now();
+    icalCache.set(req.params.id, { blockedDates, fetchedAt: now });
+    db.prepare(
+      'INSERT OR REPLACE INTO ical_cache (property_id, blocked_dates, fetched_at) VALUES (?, ?, ?)'
+    ).run(req.params.id, JSON.stringify(blockedDates), now);
     res.json({ blockedDates });
   } catch (err) {
     console.error('iCal fetch error:', err.message);
@@ -942,6 +964,7 @@ app.post('/api/properties', requireAuth, (req, res) => {
       );
       // Clear iCal cache so next availability request re-fetches
       icalCache.delete(p.id);
+      db.prepare('DELETE FROM ical_cache WHERE property_id = ?').run(p.id);
     } else {
       db.prepare(`INSERT INTO properties (id, name, type, regionId, regionZh, regionEn, regionDesc, badge,
         secondaryBadge, shortDesc, address, transportInfo, introduction, videoUrl, mapEmbedUrl,
