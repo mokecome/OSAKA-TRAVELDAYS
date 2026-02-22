@@ -910,7 +910,7 @@ app.get('/api/properties/:id/availability', async (req, res) => {
     if (!prop.ical_url) return res.json({ blockedDates: [] });
 
     const cached = icalCache.get(req.params.id);
-    if (cached && Date.now() - cached.fetchedAt < 5 * 60 * 1000) {
+    if (cached && Date.now() - cached.fetchedAt < 30 * 1000) {
       return res.json({ blockedDates: cached.blockedDates });
     }
 
