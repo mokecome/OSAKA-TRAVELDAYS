@@ -475,14 +475,6 @@ function getRegionsWithProperties() {
       p.amenities  = safeParseJSON(p.amenities);
       p.spaceIntro = safeParseJSON(p.spaceIntro);
     }
-  } else {
-    // No properties — still parse JSON fields (they'll be empty arrays)
-    for (const p of allProps) {
-      p.images     = [];
-      p.quickInfo  = safeParseJSON(p.quickInfo);
-      p.amenities  = safeParseJSON(p.amenities);
-      p.spaceIntro = safeParseJSON(p.spaceIntro);
-    }
   }
 
   // Group properties by regionId and attach to regions
