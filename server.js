@@ -164,6 +164,7 @@ try { db.exec("ALTER TABLE properties ADD COLUMN amenities TEXT DEFAULT '[]'"); 
 try { db.exec("ALTER TABLE properties ADD COLUMN spaceIntro TEXT DEFAULT '[]'"); } catch(e) {}
 try { db.exec("ALTER TABLE properties ADD COLUMN nearestStation TEXT DEFAULT ''"); } catch(e) {}
 try { db.exec("ALTER TABLE properties ADD COLUMN regionId INTEGER DEFAULT NULL"); } catch(e) {}
+try { db.exec("ALTER TABLE properties ADD COLUMN ical_url TEXT DEFAULT ''"); } catch(e) {}
 
 // Migrate existing properties: create regions from regionZh and link
 {
@@ -299,6 +300,27 @@ const upload = multer({
     cb(null, allowed.test(path.extname(file.originalname)));
   }
 });
+
+// ==================== iCAL ====================
+function parseIcal(icsText) {
+  const blocked = new Set();
+  const events = icsText.split('BEGIN:VEVENT').slice(1);
+  for (const ev of events) {
+    const s = ev.match(/DTSTART[^:\n]*:(\d{8})/);
+    const e = ev.match(/DTEND[^:\n]*:(\d{8})/);
+    if (s && e) {
+      const d = new Date(s[1].replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+      const end = new Date(e[1].replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+      while (d < end) {
+        blocked.add(d.toISOString().split('T')[0]);
+        d.setDate(d.getDate() + 1);
+      }
+    }
+  }
+  return Array.from(blocked);
+}
+
+const icalCache = new Map(); // propertyId -> { blockedDates, fetchedAt }
 
 // ==================== HELPERS ====================
 function getPropertyWithImages(prop) {
@@ -631,6 +653,30 @@ app.get('/api/properties/:id', (req, res) => {
   res.json(getPropertyWithImages(prop));
 });
 
+// Get availability (blocked dates) from Airbnb iCal
+app.get('/api/properties/:id/availability', async (req, res) => {
+  try {
+    const prop = db.prepare('SELECT ical_url FROM properties WHERE id = ?').get(req.params.id);
+    if (!prop) return res.status(404).json({ error: 'Not found' });
+    if (!prop.ical_url) return res.json({ blockedDates: [] });
+
+    const cached = icalCache.get(req.params.id);
+    if (cached && Date.now() - cached.fetchedAt < 5 * 60 * 1000) {
+      return res.json({ blockedDates: cached.blockedDates });
+    }
+
+    const response = await fetch(prop.ical_url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (!response.ok) throw new Error('iCal fetch failed: ' + response.status);
+    const text = await response.text();
+    const blockedDates = parseIcal(text);
+    icalCache.set(req.params.id, { blockedDates, fetchedAt: Date.now() });
+    res.json({ blockedDates });
+  } catch (err) {
+    console.error('iCal fetch error:', err.message);
+    res.status(502).json({ error: 'iCal fetch failed', blockedDates: [] });
+  }
+});
+
 // Create or update property
 app.post('/api/properties', requireAuth, (req, res) => {
   const p = req.body;
@@ -651,7 +697,8 @@ app.post('/api/properties', requireAuth, (req, res) => {
         name=?, type=?, regionId=?, regionZh=?, regionEn=?, regionDesc=?, badge=?, secondaryBadge=?,
         shortDesc=?, address=?, transportInfo=?, introduction=?, videoUrl=?, mapEmbedUrl=?,
         airbnbUrl=?, capacity=?, size=?, checkIn=?, checkOut=?, transportDetail=?,
-        quickInfo=?, amenities=?, spaceIntro=?, nearestStation=?, updatedAt=datetime('now','localtime')
+        quickInfo=?, amenities=?, spaceIntro=?, nearestStation=?, ical_url=?,
+        updatedAt=datetime('now','localtime')
         WHERE id=?`).run(
         p.name, p.type || '包棟民宿', p.regionId || null, regionZh, regionEn, regionDesc,
         p.badge || '', p.secondaryBadge || '', p.shortDesc || '', p.address || '',
@@ -659,20 +706,23 @@ app.post('/api/properties', requireAuth, (req, res) => {
         p.airbnbUrl || '', p.capacity || '', p.size || '', p.checkIn || '下午3點以後',
         p.checkOut || '上午10點之前', p.transportDetail || '',
         JSON.stringify(p.quickInfo || []), JSON.stringify(p.amenities || []),
-        JSON.stringify(p.spaceIntro || []), p.nearestStation || '', p.id
+        JSON.stringify(p.spaceIntro || []), p.nearestStation || '', p.icalUrl || '', p.id
       );
+      // Clear iCal cache so next availability request re-fetches
+      icalCache.delete(p.id);
     } else {
       db.prepare(`INSERT INTO properties (id, name, type, regionId, regionZh, regionEn, regionDesc, badge,
         secondaryBadge, shortDesc, address, transportInfo, introduction, videoUrl, mapEmbedUrl,
         airbnbUrl, capacity, size, checkIn, checkOut, transportDetail, quickInfo,
-        amenities, spaceIntro, nearestStation)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
+        amenities, spaceIntro, nearestStation, ical_url)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
         p.id, p.name, p.type || '包棟民宿', p.regionId || null, regionZh, regionEn, regionDesc,
         p.badge || '', p.secondaryBadge || '', p.shortDesc || '', p.address || '',
         p.transportInfo || '', p.introduction || '', p.videoUrl || '', p.mapEmbedUrl || '',
         p.airbnbUrl || '', p.capacity || '', p.size || '', p.checkIn || '下午3點以後',
         p.checkOut || '上午10點之前', p.transportDetail || '', JSON.stringify(p.quickInfo || []),
-        JSON.stringify(p.amenities || []), JSON.stringify(p.spaceIntro || []), p.nearestStation || ''
+        JSON.stringify(p.amenities || []), JSON.stringify(p.spaceIntro || []),
+        p.nearestStation || '', p.icalUrl || ''
       );
     }
 

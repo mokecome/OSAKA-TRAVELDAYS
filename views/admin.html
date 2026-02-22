@@ -593,6 +593,10 @@
               <label class="form-label">Airbnb 連結</label>
               <input type="text" id="f-airbnbUrl" class="form-input" placeholder="https://www.airbnb.com.tw/rooms/...">
             </div>
+            <div>
+              <label class="form-label">Airbnb iCal URL <span class="text-xs text-text-disabled">（空房日曆同步）</span></label>
+              <input type="text" id="f-icalUrl" class="form-input" placeholder="https://www.airbnb.com/calendar/ical/...ics?s=...">
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="form-label">入住時間</label>
@@ -1305,7 +1309,7 @@ function clearForm() {
 
   ['f-id','f-name','f-badge','f-secondaryBadge',
    'f-shortDesc','f-capacity','f-size','f-introduction','f-address','f-transportInfo',
-   'f-nearestStation','f-transportDetail','f-mapEmbedUrl','f-airbnbUrl','f-checkIn','f-checkOut','f-videoUrl',
+   'f-nearestStation','f-transportDetail','f-mapEmbedUrl','f-airbnbUrl','f-icalUrl','f-checkIn','f-checkOut','f-videoUrl',
    'f-qi1Title','f-qi1Value','f-qi1Desc','f-qi2Title','f-qi2Value','f-qi2Desc',
    'f-si1Title','f-si1Desc','f-si2Title','f-si2Desc','f-si3Title','f-si3Desc','f-si4Title','f-si4Desc'
   ].forEach(id => { document.getElementById(id).value = ''; });
@@ -1334,6 +1338,7 @@ function loadPropertyToForm(prop) {
   document.getElementById('f-transportDetail').value = prop.transportDetail || '';
   document.getElementById('f-mapEmbedUrl').value = prop.mapEmbedUrl || '';
   document.getElementById('f-airbnbUrl').value = prop.airbnbUrl || '';
+  document.getElementById('f-icalUrl').value = prop.ical_url || '';
   document.getElementById('f-checkIn').value = prop.checkIn || '下午3點以後';
   document.getElementById('f-checkOut').value = prop.checkOut || '上午10點之前';
   document.getElementById('f-videoUrl').value = prop.videoUrl || '';
@@ -1401,6 +1406,7 @@ async function saveProperty() {
     transportDetail: document.getElementById('f-transportDetail').value.trim(),
     mapEmbedUrl: document.getElementById('f-mapEmbedUrl').value.trim(),
     airbnbUrl: document.getElementById('f-airbnbUrl').value.trim(),
+    icalUrl: document.getElementById('f-icalUrl').value.trim(),
     checkIn: document.getElementById('f-checkIn').value.trim(),
     checkOut: document.getElementById('f-checkOut').value.trim(),
     videoUrl: document.getElementById('f-videoUrl').value.trim(),
