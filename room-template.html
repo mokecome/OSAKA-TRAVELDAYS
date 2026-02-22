@@ -237,15 +237,17 @@
           </svg>
           <span class="text-xl font-serif font-bold text-amber-900">大阪旅行日民宿</span>
         </a>
-        <nav class="hidden md:flex items-center space-x-6">
-          <a href="../index.html#properties" class="text-amber-800 hover:text-amber-600 transition-colors">房源一覽</a>
-          <a href="../index.html#contact" class="text-amber-800 hover:text-amber-600 transition-colors">聯絡我們</a>
-        </nav>
-        <!-- Language buttons — always visible -->
-        <div class="lang-switcher-nav">
-          <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-nav active" aria-pressed="true">中文</button>
-          <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-nav" aria-pressed="false">日本語</button>
-          <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-nav" aria-pressed="false">EN</button>
+        <div class="flex items-center gap-6">
+          <div class="lang-switcher-nav">
+            <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-nav active" aria-pressed="true">中文</button>
+            <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-nav" aria-pressed="false">日本語</button>
+            <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-nav" aria-pressed="false">EN</button>
+          </div>
+          <nav class="hidden md:flex items-center space-x-8">
+            <a href="../index.html#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">房源一覽</a>
+            <a href="../index.html#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">關於我們</a>
+            <a href="../index.html#contact" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">聯絡我們</a>
+          </nav>
         </div>
       </div>
     </div>
