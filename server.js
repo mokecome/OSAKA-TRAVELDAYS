@@ -427,6 +427,77 @@ function safeParseJSON(str, fallback = []) {
   try { return JSON.parse(str); } catch(e) { return fallback; }
 }
 
+/**
+ * Fetch all regions with their nested properties and images in 3 queries total.
+ * Replaces the N+1 loop pattern used in /api/regions and the SSR GET / route.
+ */
+function getRegionsWithProperties() {
+  const regions = db.prepare('SELECT * FROM regions ORDER BY sortOrder ASC').all();
+  if (regions.length === 0) return regions;
+
+  // 1 query: all properties that belong to any of these regions
+  const regionIds = regions.map(r => r.id);
+  const placeholders = regionIds.map(() => '?').join(',');
+  const allProps = db.prepare(
+    `SELECT * FROM properties WHERE regionId IN (${placeholders}) ORDER BY createdAt ASC`
+  ).all(...regionIds);
+
+  if (allProps.length > 0) {
+    // 1 query: all images for those properties
+    const propIds = allProps.map(p => p.id);
+    const imgPlaceholders = propIds.map(() => '?').join(',');
+    const allImages = db.prepare(
+      `SELECT id, propertyId, url, isLocal, filename, sortOrder
+         FROM property_images
+        WHERE propertyId IN (${imgPlaceholders})
+        ORDER BY sortOrder`
+    ).all(...propIds);
+
+    // Group images by propertyId
+    const imagesByPropId = {};
+    for (const img of allImages) {
+      if (!imagesByPropId[img.propertyId]) imagesByPropId[img.propertyId] = [];
+      // Apply local-image cache-busting (same as getPropertyWithImages)
+      if (img.isLocal && img.url) {
+        try {
+          const filePath = path.join(__dirname, img.url.replace(/^\//, ''));
+          const mtime = Math.floor(fs.statSync(filePath).mtimeMs / 1000);
+          img.url = img.url + '?' + mtime;
+        } catch (e) {}
+      }
+      imagesByPropId[img.propertyId].push(img);
+    }
+
+    // Attach images + parse JSON fields to each property
+    for (const p of allProps) {
+      p.images     = imagesByPropId[p.id] || [];
+      p.quickInfo  = safeParseJSON(p.quickInfo);
+      p.amenities  = safeParseJSON(p.amenities);
+      p.spaceIntro = safeParseJSON(p.spaceIntro);
+    }
+  } else {
+    // No properties — still parse JSON fields (they'll be empty arrays)
+    for (const p of allProps) {
+      p.images     = [];
+      p.quickInfo  = safeParseJSON(p.quickInfo);
+      p.amenities  = safeParseJSON(p.amenities);
+      p.spaceIntro = safeParseJSON(p.spaceIntro);
+    }
+  }
+
+  // Group properties by regionId and attach to regions
+  const propsByRegion = {};
+  for (const p of allProps) {
+    if (!propsByRegion[p.regionId]) propsByRegion[p.regionId] = [];
+    propsByRegion[p.regionId].push(p);
+  }
+  for (const region of regions) {
+    region.properties = propsByRegion[region.id] || [];
+  }
+
+  return regions;
+}
+
 function getPropertyWithImages(prop) {
   if (!prop) return null;
   prop.images = db.prepare('SELECT id, propertyId, url, isLocal, filename, sortOrder FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(prop.id);
@@ -650,12 +721,7 @@ app.get('/sitemap.xml', (req, res) => {
 app.get('/', (req, res) => {
   try {
     if (!ssrCache) {
-      const regions = db.prepare('SELECT * FROM regions ORDER BY sortOrder ASC').all();
-      for (const region of regions) {
-        const props = db.prepare('SELECT * FROM properties WHERE regionId = ? ORDER BY createdAt ASC').all(region.id);
-        props.forEach(p => { getPropertyWithImages(p); });
-        region.properties = props;
-      }
+      const regions = getRegionsWithProperties();
 
       const propertiesHtml = ssrRenderAllRegions(regions);
       const totalProps = regions.reduce((n, r) => n + (r.properties ? r.properties.length : 0), 0);
@@ -729,13 +795,7 @@ app.post('/api/login', (req, res) => {
 
 // List all regions with nested properties
 app.get('/api/regions', (req, res) => {
-  const regions = db.prepare('SELECT * FROM regions ORDER BY sortOrder ASC').all();
-  for (const region of regions) {
-    const props = db.prepare('SELECT * FROM properties WHERE regionId = ? ORDER BY createdAt ASC').all(region.id);
-    props.forEach(p => { getPropertyWithImages(p); });
-    region.properties = props;
-  }
-  res.json(regions);
+  res.json(getRegionsWithProperties());
 });
 
 // Create or update region
