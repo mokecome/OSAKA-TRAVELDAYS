@@ -990,7 +990,7 @@
   <!-- Hero Section -->
   <section class="relative min-h-screen flex items-center justify-center">
     <div class="absolute inset-0">
-      <img src="images/hero.jpg"
+      <img id="heroImg" src="images/hero.jpg"
            alt="大阪旅行日民宿 - 精選大阪各區優質民宿住宿"
            class="w-full h-full object-cover object-center">
       <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-amber-50/80"></div>
@@ -998,10 +998,10 @@
 
     <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
       <p class="text-amber-200 text-sm tracking-[0.3em] uppercase mb-6 animate-fadeInUp">Welcome to Osaka</p>
-      <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-white mb-6 animate-fadeInUp" style="animation-delay: 0.1s;">
+      <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-white mb-6 animate-fadeInUp" style="animation-delay: 0.1s;" data-i18n="hero.title">
         大阪旅行日民宿
       </h1>
-      <p class="text-xl sm:text-2xl md:text-3xl text-white/90 mb-4 font-light animate-fadeInUp" style="animation-delay: 0.2s;">
+      <p class="text-xl sm:text-2xl md:text-3xl text-white/90 mb-4 font-light animate-fadeInUp" style="animation-delay: 0.2s;" data-i18n="hero.subtitle">
         OSAKA TRAVELDAYS
       </p>
       <p class="text-base sm:text-lg text-white/70 max-w-xl mx-auto mb-10 animate-fadeInUp" style="animation-delay: 0.3s;" data-i18n="hero.desc">
@@ -1659,7 +1659,7 @@
         <p class="text-amber-600 mt-4" data-i18n="faq.subheading">關於大阪旅行日民宿的常見疑問</p>
       </div>
 
-      <div class="space-y-4">
+      <div id="faqList" class="space-y-4">
         <details class="group bg-amber-50/50 rounded-xl border border-amber-100 overflow-hidden">
           <summary class="flex items-center justify-between p-6 cursor-pointer list-none">
             <h3 class="font-semibold text-amber-900 text-lg pr-4" data-i18n="faq.q1">如何預訂大阪旅行日民宿？</h3>
@@ -1748,17 +1748,17 @@
               <span data-i18n="footer.contact">聯絡資訊</span>
             </h4>
             <div class="space-y-4">
-              <a href="mailto:service.traveldays@gmail.com" class="flex items-center gap-3 text-amber-300 hover:text-white transition-colors">
+              <a id="footerEmailLink" href="mailto:service.traveldays@gmail.com" class="flex items-center gap-3 text-amber-300 hover:text-white transition-colors">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
-                <span class="text-sm break-all">service.traveldays@gmail.com</span>
+                <span id="footerEmail" class="text-sm break-all">service.traveldays@gmail.com</span>
               </a>
               <a href="https://lin.ee/pGrA7Ej" target="_blank" class="flex items-center gap-3 text-amber-300 hover:text-white transition-colors">
                 <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
                 </svg>
-                LINE: @fgk8695x
+                <span id="footerLine">LINE: @fgk8695x</span>
               </a>
             </div>
           </div>
@@ -1784,8 +1784,8 @@
               <span data-i18n="footer.company">公司資訊</span>
             </h4>
             <div class="text-amber-400/80 text-sm space-y-2">
-              <p class="text-white font-semibold">DAIDODO合同会社</p>
-              <p style="white-space: nowrap;">大阪市中央区上本町西3−3−２</p>
+              <p id="footerCompanyName" class="text-white font-semibold" data-i18n="footer.company.name">DAIDODO合同会社</p>
+              <p id="footerAddress" style="white-space: nowrap;" data-i18n="footer.address">大阪市中央区上本町西3−3−２</p>
             </div>
           </div>
         </div>
@@ -2455,6 +2455,8 @@
         'nav.rooms': '房源一覽',
         'nav.about': '關於我們',
         'nav.contact': '聯絡我們',
+        'hero.title': '大阪旅行日民宿',
+        'hero.subtitle': 'OSAKA TRAVELDAYS',
         'hero.desc': '精選大阪各區優質民宿・包棟住宿・公寓式酒店\n體驗最道地的日本生活',
         'hero.cta': '瀏覽房源',
         'stats.properties': '精選房源',
@@ -2485,6 +2487,8 @@
         'footer.tagline': '精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。無論是家庭旅遊、朋友出遊或商務出差，都能找到最適合的住宿選擇。',
         'footer.contact': '聯絡資訊',
         'footer.registration': '営業登記',
+        'footer.company.name': 'DAIDODO合同会社',
+        'footer.address': '大阪市中央区上本町西3−3−２',
         'footer.legal.note': '旅行日民宿均為合法經營・安心入住',
         'footer.privacy': '隱私政策',
         'footer.terms': '使用條款'
@@ -2493,6 +2497,8 @@
         'nav.rooms': '物件一覧',
         'nav.about': '私たちについて',
         'nav.contact': 'お問い合わせ',
+        'hero.title': '大阪旅行日民宿',
+        'hero.subtitle': 'OSAKA TRAVELDAYS',
         'hero.desc': '大阪各エリアの厳選民泊・丸ごと貸切・サービスアパートメント\n本場の日本生活を体験',
         'hero.cta': '物件を見る',
         'stats.properties': '厳選物件',
@@ -2523,6 +2529,8 @@
         'footer.tagline': '大阪各エリアの厳選民泊で、忘れられない日本旅行をお届けします。家族旅行・友人旅行・出張など、あらゆるシーンに最適な宿泊先をご用意。',
         'footer.contact': 'お問い合わせ',
         'footer.registration': '営業登記',
+        'footer.company.name': 'DAIDODO合同会社',
+        'footer.address': '大阪市中央区上本町西3−3−２',
         'footer.legal.note': '旅行日民宿は全て合法経営・安心してご利用ください',
         'footer.privacy': 'プライバシーポリシー',
         'footer.terms': '利用規約'
@@ -2531,6 +2539,8 @@
         'nav.rooms': 'Properties',
         'nav.about': 'About Us',
         'nav.contact': 'Contact',
+        'hero.title': '大阪旅行日民宿',
+        'hero.subtitle': 'OSAKA TRAVELDAYS',
         'hero.desc': 'Curated Osaka guesthouses, entire-home rentals & serviced apartments\nExperience authentic Japanese living',
         'hero.cta': 'Browse Properties',
         'stats.properties': 'Curated Properties',
@@ -2561,6 +2571,8 @@
         'footer.tagline': 'Curated Osaka guesthouses for an unforgettable Japan experience. Whether for family travel, friends\' trips, or business — find the perfect stay.',
         'footer.contact': 'Contact',
         'footer.registration': 'Business Registration',
+        'footer.company.name': 'DAIDODO合同会社',
+        'footer.address': '大阪市中央区上本町西3−3−２',
         'footer.legal.note': 'All Travel Days properties are legally registered — stay with confidence',
         'footer.privacy': 'Privacy Policy',
         'footer.terms': 'Terms of Use'
@@ -2611,21 +2623,133 @@
       });
     }
 
-    // Apply saved language on load
+    // ─── Dynamic site settings loader ────────────────────────────────────────
+    // Fetches /api/settings and overrides TRANSLATIONS + DOM before setLanguage()
+    async function loadSiteSettings() {
+      var settings;
+      try {
+        var res = await fetch('/api/settings');
+        if (!res.ok) return;
+        settings = await res.json();
+      } catch (e) {
+        // Network error or JSON parse failure — silently fall back to static defaults
+        return;
+      }
+      if (!settings || typeof settings !== 'object') return;
+
+      var langs = ['zh-TW', 'ja', 'en'];
+
+      // 1. Hero image
+      if (settings['hero.image'] && settings['hero.image'].url) {
+        var heroImg = document.getElementById('heroImg');
+        if (heroImg) heroImg.src = settings['hero.image'].url;
+      }
+
+      // 2. Hero text translations (title, subtitle, desc, cta)
+      var heroKeys = ['hero.title', 'hero.subtitle', 'hero.desc', 'hero.cta'];
+      heroKeys.forEach(function(key) {
+        if (settings[key] && typeof settings[key] === 'object') {
+          langs.forEach(function(lang) {
+            if (settings[key][lang] !== undefined) {
+              TRANSLATIONS[lang][key] = settings[key][lang];
+            }
+          });
+        }
+      });
+
+      // 3. FAQ items
+      if (Array.isArray(settings['faq.items']) && settings['faq.items'].length > 0) {
+        var items = settings['faq.items'];
+        var faqList = document.getElementById('faqList');
+        var existingCount = faqList ? faqList.querySelectorAll('details').length : 6;
+
+        // Override TRANSLATIONS for all items
+        items.forEach(function(item, idx) {
+          var n = idx + 1;
+          langs.forEach(function(lang) {
+            if (item.q && item.q[lang] !== undefined) {
+              TRANSLATIONS[lang]['faq.q' + n] = item.q[lang];
+            }
+            if (item.a && item.a[lang] !== undefined) {
+              TRANSLATIONS[lang]['faq.a' + n] = item.a[lang];
+            }
+          });
+        });
+
+        // If item count differs from static HTML, rebuild the FAQ DOM
+        if (faqList && items.length !== existingCount) {
+          var svgChevron = '<svg class="w-5 h-5 text-amber-500 flex-shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>';
+          var html = '';
+          items.forEach(function(item, idx) {
+            var n = idx + 1;
+            var currentLang = localStorage.getItem('lang') || 'zh-TW';
+            var qText = (item.q && item.q[currentLang]) || (TRANSLATIONS[currentLang]['faq.q' + n]) || '';
+            var aText = (item.a && item.a[currentLang]) || (TRANSLATIONS[currentLang]['faq.a' + n]) || '';
+            html += '<details class="group bg-amber-50/50 rounded-xl border border-amber-100 overflow-hidden">'
+              + '<summary class="flex items-center justify-between p-6 cursor-pointer list-none">'
+              + '<h3 class="font-semibold text-amber-900 text-lg pr-4" data-i18n="faq.q' + n + '">' + qText + '</h3>'
+              + svgChevron
+              + '</summary>'
+              + '<div class="px-6 pb-6 text-amber-700 leading-relaxed">'
+              + '<p data-i18n="faq.a' + n + '">' + aText + '</p>'
+              + '</div>'
+              + '</details>';
+          });
+          faqList.innerHTML = html;
+        }
+      }
+
+      // 4. Footer plain-string fields (email, LINE) — update DOM directly
+      if (settings['footer.email'] && typeof settings['footer.email'] === 'string') {
+        var email = settings['footer.email'];
+        var emailSpan = document.getElementById('footerEmail');
+        if (emailSpan) emailSpan.textContent = email;
+        var emailLink = document.getElementById('footerEmailLink');
+        if (emailLink) emailLink.href = 'mailto:' + email;
+      }
+      if (settings['footer.line'] && typeof settings['footer.line'] === 'string') {
+        var lineEl = document.getElementById('footerLine');
+        if (lineEl) lineEl.textContent = 'LINE: ' + settings['footer.line'];
+      }
+
+      // 5. Footer multilingual fields (company name, address) — override TRANSLATIONS
+      //    The DOM elements have data-i18n attributes so setLanguage() will re-render them.
+      //    Also do an immediate DOM update for the current language.
+      var footerMultiKeys = {
+        'footer.company': 'footer.company.name',
+        'footer.address': 'footer.address'
+      };
+      Object.keys(footerMultiKeys).forEach(function(apiKey) {
+        var transKey = footerMultiKeys[apiKey];
+        if (settings[apiKey] && typeof settings[apiKey] === 'object') {
+          langs.forEach(function(lang) {
+            if (settings[apiKey][lang] !== undefined) {
+              TRANSLATIONS[lang][transKey] = settings[apiKey][lang];
+            }
+          });
+        }
+      });
+    }
+
+    // Apply saved language on load — await settings before rendering
     (function() {
       var saved = localStorage.getItem('lang') || 'zh-TW';
-      if (saved !== 'zh-TW') {
-        // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', function() { setLanguage(saved); });
-        } else {
+
+      async function init() {
+        await loadSiteSettings();
+        if (saved !== 'zh-TW') {
           setLanguage(saved);
+        } else {
+          // setLanguage not called for zh-TW (it's the default HTML language),
+          // but still apply any overridden TRANSLATIONS values to the DOM now.
+          setLanguage('zh-TW');
         }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
       } else {
-        // Still update active button
-        document.querySelectorAll('.lang-btn-nav').forEach(function(btn) {
-          btn.classList.toggle('active', btn.dataset.lang === 'zh-TW');
-        });
+        init();
       }
     })();
   </script>
