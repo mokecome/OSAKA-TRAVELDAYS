@@ -271,7 +271,7 @@ try { db.exec("ALTER TABLE properties ADD COLUMN regionId INTEGER DEFAULT NULL")
     ['footer.address', JSON.stringify({
       'zh-TW': '大阪市中央区上本町西3−3−２',
       'ja': '大阪市中央区上本町西3−3−２',
-      'en': 'Uehonmachinis3-3-2, Chuo-ku, Osaka'
+      'en': '3-3-2 Uehommachi Nishi, Chuo-ku, Osaka'
     })]
   ];
   for (const [key, value] of defaults) {
@@ -817,6 +817,13 @@ app.post('/api/settings', requireAuth, (req, res) => {
   const { key, value } = req.body;
   if (!key || typeof key !== 'string' || key.trim() === '') {
     return res.status(400).json({ error: 'key must be a non-empty string' });
+  }
+  const ALLOWED_SETTINGS_KEYS = new Set([
+    'hero.image', 'hero.title', 'hero.subtitle', 'hero.desc', 'hero.cta',
+    'faq.items', 'footer.email', 'footer.line', 'footer.company', 'footer.address'
+  ]);
+  if (!ALLOWED_SETTINGS_KEYS.has(key.trim())) {
+    return res.status(400).json({ error: 'Unknown settings key' });
   }
   if (value === undefined) {
     return res.status(400).json({ error: 'value is required' });
