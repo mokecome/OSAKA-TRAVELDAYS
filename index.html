@@ -987,9 +987,9 @@
         </a>
         <div class="flex items-center gap-6">
           <div class="lang-switcher-nav">
-            <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-nav active">中文</button>
-            <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-nav">日本語</button>
-            <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-nav">EN</button>
+            <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-nav active" aria-pressed="true">中文</button>
+            <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-nav" aria-pressed="false">日本語</button>
+            <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-nav" aria-pressed="false">EN</button>
           </div>
           <nav class="hidden md:flex items-center space-x-8">
             <a href="#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.rooms">房源一覽</a>
@@ -997,7 +997,7 @@
             <a href="#contact" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.contact">聯絡我們</a>
           </nav>
         </div>
-        <button class="md:hidden p-2 text-amber-800">
+        <button class="md:hidden p-2 text-amber-800" aria-label="開啟選單" aria-expanded="false" id="mobileMenuBtn">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
@@ -1005,6 +1005,8 @@
       </div>
     </div>
   </header>
+
+  <main id="mainContent">
 
   <!-- Hero Section -->
   <section class="relative min-h-screen flex items-center justify-center">
@@ -1827,6 +1829,8 @@
     </div>
   </footer>
 
+  </main>
+
   <!-- FAQ Chatbot Widget -->
   <button class="chat-btn" id="chatBtn" aria-label="開啟客服">
     <svg id="chatIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1837,7 +1841,7 @@
     </svg>
   </button>
 
-  <div class="chat-window" id="chatWindow">
+  <div class="chat-window" id="chatWindow" role="dialog" aria-labelledby="chatTitle" aria-modal="true" aria-hidden="true">
     <div class="chat-header">
       <div class="chat-header-left">
         <div class="chat-avatar">🏠</div>
@@ -1847,7 +1851,7 @@
         </div>
       </div>
       <div class="chat-header-actions">
-<button class="close-btn" id="closeChat">
+<button class="close-btn" id="closeChat" aria-label="關閉客服">
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -1860,8 +1864,8 @@
     <div class="chat-categories" id="chatCategories"></div>
 
     <div class="chat-input-area">
-      <input type="text" class="chat-input" id="chatInput" placeholder="請輸入您的問題...">
-      <button class="send-btn" id="sendBtn" disabled>
+      <input type="text" class="chat-input" id="chatInput" placeholder="請輸入您的問題..." aria-label="輸入問題">
+      <button class="send-btn" id="sendBtn" disabled aria-label="送出">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
         </svg>
@@ -2675,7 +2679,9 @@
 
       // Update nav lang button active state
       document.querySelectorAll('.lang-btn-nav').forEach(function(btn) {
-        btn.classList.toggle('active', btn.dataset.lang === lang);
+        var isActive = btn.dataset.lang === lang;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
       });
 
       // Sync chatbot language
