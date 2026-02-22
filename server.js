@@ -849,12 +849,31 @@ app.delete('/api/regions/:id', requireAuth, (req, res) => {
 // List all properties
 app.get('/api/properties', (req, res) => {
   const props = db.prepare('SELECT * FROM properties ORDER BY updatedAt DESC').all();
-  props.forEach(p => {
-    p.images = db.prepare('SELECT id, propertyId, url, isLocal, filename, sortOrder FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(p.id);
-    p.quickInfo  = safeParseJSON(p.quickInfo);
-    p.amenities  = safeParseJSON(p.amenities);
-    p.spaceIntro = safeParseJSON(p.spaceIntro);
-  });
+  if (props.length > 0) {
+    const ids = props.map(p => p.id);
+    const placeholders = ids.map(() => '?').join(',');
+    const allImages = db.prepare(
+      `SELECT id, propertyId, url, isLocal, filename, sortOrder FROM property_images WHERE propertyId IN (${placeholders}) ORDER BY sortOrder`
+    ).all(...ids);
+    const imagesByPropId = {};
+    for (const img of allImages) {
+      if (!imagesByPropId[img.propertyId]) imagesByPropId[img.propertyId] = [];
+      if (img.isLocal && img.url) {
+        try {
+          const filePath = path.join(__dirname, img.url.replace(/^\//, ''));
+          const mtime = Math.floor(fs.statSync(filePath).mtimeMs / 1000);
+          img.url = img.url + '?' + mtime;
+        } catch (e) {}
+      }
+      imagesByPropId[img.propertyId].push(img);
+    }
+    for (const p of props) {
+      p.images     = imagesByPropId[p.id] || [];
+      p.quickInfo  = safeParseJSON(p.quickInfo);
+      p.amenities  = safeParseJSON(p.amenities);
+      p.spaceIntro = safeParseJSON(p.spaceIntro);
+    }
+  }
   res.json(props);
 });
 
