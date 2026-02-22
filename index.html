@@ -11,14 +11,14 @@
   <meta name="keywords" content="大阪民宿,大阪包棟,大阪住宿,Osaka vacation rental,大阪旅行,Airbnb大阪,大阪家庭住宿,心齋橋民宿,難波住宿,大正區民宿,西九條住宿,大阪自由行住宿">
   <meta name="author" content="大阪旅行日民宿 OSAKA TRAVELDAYS">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://osaka-traveldays.com/">
+  <link rel="canonical" href="https://airbnb.traveldays.com.tw/">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="大阪旅行日民宿 | 精選大阪包棟民宿・公寓式住宿">
   <meta property="og:description" content="精選大阪各區優質包棟民宿與公寓式住宿。大正區、心齋橋、難波、西九條等熱門地段，鄰近車站交通便利，中文客服24小時支援。">
-  <meta property="og:image" content="https://osaka-traveldays.com/images/hero.jpg">
-  <meta property="og:url" content="https://osaka-traveldays.com/">
+  <meta property="og:image" content="https://airbnb.traveldays.com.tw/images/hero.jpg">
+  <meta property="og:url" content="https://airbnb.traveldays.com.tw/">
   <meta property="og:site_name" content="大阪旅行日民宿 OSAKA TRAVELDAYS">
   <meta property="og:locale" content="zh_TW">
 
@@ -26,7 +26,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="大阪旅行日民宿 | 精選大阪包棟民宿・公寓式住宿">
   <meta name="twitter:description" content="精選大阪各區優質包棟民宿與公寓式住宿。大正區、心齋橋、難波、西九條等熱門地段，中文客服24小時支援。">
-  <meta name="twitter:image" content="https://osaka-traveldays.com/images/hero.jpg">
+  <meta name="twitter:image" content="https://airbnb.traveldays.com.tw/images/hero.jpg">
 
   <!-- Google Search Console placeholder -->
   <!-- <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE"> -->
@@ -844,6 +844,25 @@
       width: 20px;
       height: 20px;
     }
+
+    /* Region filter tabs */
+    .region-tab {
+      flex-shrink: 0;
+      padding: 0.375rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: 1.5px solid #f59e0b;
+      color: #92400e;
+      background: white;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .region-tab:hover { background: #fef3c7; }
+    .region-tab.active { background: #f59e0b; color: white; }
+    .scrollbar-hide { scrollbar-width: none; }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
   </style>
 
   <!-- Structured Data: Organization + LodgingBusiness -->
@@ -853,9 +872,9 @@
     "@type": "LodgingBusiness",
     "name": "大阪旅行日民宿 OSAKA TRAVELDAYS",
     "description": "精選大阪各區優質包棟民宿與公寓式住宿，適合家庭旅遊與團體入住。",
-    "url": "https://osaka-traveldays.com",
-    "logo": "https://osaka-traveldays.com/images/logo.png",
-    "image": "https://osaka-traveldays.com/images/hero.jpg",
+    "url": "https://airbnb.traveldays.com.tw",
+    "logo": "https://airbnb.traveldays.com.tw/images/logo.png",
+    "image": "https://airbnb.traveldays.com.tw/images/hero.jpg",
     "email": "service.traveldays@gmail.com",
     "address": {
       "@type": "PostalAddress",
@@ -948,7 +967,7 @@
         "@type": "ListItem",
         "position": 1,
         "name": "首頁",
-        "item": "https://osaka-traveldays.com/"
+        "item": "https://airbnb.traveldays.com.tw/"
       }
     ]
   }
@@ -1052,11 +1071,18 @@
   <!-- Properties Section -->
   <section id="properties" class="py-20 lg:py-28">
 
+    <!-- Region Filter Bar -->
+    <div id="regionFilterBar" class="hidden sticky top-16 z-30 bg-white/95 backdrop-blur-sm border-b border-amber-100 shadow-sm mb-8">
+      <div class="container mx-auto px-4 lg:px-8">
+        <div id="regionFilterTabs" class="flex gap-2 overflow-x-auto py-3 scrollbar-hide"></div>
+      </div>
+    </div>
+
     <div id="propertiesContainer" style="display:none;"></div>
 
     <div id="staticProperties">
     <!-- 大正區 -->
-    <div class="py-16 lg:py-20 bg-gradient-to-b from-amber-50/50 to-white">
+    <div class="py-16 lg:py-20 bg-gradient-to-b from-amber-50/50 to-white" data-region-id="static-taisho">
       <div class="container mx-auto px-4 lg:px-8">
         <div class="text-center mb-14">
           <span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">Taisho Ward</span>
@@ -1213,7 +1239,7 @@
     </div>
 
     <!-- 心齋橋 / 日本橋 / 難波 -->
-    <div class="py-16 lg:py-20">
+    <div class="py-16 lg:py-20" data-region-id="static-shinsaibashi">
       <div class="container mx-auto px-4 lg:px-8">
         <div class="text-center mb-14">
           <span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">Shinsaibashi / Nipponbashi / Namba</span>
@@ -1370,7 +1396,7 @@
     </div>
 
     <!-- 住之江区 -->
-    <div class="py-16 lg:py-20 bg-gradient-to-b from-amber-50/50 to-white">
+    <div class="py-16 lg:py-20 bg-gradient-to-b from-amber-50/50 to-white" data-region-id="static-suminoe">
       <div class="container mx-auto px-4 lg:px-8">
         <div class="text-center mb-14">
           <span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">Suminoe Ward</span>
@@ -1430,7 +1456,7 @@
     </div>
 
     <!-- 西九條 / 九條區 / 福島區 -->
-    <div class="py-16 lg:py-20">
+    <div class="py-16 lg:py-20" data-region-id="static-nishikujo">
       <div class="container mx-auto px-4 lg:px-8">
         <div class="text-center mb-14">
           <span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">Nishikujo / Kujo / Fukushima</span>
@@ -2298,12 +2324,9 @@
         return '';
       }
 
-      function escapeHtml(str) {
-        if (!str) return '';
-        var div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
-      }
+      // escHtml is defined in the i18n script block below.
+      // Safe to reference here: these functions only run from async callbacks
+      // (API fetch / DOM ready), by which time all scripts have executed.
 
       function renderCard(property, delay) {
         var coverUrl = getCoverImage(property);
@@ -2312,37 +2335,37 @@
 
         return '<div class="property-card animate-fadeInUp"' + delayAttr + '>' +
           '<div class="relative aspect-[4/3] overflow-hidden">' +
-            '<img src="' + escapeHtml(coverUrl) + '" alt="' + escapeHtml(property.name) + '" class="w-full h-full object-cover card-image">' +
+            '<img src="' + escHtml(coverUrl) + '" alt="' + escHtml(property.name) + '" class="w-full h-full object-cover card-image">' +
             '<div class="image-overlay"></div>' +
             '<div class="absolute top-4 left-4">' +
               '<span class="badge">' +
                 badgeIcon +
-                ' ' + escapeHtml(property.badge) +
+                ' ' + escHtml(property.badge) +
               '</span>' +
             '</div>' +
             (property.secondaryBadge ? '<div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">' +
-              '<span class="text-amber-800 font-bold text-sm">' + escapeHtml(property.secondaryBadge) + '</span>' +
+              '<span class="text-amber-800 font-bold text-sm">' + escHtml(property.secondaryBadge) + '</span>' +
             '</div>' : '') +
           '</div>' +
           '<div class="p-6 flex flex-col flex-1">' +
-            '<h3 class="font-bold text-xl text-amber-900 mb-1">' + escapeHtml(property.name) + '</h3>' +
-            '<p class="text-amber-500 text-sm mb-4">' + escapeHtml(property.shortDesc) + '</p>' +
+            '<h3 class="font-bold text-xl text-amber-900 mb-1">' + escHtml(property.name) + '</h3>' +
+            '<p class="text-amber-500 text-sm mb-4">' + escHtml(property.shortDesc) + '</p>' +
             '<div class="space-y-1 mb-5">' +
               '<div class="info-item">' +
                 '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
                   '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>' +
                   '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>' +
                 '</svg>' +
-                '<span>' + escapeHtml(property.address) + '</span>' +
+                '<span>' + escHtml(property.address) + '</span>' +
               '</div>' +
               '<div class="info-item">' +
                 '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
                   '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>' +
                 '</svg>' +
-                '<span>' + escapeHtml(property.transportInfo) + '</span>' +
+                '<span>' + escHtml(property.transportInfo) + '</span>' +
               '</div>' +
             '</div>' +
-            '<a href="rooms/' + escapeHtml(property.id) + '.html" class="btn-primary w-full mt-auto">' +
+            '<a href="rooms/' + escHtml(property.id) + '.html" class="btn-primary w-full mt-auto">' +
               '<span>查看詳情</span>' +
               '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
                 '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>' +
@@ -2352,7 +2375,7 @@
         '</div>';
       }
 
-      function renderRegion(regionZh, regionEn, regionDesc, properties, isOdd) {
+      function renderRegion(regionId, regionZh, regionEn, regionDesc, properties, isOdd) {
         var bgClass = isOdd ? 'bg-gradient-to-b from-amber-50/50 to-white' : 'bg-white';
         var count = properties.length;
 
@@ -2383,12 +2406,12 @@
           }
         }
 
-        return '<div class="py-16 lg:py-20 ' + bgClass + '">' +
+        return '<div class="py-16 lg:py-20 ' + bgClass + '" data-region-id="' + regionId + '">' +
           '<div class="container mx-auto px-4 lg:px-8">' +
             '<div class="text-center mb-14">' +
-              '<span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">' + escapeHtml(regionEn) + '</span>' +
-              '<h2 class="text-2xl md:text-3xl lg:text-4xl font-serif text-amber-900 section-title">' + escapeHtml(regionZh) + '</h2>' +
-              (regionDesc ? '<p class="text-amber-600 mt-4 max-w-lg mx-auto">' + escapeHtml(regionDesc) + '</p>' : '') +
+              '<span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">' + escHtml(regionEn) + '</span>' +
+              '<h2 class="text-2xl md:text-3xl lg:text-4xl font-serif text-amber-900 section-title">' + escHtml(regionZh) + '</h2>' +
+              (regionDesc ? '<p class="text-amber-600 mt-4 max-w-lg mx-auto">' + escHtml(regionDesc) + '</p>' : '') +
             '</div>' +
             '<div class="' + gridClass + '">' +
               cardsHtml +
@@ -2401,14 +2424,16 @@
         var html = '';
         var totalProperties = 0;
         var totalRegions = regions.length;
+        var activeRegions = [];
 
         for (var i = 0; i < regions.length; i++) {
           var region = regions[i];
           var props = region.properties || [];
           totalProperties += props.length;
           if (props.length === 0) continue;
-          var isOdd = (i % 2 === 0);
-          html += renderRegion(region.nameZh, region.nameEn, region.description, props, isOdd);
+          activeRegions.push(region);
+          var isOdd = (activeRegions.length % 2 === 1);
+          html += renderRegion(region.id, region.nameZh, region.nameEn, region.description, props, isOdd);
         }
 
         var container = document.getElementById('propertiesContainer');
@@ -2428,8 +2453,56 @@
             el.style.animationPlayState = 'paused';
             observer.observe(el);
           });
+
+          renderFilterBar(activeRegions);
         }
       }
+
+      function filterByRegion(rid) {
+        document.querySelectorAll('.region-tab').forEach(function(btn) {
+          btn.classList.toggle('active', btn.dataset.rid === rid);
+        });
+        document.querySelectorAll('[data-region-id]').forEach(function(el) {
+          el.style.display = (rid === 'all' || String(el.dataset.regionId) === String(rid)) ? '' : 'none';
+        });
+      }
+
+      function renderFilterBar(regions) {
+        var bar = document.getElementById('regionFilterBar');
+        var tabs = document.getElementById('regionFilterTabs');
+        if (!bar || !tabs || !regions.length) return;
+
+        var lang = localStorage.getItem('lang') || 'zh-TW';
+        var allLabel = (TRANSLATIONS[lang] && TRANSLATIONS[lang]['filter.all']) || '全部';
+        var html = '<button class="region-tab active" data-rid="all" data-i18n="filter.all">' + allLabel + '</button>';
+
+        for (var i = 0; i < regions.length; i++) {
+          var r = regions[i];
+          var rid = escHtml(String(r.id));
+          html += '<button class="region-tab" data-rid="' + rid + '">' + escHtml(r.nameZh) + '</button>';
+        }
+
+        tabs.innerHTML = html;
+        tabs.onclick = function(e) {
+          var btn = e.target.closest('.region-tab');
+          if (btn) filterByRegion(btn.dataset.rid);
+        };
+        bar.classList.remove('hidden');
+      }
+
+      // Initialize filter bar from static HTML (overridden if API succeeds)
+      (function() {
+        var staticProps = document.getElementById('staticProperties');
+        if (!staticProps) return;
+        var sections = staticProps.querySelectorAll('[data-region-id]');
+        if (!sections.length) return;
+        var staticRegions = [];
+        sections.forEach(function(el) {
+          var h2 = el.querySelector('h2');
+          staticRegions.push({ id: el.dataset.regionId, nameZh: h2 ? h2.textContent.trim() : el.dataset.regionId });
+        });
+        renderFilterBar(staticRegions);
+      })();
 
       // Fetch regions from API
       fetch('/api/regions')
@@ -2491,7 +2564,8 @@
         'footer.address': '大阪市中央区上本町西3−3−２',
         'footer.legal.note': '旅行日民宿均為合法經營・安心入住',
         'footer.privacy': '隱私政策',
-        'footer.terms': '使用條款'
+        'footer.terms': '使用條款',
+        'filter.all': '全部'
       },
       'ja': {
         'nav.rooms': '物件一覧',
@@ -2533,7 +2607,8 @@
         'footer.address': '大阪市中央区上本町西3−3−２',
         'footer.legal.note': '旅行日民宿は全て合法経営・安心してご利用ください',
         'footer.privacy': 'プライバシーポリシー',
-        'footer.terms': '利用規約'
+        'footer.terms': '利用規約',
+        'filter.all': 'すべて'
       },
       'en': {
         'nav.rooms': 'Properties',
@@ -2575,14 +2650,15 @@
         'footer.address': '大阪市中央区上本町西3−3−２',
         'footer.legal.note': 'All Travel Days properties are legally registered — stay with confidence',
         'footer.privacy': 'Privacy Policy',
-        'footer.terms': 'Terms of Use'
+        'footer.terms': 'Terms of Use',
+        'filter.all': 'All'
       }
     };
 
     function setLanguage(lang) {
       if (!TRANSLATIONS[lang]) return;
       localStorage.setItem('lang', lang);
-      document.documentElement.lang = lang === 'zh-TW' ? 'zh-TW' : lang === 'ja' ? 'ja' : 'en';
+      document.documentElement.lang = lang;
 
       document.querySelectorAll('[data-i18n]').forEach(function(el) {
         var key = el.dataset.i18n;
@@ -2625,7 +2701,7 @@
 
     // ─── HTML escape helper (XSS prevention) ─────────────────────────────────
     function escHtml(str) {
-      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
     }
 
     // ─── Dynamic site settings loader ────────────────────────────────────────

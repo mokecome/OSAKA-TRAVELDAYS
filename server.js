@@ -59,6 +59,17 @@ app.use((req, res, next) => {
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: blob: https:",
+    "connect-src 'self'",
+    "frame-src https://www.google.com",
+    "object-src 'none'",
+    "base-uri 'self'"
+  ].join('; '));
   next();
 });
 
@@ -160,11 +171,18 @@ db.exec(`
 `);
 
 // Migrate existing DB: add new columns if missing
-try { db.exec("ALTER TABLE properties ADD COLUMN amenities TEXT DEFAULT '[]'"); } catch(e) {}
-try { db.exec("ALTER TABLE properties ADD COLUMN spaceIntro TEXT DEFAULT '[]'"); } catch(e) {}
-try { db.exec("ALTER TABLE properties ADD COLUMN nearestStation TEXT DEFAULT ''"); } catch(e) {}
-try { db.exec("ALTER TABLE properties ADD COLUMN regionId INTEGER DEFAULT NULL"); } catch(e) {}
-try { db.exec("ALTER TABLE properties ADD COLUMN ical_url TEXT DEFAULT ''"); } catch(e) {}
+const migrations = [
+  "ALTER TABLE properties ADD COLUMN amenities TEXT DEFAULT '[]'",
+  "ALTER TABLE properties ADD COLUMN spaceIntro TEXT DEFAULT '[]'",
+  "ALTER TABLE properties ADD COLUMN nearestStation TEXT DEFAULT ''",
+  "ALTER TABLE properties ADD COLUMN regionId INTEGER DEFAULT NULL",
+  "ALTER TABLE properties ADD COLUMN ical_url TEXT DEFAULT ''"
+];
+for (const sql of migrations) {
+  try { db.exec(sql); } catch(e) {
+    if (!e.message.includes('duplicate column name')) console.error('[migration]', e.message);
+  }
+}
 
 // Migrate existing properties: create regions from regionZh and link
 {
@@ -323,6 +341,13 @@ function parseIcal(icsText) {
 const icalCache = new Map(); // propertyId -> { blockedDates, fetchedAt }
 
 // ==================== HELPERS ====================
+
+/** Safely parse a JSON string, returning fallback (default []) on failure. */
+function safeParseJSON(str, fallback = []) {
+  if (!str) return fallback;
+  try { return JSON.parse(str); } catch(e) { return fallback; }
+}
+
 function getPropertyWithImages(prop) {
   if (!prop) return null;
   prop.images = db.prepare('SELECT id, propertyId, url, isLocal, filename, sortOrder FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(prop.id);
@@ -336,9 +361,9 @@ function getPropertyWithImages(prop) {
     }
     return img;
   });
-  prop.quickInfo = JSON.parse(prop.quickInfo || '[]');
-  prop.amenities = JSON.parse(prop.amenities || '[]');
-  prop.spaceIntro = JSON.parse(prop.spaceIntro || '[]');
+  prop.quickInfo  = safeParseJSON(prop.quickInfo);
+  prop.amenities  = safeParseJSON(prop.amenities);
+  prop.spaceIntro = safeParseJSON(prop.spaceIntro);
   return prop;
 }
 
@@ -464,7 +489,7 @@ app.get('/rooms/:id.html', (req, res) => {
         ${coverImage ? `<img src="${escHtml(coverImage)}" alt="${escHtml(p.name)} - 大阪民宿" style="max-width:100%;height:auto;">` : ''}
         ${p.introduction ? `<div class="mt-6"><h2 class="text-xl font-bold mb-2">房源介紹</h2><p>${escHtml(p.introduction)}</p></div>` : ''}
         ${amenityList ? `<div class="mt-4"><h2 class="text-xl font-bold mb-2">設備服務</h2><p>${escHtml(amenityList)}</p></div>` : ''}
-        ${p.airbnbUrl ? `<div class="mt-6"><a href="${escHtml(p.airbnbUrl)}" rel="noopener" class="btn-primary">前往 Airbnb 預訂</a></div>` : ''}
+        ${p.airbnbUrl ? `<div class="mt-6"><a href="${escHtml(p.airbnbUrl)}" rel="noopener" class="btn-primary">立即預訂</a></div>` : ''}
       </article>
     </noscript>`;
 
@@ -639,9 +664,9 @@ app.get('/api/properties', (req, res) => {
   const props = db.prepare('SELECT * FROM properties ORDER BY updatedAt DESC').all();
   props.forEach(p => {
     p.images = db.prepare('SELECT id, propertyId, url, isLocal, filename, sortOrder FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(p.id);
-    p.quickInfo = JSON.parse(p.quickInfo || '[]');
-    p.amenities = JSON.parse(p.amenities || '[]');
-    p.spaceIntro = JSON.parse(p.spaceIntro || '[]');
+    p.quickInfo  = safeParseJSON(p.quickInfo);
+    p.amenities  = safeParseJSON(p.amenities);
+    p.spaceIntro = safeParseJSON(p.spaceIntro);
   });
   res.json(props);
 });
@@ -682,16 +707,17 @@ app.post('/api/properties', requireAuth, (req, res) => {
   const p = req.body;
   if (!p.id || !p.name) return res.status(400).json({ error: 'ID and name are required' });
 
+  // Validate regionId before touching the DB
+  let regionZh = '', regionEn = '', regionDesc = '';
+  if (p.regionId) {
+    const region = db.prepare('SELECT nameZh, nameEn, description FROM regions WHERE id = ?').get(p.regionId);
+    if (!region) return res.status(400).json({ error: '指定的區域不存在' });
+    regionZh = region.nameZh; regionEn = region.nameEn; regionDesc = region.description;
+  }
+
   const existing = db.prepare('SELECT id FROM properties WHERE id = ?').get(p.id);
 
   const transaction = db.transaction(() => {
-    // Get region info for backward compat fields
-    let regionZh = '', regionEn = '', regionDesc = '';
-    if (p.regionId) {
-      const region = db.prepare('SELECT nameZh, nameEn, description FROM regions WHERE id = ?').get(p.regionId);
-      if (region) { regionZh = region.nameZh; regionEn = region.nameEn; regionDesc = region.description; }
-    }
-
     if (existing) {
       db.prepare(`UPDATE properties SET
         name=?, type=?, regionId=?, regionZh=?, regionEn=?, regionDesc=?, badge=?, secondaryBadge=?,
@@ -788,7 +814,12 @@ app.post('/api/upload', requireAuth, upload.array('images', 20), (req, res) => {
 
 // Delete uploaded image file
 app.delete('/api/upload/:filename', requireAuth, (req, res) => {
-  const filePath = path.join(uploadDir, req.params.filename);
+  const filename = path.basename(req.params.filename); // strip any directory components
+  const filePath = path.join(uploadDir, filename);
+  const resolved = path.resolve(filePath);
+  if (!resolved.startsWith(path.resolve(uploadDir) + path.sep)) {
+    return res.status(400).json({ error: 'Invalid filename' });
+  }
   if (fs.existsSync(filePath)) {
     try { fs.unlinkSync(filePath); } catch (e) { /* ignore */ }
   }
@@ -800,9 +831,9 @@ app.get('/api/export', requireAuth, (req, res) => {
   const props = db.prepare('SELECT * FROM properties ORDER BY updatedAt DESC').all();
   props.forEach(p => {
     p.images = db.prepare('SELECT url, isLocal, filename, sortOrder FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(p.id);
-    p.quickInfo = JSON.parse(p.quickInfo || '[]');
-    p.amenities = JSON.parse(p.amenities || '[]');
-    p.spaceIntro = JSON.parse(p.spaceIntro || '[]');
+    p.quickInfo  = safeParseJSON(p.quickInfo);
+    p.amenities  = safeParseJSON(p.amenities);
+    p.spaceIntro = safeParseJSON(p.spaceIntro);
   });
   res.setHeader('Content-Disposition', 'attachment; filename=osaka-properties.json');
   res.json(props);
@@ -847,6 +878,10 @@ app.post('/api/import', requireAuth, (req, res) => {
 });
 
 // ---- SITE SETTINGS ----
+const ALLOWED_SETTINGS_KEYS = new Set([
+  'hero.image', 'hero.title', 'hero.subtitle', 'hero.desc', 'hero.cta',
+  'faq.items', 'footer.email', 'footer.line', 'footer.company', 'footer.address'
+]);
 
 // Get all settings (public)
 app.get('/api/settings', (req, res) => {
@@ -868,10 +903,6 @@ app.post('/api/settings', requireAuth, (req, res) => {
   if (!key || typeof key !== 'string' || key.trim() === '') {
     return res.status(400).json({ error: 'key must be a non-empty string' });
   }
-  const ALLOWED_SETTINGS_KEYS = new Set([
-    'hero.image', 'hero.title', 'hero.subtitle', 'hero.desc', 'hero.cta',
-    'faq.items', 'footer.email', 'footer.line', 'footer.company', 'footer.address'
-  ]);
   if (!ALLOWED_SETTINGS_KEYS.has(key.trim())) {
     return res.status(400).json({ error: 'Unknown settings key' });
   }

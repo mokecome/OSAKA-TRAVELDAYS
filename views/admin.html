@@ -919,6 +919,7 @@ let AUTH_TOKEN = sessionStorage.getItem('admin_token') || '';
 // ==================== STATE ====================
 let properties = [];
 let regions = [];
+let regionMap = new Map(); // id → region, for O(1) lookup
 let currentView = 'dashboard';
 let currentPropertyId = null;
 let currentRegionId = null;
@@ -1029,12 +1030,14 @@ async function apiUpload(files) {
 async function loadData() {
   try {
     regions = await apiGet('/regions');
+    regionMap = new Map(regions.map(r => [r.id, r]));
     properties = regions.flatMap(r => r.properties);
     updateCounts();
     renderCurrentView();
   } catch (err) {
     showToast('載入資料失敗：' + err.message, 'error');
     regions = [];
+    regionMap = new Map();
     properties = [];
   }
 }
@@ -1121,7 +1124,7 @@ function renderDashboard() {
 
   list.innerHTML = recent.map(p => {
     const thumb = p.images && p.images.length > 0 ? p.images[0].url : '';
-    const region = regions.find(r => r.id === p.regionId);
+    const region = regionMap.get(p.regionId);
     return `
       <div class="flex items-center gap-4 px-5 py-3 hover:bg-surface-hover cursor-pointer transition-colors" onclick="editProperty('${p.id}')">
         <div class="w-12 h-12 rounded-lg overflow-hidden bg-surface flex-shrink-0">
@@ -1162,7 +1165,7 @@ function renderPropertyList() {
   empty.classList.add('hidden');
   table.innerHTML = filtered.map(p => {
     const thumb = p.images && p.images.length > 0 ? p.images[0].url : '';
-    const region = regions.find(r => r.id === p.regionId);
+    const region = regionMap.get(p.regionId);
     return `
       <div class="flex items-center gap-4 px-5 py-3 hover:bg-surface-hover cursor-pointer transition-colors" onclick="editProperty('${p.id}')">
         <div class="w-14 h-10 rounded-lg overflow-hidden bg-surface flex-shrink-0">
@@ -1649,7 +1652,7 @@ function renderRegionList() {
         <button onclick="moveRegion(${r.id},'down')" class="p-1.5 rounded-lg hover:bg-surface transition-colors ${idx === regions.length - 1 ? 'opacity-30 pointer-events-none' : ''}" title="下移">
           <svg class="w-4 h-4 text-icon-default" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
         </button>
-        <button onclick="openRegionModal(regions.find(r=>r.id===${r.id}))" class="p-1.5 rounded-lg hover:bg-surface transition-colors" title="編輯">
+        <button onclick="openRegionModal(regionMap.get(${r.id}))" class="p-1.5 rounded-lg hover:bg-surface transition-colors" title="編輯">
           <svg class="w-4 h-4 text-icon-default" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
         </button>
         <button onclick="deleteRegion(${r.id})" class="p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="刪除">
@@ -1694,7 +1697,7 @@ async function saveRegion() {
 }
 
 async function deleteRegion(id) {
-  const region = regions.find(r => r.id === id);
+  const region = regionMap.get(id);
   const propCount = region ? (region.properties || []).length : 0;
   if (propCount > 0) {
     showToast(`此區域還有 ${propCount} 個房源，請先移除房源再刪除區域`, 'error');
@@ -1729,7 +1732,14 @@ function showToast(msg, type = 'info') {
   };
   const toast = document.createElement('div');
   toast.className = 'toast ' + type;
-  toast.innerHTML = (icons[type] || '') + '<span>' + msg + '</span>';
+  if (icons[type]) {
+    const iconEl = document.createElement('span');
+    iconEl.innerHTML = icons[type]; // safe: hardcoded SVG string
+    toast.appendChild(iconEl);
+  }
+  const msgEl = document.createElement('span');
+  msgEl.textContent = msg; // safe: user-facing text, not HTML
+  toast.appendChild(msgEl);
   document.body.appendChild(toast);
   setTimeout(() => {
     toast.style.opacity = '0';
