@@ -689,7 +689,7 @@ app.get('/rooms/:id.html', (req, res) => {
   // Inject SSR content after the loading div
   html = html.replace('</main>', ssrContent + '\n  </main>');
   // Inject full multilingual property data for client-side language switching
-  const propDataScript = `<script>window.__PROPERTY_DATA = ${JSON.stringify(p)};</script>`;
+  const propDataScript = `<script>window.__PROPERTY_DATA = ${JSON.stringify(p).replace(/<\/script>/gi, '<\\/script>')};</script>`;
   html = html.replace('</body>', propDataScript + '\n</body>');
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
