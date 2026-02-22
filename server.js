@@ -184,6 +184,12 @@ for (const sql of migrations) {
   }
 }
 
+// Create indexes for frequently queried foreign keys
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_properties_regionId ON properties(regionId);
+  CREATE INDEX IF NOT EXISTS idx_property_images_propertyId ON property_images(propertyId);
+`);
+
 // Migrate existing properties: create regions from regionZh and link
 {
   const orphans = db.prepare("SELECT DISTINCT regionZh, regionEn, regionDesc FROM properties WHERE regionId IS NULL AND regionZh != ''").all();
