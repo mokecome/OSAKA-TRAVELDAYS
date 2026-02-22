@@ -199,6 +199,21 @@
     @media (max-width: 640px) {
       .gallery-grid { grid-template-columns: repeat(2, 1fr); }
     }
+    .lang-btn-room {
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #78350f;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+    .lang-btn-room:hover { background: #fde68a; }
+    .lang-btn-room.active { background: #92400e; color: white; }
   </style>
 </head>
 <body>
@@ -212,9 +227,14 @@
           </svg>
           <span class="text-xl font-serif font-bold text-amber-900">大阪旅行日民宿</span>
         </a>
-        <nav class="hidden md:flex items-center space-x-8">
+        <nav class="hidden md:flex items-center space-x-6">
           <a href="../index.html#properties" class="text-amber-800 hover:text-amber-600 transition-colors">房源一覽</a>
           <a href="../index.html#contact" class="text-amber-800 hover:text-amber-600 transition-colors">聯絡我們</a>
+          <div class="flex items-center gap-1 ml-2">
+            <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-room active" aria-pressed="true">中文</button>
+            <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-room" aria-pressed="false">日本語</button>
+            <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-room" aria-pressed="false">EN</button>
+          </div>
         </nav>
       </div>
     </div>
@@ -781,7 +801,24 @@
       window.setLanguage = function(lang) {
         if (_origSetLanguage) _origSetLanguage(lang);
         renderRoomContent(lang);
+        // Sync language button active state
+        document.querySelectorAll('.lang-btn-room').forEach(function(btn) {
+          var isActive = btn.getAttribute('data-lang') === lang;
+          btn.classList.toggle('active', isActive);
+          btn.setAttribute('aria-pressed', String(isActive));
+        });
+        localStorage.setItem('lang', lang);
       };
+    })();
+
+    // Sync button state on initial load
+    (function() {
+      var lang = getCurrentLang();
+      document.querySelectorAll('.lang-btn-room').forEach(function(btn) {
+        var isActive = btn.getAttribute('data-lang') === lang;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', String(isActive));
+      });
     })();
 
     // Fetch and render
