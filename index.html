@@ -1704,7 +1704,7 @@
           const buttons = quickReplies.map(faqId => {
             const faq = this.faqs.find(f => f.id === faqId);
             if (!faq) return '';
-            return `<button class="quick-reply-btn" data-faq="${faqId}">▸ ${faq.question[this.language]}</button>`;
+            return `<button class="quick-reply-btn" data-faq="${faqId}">▸ ${escHtml(faq.question[this.language])}</button>`;
           }).join('');
 
           html += `<div class="quick-replies">${buttons}</div>`;
@@ -1985,7 +1985,7 @@
           }
         })
         .catch(function(err) {
-          console.warn('Failed to load regions from API, using static fallback:', err);
+          console.error('Failed to load regions from API:', err);
         });
     })();
   </script>

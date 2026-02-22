@@ -811,7 +811,8 @@ app.post('/api/regions', requireAuth, (req, res) => {
 
 // Move region up or down
 app.put('/api/regions/:id/move', requireAuth, (req, res) => {
-  const { direction } = req.body; // 'up' or 'down'
+  const { direction } = req.body;
+  if (!['up', 'down'].includes(direction)) return res.status(400).json({ error: 'direction must be "up" or "down"' });
   const regionId = parseInt(req.params.id);
   const allRegions = db.prepare('SELECT id, sortOrder FROM regions ORDER BY sortOrder ASC').all();
   const idx = allRegions.findIndex(r => r.id === regionId);
@@ -876,7 +877,7 @@ app.get('/api/properties/:id/availability', async (req, res) => {
       return res.json({ blockedDates: cached.blockedDates });
     }
 
-    const response = await fetch(prop.ical_url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    const response = await fetch(prop.ical_url, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) });
     if (!response.ok) throw new Error('iCal fetch failed: ' + response.status);
     const text = await response.text();
     const blockedDates = parseIcal(text);
@@ -956,7 +957,7 @@ app.post('/api/properties', requireAuth, (req, res) => {
 app.put('/api/properties/:oldId/rename', requireAuth, (req, res) => {
   const { oldId } = req.params;
   const { newId } = req.body;
-  if (!newId) return res.status(400).json({ error: 'newId required' });
+  if (!newId || !/^[a-zA-Z0-9_-]{1,50}$/.test(newId)) return res.status(400).json({ error: 'newId must be 1–50 alphanumeric/dash/underscore characters' });
 
   const existing = db.prepare('SELECT id FROM properties WHERE id = ?').get(newId);
   if (existing && oldId !== newId) return res.status(409).json({ error: 'ID already exists' });
@@ -1102,6 +1103,7 @@ app.post('/api/settings', requireAuth, (req, res) => {
   db.prepare(`INSERT INTO site_settings (key, value, updatedAt) VALUES (?, ?, CURRENT_TIMESTAMP)
     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updatedAt = CURRENT_TIMESTAMP`)
     .run(key.trim(), JSON.stringify(value));
+  invalidateSSRCache();
   res.json({ success: true });
 });
 
