@@ -667,11 +667,6 @@ app.get('/', (req, res) => {
       );
 
       pageHtml = pageHtml.replace(
-        '<div id="staticProperties">',
-        '<div id="staticProperties" style="display:none;">'
-      );
-
-      pageHtml = pageHtml.replace(
         /(<p id="statProperties"[^>]*>)\d+(<\/p>)/,
         `$1${totalProps}$2`
       );
