@@ -196,6 +196,13 @@
         區域管理
         <span id="navRegionCount" class="ml-auto text-xs text-white/40 bg-white/10 px-1.5 py-0.5 rounded">0</span>
       </button>
+      <button onclick="navigate('homepage')" data-nav="homepage" id="nav-homepage"
+        class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/90 text-sm transition-colors">
+        <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        首頁管理
+      </button>
     </nav>
 
     <!-- Footer -->
@@ -638,6 +645,226 @@
         </div>
       </div>
 
+      <!-- View: Homepage Management -->
+      <div id="view-homepage" class="hidden">
+        <h1 class="text-xl font-semibold mb-6">首頁管理</h1>
+
+        <!-- Section 1: Hero Image -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">主視覺底圖</h2>
+            <span class="text-xs text-text-disabled">首頁全屏背景圖片</span>
+          </div>
+          <div class="card-body space-y-4">
+            <div>
+              <img id="hero-preview" src="" alt="Hero 預覽" class="w-full max-h-60 object-cover rounded-lg bg-surface hidden">
+              <div id="hero-preview-empty" class="w-full h-40 bg-surface rounded-lg flex items-center justify-center text-text-disabled text-sm">
+                尚未設定主視覺底圖
+              </div>
+            </div>
+            <div class="flex gap-2 flex-wrap items-center">
+              <label class="btn btn-default cursor-pointer">
+                選擇圖片
+                <input type="file" id="hero-image-input" accept="image/*" class="hidden" onchange="uploadHeroImage(this.files[0])">
+              </label>
+              <span class="text-xs text-text-disabled">選擇後自動上傳並儲存</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Hero Text -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">主視覺文字</h2>
+            <span class="text-xs text-text-disabled">首頁 Hero 區塊的標題、副標題等文字</span>
+          </div>
+          <div class="card-body">
+            <!-- Language Tabs -->
+            <div class="flex gap-1 mb-5 border-b border-border-subdued">
+              <button onclick="switchHeroTextTab('zh-TW')" id="hero-tab-zh-TW"
+                class="px-4 py-2 text-sm font-medium border-b-2 border-primary text-primary -mb-px transition-colors">繁中</button>
+              <button onclick="switchHeroTextTab('ja')" id="hero-tab-ja"
+                class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">日文</button>
+              <button onclick="switchHeroTextTab('en')" id="hero-tab-en"
+                class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">英文</button>
+            </div>
+
+            <!-- zh-TW fields -->
+            <div id="hero-fields-zh-TW" class="space-y-4">
+              <div>
+                <label class="form-label">大標題</label>
+                <input type="text" id="hero-title-zh-TW" class="form-input" placeholder="例: 大阪旅行日民宿">
+              </div>
+              <div>
+                <label class="form-label">副標題</label>
+                <input type="text" id="hero-subtitle-zh-TW" class="form-input" placeholder="例: 精選包棟民宿">
+              </div>
+              <div>
+                <label class="form-label">說明文字</label>
+                <textarea id="hero-desc-zh-TW" rows="4" class="form-input" placeholder="首頁說明文字，每行換行顯示..."></textarea>
+              </div>
+              <div>
+                <label class="form-label">按鈕文字</label>
+                <input type="text" id="hero-cta-zh-TW" class="form-input" placeholder="例: 瀏覽房源">
+              </div>
+            </div>
+
+            <!-- ja fields -->
+            <div id="hero-fields-ja" class="space-y-4 hidden">
+              <div>
+                <label class="form-label">大標題</label>
+                <input type="text" id="hero-title-ja" class="form-input" placeholder="例: 大阪旅行日民泊">
+              </div>
+              <div>
+                <label class="form-label">副標題</label>
+                <input type="text" id="hero-subtitle-ja" class="form-input" placeholder="例: 厳選貸切民泊">
+              </div>
+              <div>
+                <label class="form-label">說明文字</label>
+                <textarea id="hero-desc-ja" rows="4" class="form-input" placeholder="日本語の説明文..."></textarea>
+              </div>
+              <div>
+                <label class="form-label">按鈕文字</label>
+                <input type="text" id="hero-cta-ja" class="form-input" placeholder="例: 物件を見る">
+              </div>
+            </div>
+
+            <!-- en fields -->
+            <div id="hero-fields-en" class="space-y-4 hidden">
+              <div>
+                <label class="form-label">大標題</label>
+                <input type="text" id="hero-title-en" class="form-input" placeholder="例: Osaka Travel Days">
+              </div>
+              <div>
+                <label class="form-label">副標題</label>
+                <input type="text" id="hero-subtitle-en" class="form-input" placeholder="例: Premium Private Stays">
+              </div>
+              <div>
+                <label class="form-label">說明文字</label>
+                <textarea id="hero-desc-en" rows="4" class="form-input" placeholder="Description text..."></textarea>
+              </div>
+              <div>
+                <label class="form-label">按鈕文字</label>
+                <input type="text" id="hero-cta-en" class="form-input" placeholder="例: Browse Properties">
+              </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-border-subdued">
+              <button onclick="saveHeroText()" class="btn btn-primary">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                儲存主視覺文字
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: FAQ -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">FAQ 管理</h2>
+            <span class="text-xs text-text-disabled">首頁常見問答</span>
+          </div>
+          <div class="card-body">
+            <div id="faq-list" class="space-y-3 mb-4"></div>
+            <div class="flex gap-2 flex-wrap pt-4 border-t border-border-subdued">
+              <button onclick="addFAQItem()" class="btn btn-default">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                + 新增問答
+              </button>
+              <button onclick="saveFAQ()" class="btn btn-primary">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                儲存 FAQ
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Footer -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">頁尾資訊</h2>
+            <span class="text-xs text-text-disabled">首頁 Footer 聯絡資訊</span>
+          </div>
+          <div class="card-body space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="form-label">Email</label>
+                <input type="text" id="footer-email" class="form-input" placeholder="例: service.traveldays@gmail.com">
+              </div>
+              <div>
+                <label class="form-label">LINE ID</label>
+                <input type="text" id="footer-line" class="form-input" placeholder="例: @fgk8695x">
+              </div>
+            </div>
+
+            <!-- Language Tabs -->
+            <div class="border-t border-border-subdued pt-4">
+              <p class="form-label mb-3">多語言資訊</p>
+              <div class="flex gap-1 mb-4 border-b border-border-subdued">
+                <button onclick="switchFooterTab('zh-TW')" id="footer-tab-zh-TW"
+                  class="px-4 py-2 text-sm font-medium border-b-2 border-primary text-primary -mb-px transition-colors">繁中</button>
+                <button onclick="switchFooterTab('ja')" id="footer-tab-ja"
+                  class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">日文</button>
+                <button onclick="switchFooterTab('en')" id="footer-tab-en"
+                  class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">英文</button>
+              </div>
+
+              <!-- zh-TW -->
+              <div id="footer-fields-zh-TW" class="space-y-3">
+                <div>
+                  <label class="form-label">公司名稱</label>
+                  <input type="text" id="footer-company-zh-TW" class="form-input" placeholder="例: DAIDODO合同会社">
+                </div>
+                <div>
+                  <label class="form-label">地址</label>
+                  <input type="text" id="footer-address-zh-TW" class="form-input" placeholder="例: 大阪市中央區上本町西3-3-2">
+                </div>
+              </div>
+
+              <!-- ja -->
+              <div id="footer-fields-ja" class="space-y-3 hidden">
+                <div>
+                  <label class="form-label">公司名稱</label>
+                  <input type="text" id="footer-company-ja" class="form-input" placeholder="例: DAIDODO合同会社">
+                </div>
+                <div>
+                  <label class="form-label">地址</label>
+                  <input type="text" id="footer-address-ja" class="form-input" placeholder="例: 大阪市中央区上本町西3-3-2">
+                </div>
+              </div>
+
+              <!-- en -->
+              <div id="footer-fields-en" class="space-y-3 hidden">
+                <div>
+                  <label class="form-label">公司名稱</label>
+                  <input type="text" id="footer-company-en" class="form-input" placeholder="例: DAIDODO LLC">
+                </div>
+                <div>
+                  <label class="form-label">地址</label>
+                  <input type="text" id="footer-address-en" class="form-input" placeholder="例: 3-3-2 Uehommachi Nishi, Chuo Ward, Osaka">
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-border-subdued">
+              <button onclick="saveFooter()" class="btn btn-primary">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                儲存頁尾
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </main>
 </div>
@@ -846,7 +1073,8 @@ function updateBreadcrumb(view) {
     dashboard: '儀表板',
     properties: '房源管理',
     'property-form': isNewProperty ? '新增房源' : '編輯房源',
-    regions: '區域管理'
+    regions: '區域管理',
+    homepage: '首頁管理'
   };
 
   if (view === 'property-form') {
@@ -865,6 +1093,7 @@ function renderCurrentView() {
     case 'properties': renderPropertyList(); break;
     case 'property-form': break; // Form is rendered when opening
     case 'regions': renderRegionList(); break;
+    case 'homepage': loadHomepageSettings(); break;
   }
 }
 
@@ -1501,6 +1730,328 @@ function showToast(msg, type = 'info') {
     toast.style.transition = 'opacity 0.3s';
     setTimeout(() => toast.remove(), 300);
   }, 2500);
+}
+
+// ==================== HOMEPAGE MANAGEMENT ====================
+
+// Track current FAQ items in memory
+let faqItems = [];
+
+async function loadHomepageSettings() {
+  try {
+    const settings = await apiGet('/settings');
+
+    // --- Hero image ---
+    const heroImg = settings['hero.image'];
+    const heroUrl = heroImg && heroImg.url ? heroImg.url : '';
+    const preview = document.getElementById('hero-preview');
+    const previewEmpty = document.getElementById('hero-preview-empty');
+    if (heroUrl) {
+      preview.src = heroUrl;
+      preview.classList.remove('hidden');
+      previewEmpty.classList.add('hidden');
+    } else {
+      preview.src = '';
+      preview.classList.add('hidden');
+      previewEmpty.classList.remove('hidden');
+    }
+
+    // --- Hero text ---
+    const langs = ['zh-TW', 'ja', 'en'];
+    const heroTitle = settings['hero.title'] || {};
+    const heroSubtitle = settings['hero.subtitle'] || {};
+    const heroDesc = settings['hero.desc'] || {};
+    const heroCta = settings['hero.cta'] || {};
+    langs.forEach(lang => {
+      const el = id => document.getElementById(id);
+      el('hero-title-' + lang).value = heroTitle[lang] || '';
+      el('hero-subtitle-' + lang).value = heroSubtitle[lang] || '';
+      el('hero-desc-' + lang).value = heroDesc[lang] || '';
+      el('hero-cta-' + lang).value = heroCta[lang] || '';
+    });
+
+    // --- FAQ ---
+    faqItems = Array.isArray(settings['faq.items']) ? JSON.parse(JSON.stringify(settings['faq.items'])) : [];
+    renderFAQList(faqItems);
+
+    // --- Footer ---
+    document.getElementById('footer-email').value = settings['footer.email'] || '';
+    document.getElementById('footer-line').value = settings['footer.line'] || '';
+    const footerCompany = settings['footer.company'] || {};
+    const footerAddress = settings['footer.address'] || {};
+    langs.forEach(lang => {
+      document.getElementById('footer-company-' + lang).value = footerCompany[lang] || '';
+      document.getElementById('footer-address-' + lang).value = footerAddress[lang] || '';
+    });
+  } catch (err) {
+    showToast('載入首頁設定失敗：' + err.message, 'error');
+  }
+}
+
+// --- Hero image upload ---
+async function uploadHeroImage(file) {
+  if (!file) return;
+  try {
+    showToast('上傳中...', 'info');
+    const formData = new FormData();
+    formData.append('images', file);
+    const res = await fetch(API_BASE + '/upload', {
+      method: 'POST',
+      headers: { 'X-Admin-Token': AUTH_TOKEN },
+      body: formData
+    });
+    if (res.status === 401) { logout(); return; }
+    if (!res.ok) throw new Error('上傳失敗');
+    const uploaded = await res.json();
+    if (!uploaded.length) throw new Error('沒有收到上傳結果');
+    const url = uploaded[0].url;
+
+    // Save to settings
+    await apiPost('/settings', { key: 'hero.image', value: { url } });
+
+    // Update preview
+    const preview = document.getElementById('hero-preview');
+    const previewEmpty = document.getElementById('hero-preview-empty');
+    preview.src = url;
+    preview.classList.remove('hidden');
+    previewEmpty.classList.add('hidden');
+
+    showToast('主視覺底圖已更新', 'success');
+  } catch (err) {
+    showToast('上傳失敗：' + err.message, 'error');
+  }
+  // Reset file input
+  document.getElementById('hero-image-input').value = '';
+}
+
+// --- Hero text save ---
+async function saveHeroText() {
+  const langs = ['zh-TW', 'ja', 'en'];
+  const title = {}, subtitle = {}, desc = {}, cta = {};
+  langs.forEach(lang => {
+    title[lang] = document.getElementById('hero-title-' + lang).value.trim();
+    subtitle[lang] = document.getElementById('hero-subtitle-' + lang).value.trim();
+    desc[lang] = document.getElementById('hero-desc-' + lang).value.trim();
+    cta[lang] = document.getElementById('hero-cta-' + lang).value.trim();
+  });
+
+  try {
+    await apiPost('/settings', { key: 'hero.title', value: title });
+    await apiPost('/settings', { key: 'hero.subtitle', value: subtitle });
+    await apiPost('/settings', { key: 'hero.desc', value: desc });
+    await apiPost('/settings', { key: 'hero.cta', value: cta });
+    showToast('主視覺文字已儲存', 'success');
+  } catch (err) {
+    showToast('儲存失敗：' + err.message, 'error');
+  }
+}
+
+// --- FAQ save ---
+async function saveFAQ() {
+  // Collect current values from DOM into faqItems
+  const items = collectFAQFromDOM();
+  try {
+    await apiPost('/settings', { key: 'faq.items', value: items });
+    faqItems = items;
+    showToast('FAQ 已儲存', 'success');
+  } catch (err) {
+    showToast('儲存失敗：' + err.message, 'error');
+  }
+}
+
+function collectFAQFromDOM() {
+  const list = document.getElementById('faq-list');
+  const cards = list.querySelectorAll('.faq-item-card');
+  const langs = ['zh-TW', 'ja', 'en'];
+  return Array.from(cards).map(card => {
+    const idx = card.dataset.idx;
+    const q = {}, a = {};
+    langs.forEach(lang => {
+      const qEl = card.querySelector('[data-faq-q="' + lang + '"]');
+      const aEl = card.querySelector('[data-faq-a="' + lang + '"]');
+      q[lang] = qEl ? qEl.value.trim() : '';
+      a[lang] = aEl ? aEl.value.trim() : '';
+    });
+    return { q, a };
+  });
+}
+
+// --- FAQ render ---
+function renderFAQList(items) {
+  const list = document.getElementById('faq-list');
+  if (!items || items.length === 0) {
+    list.innerHTML = '<p class="text-sm text-text-disabled py-4 text-center">尚無問答，點擊「+ 新增問答」開始建立</p>';
+    return;
+  }
+
+  list.innerHTML = items.map((item, i) => {
+    const qDefault = (item.q && item.q['zh-TW']) ? item.q['zh-TW'] : ('問題 #' + (i + 1));
+    return `
+      <div class="faq-item-card border border-border-default rounded-xl overflow-hidden" data-idx="${i}"
+        draggable="true" ondragstart="faqDragStart(event,${i})" ondragover="event.preventDefault()" ondrop="faqDrop(event,${i})">
+        <div class="flex items-center gap-3 px-4 py-3 bg-surface cursor-pointer hover:bg-surface-hover transition-colors"
+          onclick="toggleFAQItem(${i})">
+          <svg class="w-4 h-4 text-icon-default flex-shrink-0 cursor-grab" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <span class="flex-1 text-sm font-medium truncate" id="faq-header-${i}">▼ ${escHtml(qDefault)}</span>
+          <button onclick="event.stopPropagation();deleteFAQItem(${i})" class="text-text-disabled hover:text-destructive transition-colors text-lg leading-none px-1" title="刪除">&times;</button>
+        </div>
+        <div id="faq-body-${i}" class="hidden px-4 pb-4 pt-2 space-y-4">
+          <!-- FAQ Language Tabs -->
+          <div class="flex gap-1 border-b border-border-subdued mb-3">
+            <button onclick="switchFAQTab(${i},'zh-TW')" id="faq-tab-${i}-zh-TW"
+              class="px-3 py-1.5 text-xs font-medium border-b-2 border-primary text-primary -mb-px transition-colors">繁中</button>
+            <button onclick="switchFAQTab(${i},'ja')" id="faq-tab-${i}-ja"
+              class="px-3 py-1.5 text-xs font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">日文</button>
+            <button onclick="switchFAQTab(${i},'en')" id="faq-tab-${i}-en"
+              class="px-3 py-1.5 text-xs font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">英文</button>
+          </div>
+          ${['zh-TW', 'ja', 'en'].map(lang => `
+          <div id="faq-fields-${i}-${lang}" class="${lang !== 'zh-TW' ? 'hidden' : ''} space-y-3">
+            <div>
+              <label class="form-label">問題</label>
+              <textarea class="form-input" rows="2" data-faq-q="${lang}" oninput="updateFAQHeader(${i})">${escHtml((item.q && item.q[lang]) || '')}</textarea>
+            </div>
+            <div>
+              <label class="form-label">答案</label>
+              <textarea class="form-input" rows="3" data-faq-a="${lang}">${escHtml((item.a && item.a[lang]) || '')}</textarea>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toggleFAQItem(i) {
+  const body = document.getElementById('faq-body-' + i);
+  const header = document.getElementById('faq-header-' + i);
+  if (!body) return;
+  const isHidden = body.classList.contains('hidden');
+  body.classList.toggle('hidden', !isHidden);
+  // Update arrow indicator
+  const currentText = header.textContent;
+  if (isHidden) {
+    header.textContent = currentText.replace(/^[▼▶]\s*/, '▶ ');
+  } else {
+    header.textContent = currentText.replace(/^[▼▶]\s*/, '▼ ');
+  }
+}
+
+function updateFAQHeader(i) {
+  const card = document.querySelector('.faq-item-card[data-idx="' + i + '"]');
+  if (!card) return;
+  const qEl = card.querySelector('[data-faq-q="zh-TW"]');
+  const header = document.getElementById('faq-header-' + i);
+  if (!header) return;
+  const arrow = header.textContent.startsWith('▶') ? '▶' : '▼';
+  header.textContent = arrow + ' ' + ((qEl && qEl.value.trim()) || ('問題 #' + (i + 1)));
+}
+
+function addFAQItem() {
+  // Collect current state from DOM before re-rendering
+  if (document.querySelector('.faq-item-card')) {
+    faqItems = collectFAQFromDOM();
+  }
+  faqItems.push({ q: { 'zh-TW': '', ja: '', en: '' }, a: { 'zh-TW': '', ja: '', en: '' } });
+  renderFAQList(faqItems);
+  // Auto-expand the new item
+  const newIdx = faqItems.length - 1;
+  const body = document.getElementById('faq-body-' + newIdx);
+  const header = document.getElementById('faq-header-' + newIdx);
+  if (body) {
+    body.classList.remove('hidden');
+    if (header) header.textContent = header.textContent.replace(/^[▼▶]\s*/, '▶ ');
+  }
+}
+
+function deleteFAQItem(i) {
+  // Collect current DOM state first
+  faqItems = collectFAQFromDOM();
+  faqItems.splice(i, 1);
+  renderFAQList(faqItems);
+}
+
+function switchFAQTab(itemIdx, lang) {
+  ['zh-TW', 'ja', 'en'].forEach(l => {
+    const fields = document.getElementById('faq-fields-' + itemIdx + '-' + l);
+    const tab = document.getElementById('faq-tab-' + itemIdx + '-' + l);
+    if (!fields || !tab) return;
+    const active = l === lang;
+    fields.classList.toggle('hidden', !active);
+    tab.classList.toggle('border-primary', active);
+    tab.classList.toggle('text-primary', active);
+    tab.classList.toggle('border-transparent', !active);
+    tab.classList.toggle('text-text-secondary', !active);
+  });
+}
+
+// FAQ drag-and-drop reorder
+let faqDragIndex = null;
+function faqDragStart(e, i) { faqDragIndex = i; e.dataTransfer.effectAllowed = 'move'; }
+function faqDrop(e, i) {
+  e.preventDefault();
+  if (faqDragIndex === null || faqDragIndex === i) return;
+  // Collect current DOM state before reorder
+  faqItems = collectFAQFromDOM();
+  const [item] = faqItems.splice(faqDragIndex, 1);
+  faqItems.splice(i, 0, item);
+  faqDragIndex = null;
+  renderFAQList(faqItems);
+}
+
+// --- Footer save ---
+async function saveFooter() {
+  const langs = ['zh-TW', 'ja', 'en'];
+  const company = {}, address = {};
+  langs.forEach(lang => {
+    company[lang] = document.getElementById('footer-company-' + lang).value.trim();
+    address[lang] = document.getElementById('footer-address-' + lang).value.trim();
+  });
+
+  try {
+    await apiPost('/settings', { key: 'footer.email', value: document.getElementById('footer-email').value.trim() });
+    await apiPost('/settings', { key: 'footer.line', value: document.getElementById('footer-line').value.trim() });
+    await apiPost('/settings', { key: 'footer.company', value: company });
+    await apiPost('/settings', { key: 'footer.address', value: address });
+    showToast('頁尾資訊已儲存', 'success');
+  } catch (err) {
+    showToast('儲存失敗：' + err.message, 'error');
+  }
+}
+
+// --- Hero text language tabs ---
+function switchHeroTextTab(lang) {
+  ['zh-TW', 'ja', 'en'].forEach(l => {
+    const fields = document.getElementById('hero-fields-' + l);
+    const tab = document.getElementById('hero-tab-' + l);
+    if (!fields || !tab) return;
+    const active = l === lang;
+    fields.classList.toggle('hidden', !active);
+    tab.classList.toggle('border-primary', active);
+    tab.classList.toggle('text-primary', active);
+    tab.classList.toggle('border-transparent', !active);
+    tab.classList.toggle('text-text-secondary', !active);
+  });
+}
+
+// --- Footer language tabs ---
+function switchFooterTab(lang) {
+  ['zh-TW', 'ja', 'en'].forEach(l => {
+    const fields = document.getElementById('footer-fields-' + l);
+    const tab = document.getElementById('footer-tab-' + l);
+    if (!fields || !tab) return;
+    const active = l === lang;
+    fields.classList.toggle('hidden', !active);
+    tab.classList.toggle('border-primary', active);
+    tab.classList.toggle('text-primary', active);
+    tab.classList.toggle('border-transparent', !active);
+    tab.classList.toggle('text-text-secondary', !active);
+  });
 }
 
 // ==================== INIT ====================
