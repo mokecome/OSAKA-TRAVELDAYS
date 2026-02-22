@@ -1006,7 +1006,10 @@ app.put('/api/properties/:oldId/rename', requireAuth, (req, res) => {
 
   const transaction = db.transaction(() => {
     db.prepare('UPDATE property_images SET propertyId = ? WHERE propertyId = ?').run(newId, oldId);
+    db.prepare('UPDATE ical_cache SET property_id = ? WHERE property_id = ?').run(newId, oldId);
     db.prepare('UPDATE properties SET id = ? WHERE id = ?').run(newId, oldId);
+    const cached = icalCache.get(oldId);
+    if (cached) { icalCache.set(newId, cached); icalCache.delete(oldId); }
   });
 
   transaction();
@@ -1026,7 +1029,9 @@ app.delete('/api/properties/:id', requireAuth, (req, res) => {
 
   const transaction = db.transaction(() => {
     db.prepare('DELETE FROM property_images WHERE propertyId = ?').run(req.params.id);
+    db.prepare('DELETE FROM ical_cache WHERE property_id = ?').run(req.params.id);
     db.prepare('DELETE FROM properties WHERE id = ?').run(req.params.id);
+    icalCache.delete(req.params.id);
   });
 
   transaction();
@@ -1107,6 +1112,8 @@ app.post('/api/import', requireAuth, (req, res) => {
 
   importAll(data);
   invalidateSSRCache();
+  db.prepare('DELETE FROM ical_cache').run();
+  icalCache.clear();
   res.json({ success: true, count: data.length });
 });
 
