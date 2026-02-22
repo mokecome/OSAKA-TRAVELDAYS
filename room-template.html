@@ -230,12 +230,13 @@
         <nav class="hidden md:flex items-center space-x-6">
           <a href="../index.html#properties" class="text-amber-800 hover:text-amber-600 transition-colors">房源一覽</a>
           <a href="../index.html#contact" class="text-amber-800 hover:text-amber-600 transition-colors">聯絡我們</a>
-          <div class="flex items-center gap-1 ml-2">
-            <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-room active" aria-pressed="true">中文</button>
-            <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-room" aria-pressed="false">日本語</button>
-            <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-room" aria-pressed="false">EN</button>
-          </div>
         </nav>
+        <!-- Language buttons — always visible -->
+        <div class="flex items-center gap-1">
+          <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-room active" aria-pressed="true">中文</button>
+          <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-room" aria-pressed="false">日本語</button>
+          <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-room" aria-pressed="false">EN</button>
+        </div>
       </div>
     </div>
   </header>
