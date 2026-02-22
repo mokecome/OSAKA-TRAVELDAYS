@@ -1778,6 +1778,20 @@
   <script>
     // Dynamic Properties Renderer
     (function() {
+      // Multilingual field helper — handles plain string (backward compat) and {"zh-TW":...} objects
+      function localizeField(val, lang) {
+        if (val === null || val === undefined) return '';
+        if (typeof val === 'object') return val[lang] || val['zh-TW'] || '';
+        if (typeof val === 'string' && val.charAt(0) === '{') {
+          try { var o = JSON.parse(val); return o[lang] || o['zh-TW'] || val; } catch (e) {}
+        }
+        return val;
+      }
+
+      function getCurrentLang() {
+        return localStorage.getItem('lang') || 'zh-TW';
+      }
+
       const HOUSE_ICON = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>';
       const APARTMENT_ICON = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/></svg>';
 
@@ -1800,40 +1814,48 @@
       // (API fetch / DOM ready), by which time all scripts have executed.
 
       function renderCard(property, delay) {
+        var lang = getCurrentLang();
+        var name          = localizeField(property.name, lang);
+        var shortDesc     = localizeField(property.shortDesc, lang);
+        var badge         = localizeField(property.badge, lang);
+        var secondaryBadge = localizeField(property.secondaryBadge, lang);
+        var address       = localizeField(property.address, lang);
+        var transportInfo = localizeField(property.transportInfo, lang);
+
         var coverUrl = getCoverImage(property);
-        var badgeIcon = getBadgeIcon(property.badge, property.type);
+        var badgeIcon = getBadgeIcon(badge, property.type);
         var delayAttr = delay > 0 ? ' style="animation-delay: ' + delay + 's;"' : '';
 
         return '<div class="property-card animate-fadeInUp"' + delayAttr + '>' +
           '<div class="relative aspect-[4/3] overflow-hidden">' +
-            '<img src="' + escHtml(coverUrl) + '" alt="' + escHtml(property.name) + '" loading="lazy" class="w-full h-full object-cover card-image">' +
+            '<img src="' + escHtml(coverUrl) + '" alt="' + escHtml(name) + '" loading="lazy" class="w-full h-full object-cover card-image">' +
             '<div class="image-overlay"></div>' +
             '<div class="absolute top-4 left-4">' +
               '<span class="badge">' +
                 badgeIcon +
-                ' ' + escHtml(property.badge) +
+                ' ' + escHtml(badge) +
               '</span>' +
             '</div>' +
-            (property.secondaryBadge ? '<div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">' +
-              '<span class="text-amber-800 font-bold text-sm">' + escHtml(property.secondaryBadge) + '</span>' +
+            (secondaryBadge ? '<div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5">' +
+              '<span class="text-amber-800 font-bold text-sm">' + escHtml(secondaryBadge) + '</span>' +
             '</div>' : '') +
           '</div>' +
           '<div class="p-6 flex flex-col flex-1">' +
-            '<h3 class="font-bold text-xl text-amber-900 mb-1">' + escHtml(property.name) + '</h3>' +
-            '<p class="text-amber-500 text-sm mb-4">' + escHtml(property.shortDesc) + '</p>' +
+            '<h3 class="font-bold text-xl text-amber-900 mb-1">' + escHtml(name) + '</h3>' +
+            '<p class="text-amber-500 text-sm mb-4">' + escHtml(shortDesc) + '</p>' +
             '<div class="space-y-1 mb-5">' +
               '<div class="info-item">' +
                 '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
                   '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>' +
                   '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>' +
                 '</svg>' +
-                '<span>' + escHtml(property.address) + '</span>' +
+                '<span>' + escHtml(address) + '</span>' +
               '</div>' +
               '<div class="info-item">' +
                 '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
                   '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>' +
                 '</svg>' +
-                '<span>' + escHtml(property.transportInfo) + '</span>' +
+                '<span>' + escHtml(transportInfo) + '</span>' +
               '</div>' +
             '</div>' +
             '<a href="rooms/' + escHtml(property.id) + '.html" class="btn-primary w-full mt-auto">' +
@@ -1925,6 +1947,7 @@
           renderFilterBar(activeRegions);
         }
       }
+      window.renderAllRegions = renderAllRegions; // expose for language-switch re-render
 
       function filterByRegion(rid) {
         document.querySelectorAll('.region-tab').forEach(function(btn) {
@@ -1981,6 +2004,7 @@
         })
         .then(function(data) {
           if (Array.isArray(data) && data.length > 0) {
+            window.__API_REGIONS = data; // store for language switching
             renderAllRegions(data);
           }
         })
@@ -2168,6 +2192,15 @@
       document.querySelectorAll('.chat-lang-btn').forEach(function(btn) {
         btn.classList.toggle('active', btn.dataset.chatLang === lang);
       });
+
+      // Re-render property cards in the new language
+      var regionsData = window.__SSR_REGIONS || window.__API_REGIONS;
+      if (regionsData && typeof window.renderAllRegions === 'function') {
+        var container = document.getElementById('propertiesContainer');
+        if (container && container.children.length > 0) {
+          window.renderAllRegions(regionsData);
+        }
+      }
     }
 
     // ─── HTML escape helper (XSS prevention) ─────────────────────────────────
