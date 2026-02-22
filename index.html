@@ -2623,6 +2623,11 @@
       });
     }
 
+    // ─── HTML escape helper (XSS prevention) ─────────────────────────────────
+    function escHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
     // ─── Dynamic site settings loader ────────────────────────────────────────
     // Fetches /api/settings and overrides TRANSLATIONS + DOM before setLanguage()
     async function loadSiteSettings() {
@@ -2671,7 +2676,13 @@
               TRANSLATIONS[lang]['faq.q' + n] = item.q[lang];
             }
             if (item.a && item.a[lang] !== undefined) {
-              TRANSLATIONS[lang]['faq.a' + n] = item.a[lang];
+              var aKey = 'faq.a' + n;
+              // faq.a4 for zh-TW is hardcoded in static HTML with <strong> tags;
+              // overriding via TRANSLATIONS would cause setLanguage() (which uses
+              // textContent) to render those tags as literal text.
+              if (!(aKey === 'faq.a4' && lang === 'zh-TW')) {
+                TRANSLATIONS[lang][aKey] = item.a[lang];
+              }
             }
           });
         });
@@ -2680,18 +2691,18 @@
         if (faqList && items.length !== existingCount) {
           var svgChevron = '<svg class="w-5 h-5 text-amber-500 flex-shrink-0 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>';
           var html = '';
+          var currentLang = localStorage.getItem('lang') || 'zh-TW';
           items.forEach(function(item, idx) {
             var n = idx + 1;
-            var currentLang = localStorage.getItem('lang') || 'zh-TW';
             var qText = (item.q && item.q[currentLang]) || (TRANSLATIONS[currentLang]['faq.q' + n]) || '';
             var aText = (item.a && item.a[currentLang]) || (TRANSLATIONS[currentLang]['faq.a' + n]) || '';
             html += '<details class="group bg-amber-50/50 rounded-xl border border-amber-100 overflow-hidden">'
               + '<summary class="flex items-center justify-between p-6 cursor-pointer list-none">'
-              + '<h3 class="font-semibold text-amber-900 text-lg pr-4" data-i18n="faq.q' + n + '">' + qText + '</h3>'
+              + '<h3 class="font-semibold text-amber-900 text-lg pr-4" data-i18n="faq.q' + n + '">' + escHtml(qText) + '</h3>'
               + svgChevron
               + '</summary>'
               + '<div class="px-6 pb-6 text-amber-700 leading-relaxed">'
-              + '<p data-i18n="faq.a' + n + '">' + aText + '</p>'
+              + '<p data-i18n="faq.a' + n + '">' + escHtml(aText) + '</p>'
               + '</div>'
               + '</details>';
           });
@@ -2715,6 +2726,9 @@
       // 5. Footer multilingual fields (company name, address) — override TRANSLATIONS
       //    The DOM elements have data-i18n attributes so setLanguage() will re-render them.
       //    Also do an immediate DOM update for the current language.
+      // API key 'footer.company' maps to translation key 'footer.company.name'
+      // because data-i18n="footer.company.name" was chosen to avoid conflict with
+      // the parent footer.company namespace (the section heading uses 'footer.company').
       var footerMultiKeys = {
         'footer.company': 'footer.company.name',
         'footer.address': 'footer.address'
@@ -2737,13 +2751,7 @@
 
       async function init() {
         await loadSiteSettings();
-        if (saved !== 'zh-TW') {
-          setLanguage(saved);
-        } else {
-          // setLanguage not called for zh-TW (it's the default HTML language),
-          // but still apply any overridden TRANSLATIONS values to the DOM now.
-          setLanguage('zh-TW');
-        }
+        setLanguage(saved); // Always call — ensures settings overrides apply for all languages including zh-TW
       }
 
       if (document.readyState === 'loading') {
