@@ -1435,7 +1435,8 @@ function editProperty(id) {
   currentRegionId = prop.regionId || null;
 
   loadPropertyToForm(prop);
-  document.getElementById('formTitle').textContent = '編輯：' + (prop.name || '(未命名)');
+  var nameDisplay = (typeof prop.name === 'object' && prop.name) ? (prop.name['zh-TW'] || '(未命名)') : (prop.name || '(未命名)');
+  document.getElementById('formTitle').textContent = '編輯：' + nameDisplay;
   document.getElementById('btnDelete').classList.remove('hidden');
   document.getElementById('btnDeleteBottom').classList.remove('hidden');
 
@@ -1516,6 +1517,7 @@ function clearForm() {
   document.getElementById('f-regionId').value = '';
   currentCoverImage = null;
   currentAmenities = [];
+  switchPropLangTab('zh-TW');
 }
 
 function loadPropertyToForm(prop) {
