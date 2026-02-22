@@ -199,7 +199,16 @@
     @media (max-width: 640px) {
       .gallery-grid { grid-template-columns: repeat(2, 1fr); }
     }
-    .lang-btn-room {
+    .lang-switcher-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      border-radius: 24px;
+      padding: 3px 5px;
+    }
+    .lang-btn-nav {
       padding: 3px 9px;
       border-radius: 20px;
       font-size: 12px;
@@ -211,9 +220,10 @@
       transition: all 0.2s;
       line-height: 1.5;
       white-space: nowrap;
+      letter-spacing: 0.01em;
     }
-    .lang-btn-room:hover { background: #fde68a; }
-    .lang-btn-room.active { background: #92400e; color: white; }
+    .lang-btn-nav:hover { background: #fde68a; }
+    .lang-btn-nav.active { background: #92400e; color: white; border-radius: 20px; }
   </style>
 </head>
 <body>
@@ -232,10 +242,10 @@
           <a href="../index.html#contact" class="text-amber-800 hover:text-amber-600 transition-colors">聯絡我們</a>
         </nav>
         <!-- Language buttons — always visible -->
-        <div class="flex items-center gap-1">
-          <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-room active" aria-pressed="true">中文</button>
-          <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-room" aria-pressed="false">日本語</button>
-          <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-room" aria-pressed="false">EN</button>
+        <div class="lang-switcher-nav">
+          <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-nav active" aria-pressed="true">中文</button>
+          <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-nav" aria-pressed="false">日本語</button>
+          <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-nav" aria-pressed="false">EN</button>
         </div>
       </div>
     </div>
@@ -803,7 +813,7 @@
         if (_origSetLanguage) _origSetLanguage(lang);
         renderRoomContent(lang);
         // Sync language button active state
-        document.querySelectorAll('.lang-btn-room').forEach(function(btn) {
+        document.querySelectorAll('.lang-btn-nav').forEach(function(btn) {
           var isActive = btn.getAttribute('data-lang') === lang;
           btn.classList.toggle('active', isActive);
           btn.setAttribute('aria-pressed', String(isActive));
@@ -815,7 +825,7 @@
     // Sync button state on initial load
     (function() {
       var lang = getCurrentLang();
-      document.querySelectorAll('.lang-btn-room').forEach(function(btn) {
+      document.querySelectorAll('.lang-btn-nav').forEach(function(btn) {
         var isActive = btn.getAttribute('data-lang') === lang;
         btn.classList.toggle('active', isActive);
         btn.setAttribute('aria-pressed', String(isActive));
