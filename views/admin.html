@@ -196,7 +196,7 @@
         區域管理
         <span id="navRegionCount" class="ml-auto text-xs text-white/40 bg-white/10 px-1.5 py-0.5 rounded">0</span>
       </button>
-      <button onclick="navigate('homepage')" data-nav="homepage" id="nav-homepage"
+      <button onclick="navigate('homepage')" data-nav="homepage"
         class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/90 text-sm transition-colors">
         <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -1793,17 +1793,8 @@ async function uploadHeroImage(file) {
   if (!file) return;
   try {
     showToast('上傳中...', 'info');
-    const formData = new FormData();
-    formData.append('images', file);
-    const res = await fetch(API_BASE + '/upload', {
-      method: 'POST',
-      headers: { 'X-Admin-Token': AUTH_TOKEN },
-      body: formData
-    });
-    if (res.status === 401) { logout(); return; }
-    if (!res.ok) throw new Error('上傳失敗');
-    const uploaded = await res.json();
-    if (!uploaded.length) throw new Error('沒有收到上傳結果');
+    const uploaded = await apiUpload([file]);
+    if (!uploaded || !uploaded.length) throw new Error('Upload failed');
     const url = uploaded[0].url;
 
     // Save to settings
@@ -1836,10 +1827,12 @@ async function saveHeroText() {
   });
 
   try {
-    await apiPost('/settings', { key: 'hero.title', value: title });
-    await apiPost('/settings', { key: 'hero.subtitle', value: subtitle });
-    await apiPost('/settings', { key: 'hero.desc', value: desc });
-    await apiPost('/settings', { key: 'hero.cta', value: cta });
+    await Promise.all([
+      apiPost('/settings', { key: 'hero.title', value: title }),
+      apiPost('/settings', { key: 'hero.subtitle', value: subtitle }),
+      apiPost('/settings', { key: 'hero.desc', value: desc }),
+      apiPost('/settings', { key: 'hero.cta', value: cta }),
+    ]);
     showToast('主視覺文字已儲存', 'success');
   } catch (err) {
     showToast('儲存失敗：' + err.message, 'error');
@@ -1864,7 +1857,6 @@ function collectFAQFromDOM() {
   const cards = list.querySelectorAll('.faq-item-card');
   const langs = ['zh-TW', 'ja', 'en'];
   return Array.from(cards).map(card => {
-    const idx = card.dataset.idx;
     const q = {}, a = {};
     langs.forEach(lang => {
       const qEl = card.querySelector('[data-faq-q="' + lang + '"]');
@@ -1888,13 +1880,13 @@ function renderFAQList(items) {
     const qDefault = (item.q && item.q['zh-TW']) ? item.q['zh-TW'] : ('問題 #' + (i + 1));
     return `
       <div class="faq-item-card border border-border-default rounded-xl overflow-hidden" data-idx="${i}"
-        draggable="true" ondragstart="faqDragStart(event,${i})" ondragover="event.preventDefault()" ondrop="faqDrop(event,${i})">
+        draggable="true" ondragstart="faqDragStart(event,${i})" ondragover="event.preventDefault()" ondrop="faqDrop(event,${i})" ondragend="faqDragIndex = null">
         <div class="flex items-center gap-3 px-4 py-3 bg-surface cursor-pointer hover:bg-surface-hover transition-colors"
           onclick="toggleFAQItem(${i})">
           <svg class="w-4 h-4 text-icon-default flex-shrink-0 cursor-grab" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
-          <span class="flex-1 text-sm font-medium truncate" id="faq-header-${i}">▼ ${escHtml(qDefault)}</span>
+          <span class="flex-1 text-sm font-medium truncate" id="faq-header-${i}">▶ ${escHtml(qDefault)}</span>
           <button onclick="event.stopPropagation();deleteFAQItem(${i})" class="text-text-disabled hover:text-destructive transition-colors text-lg leading-none px-1" title="刪除">&times;</button>
         </div>
         <div id="faq-body-${i}" class="hidden px-4 pb-4 pt-2 space-y-4">
@@ -1936,9 +1928,9 @@ function toggleFAQItem(i) {
   // Update arrow indicator
   const currentText = header.textContent;
   if (isHidden) {
-    header.textContent = currentText.replace(/^[▼▶]\s*/, '▶ ');
-  } else {
     header.textContent = currentText.replace(/^[▼▶]\s*/, '▼ ');
+  } else {
+    header.textContent = currentText.replace(/^[▼▶]\s*/, '▶ ');
   }
 }
 
@@ -1965,7 +1957,7 @@ function addFAQItem() {
   const header = document.getElementById('faq-header-' + newIdx);
   if (body) {
     body.classList.remove('hidden');
-    if (header) header.textContent = header.textContent.replace(/^[▼▶]\s*/, '▶ ');
+    if (header) header.textContent = header.textContent.replace(/^[▼▶]\s*/, '▼ ');
   }
 }
 
@@ -2014,10 +2006,12 @@ async function saveFooter() {
   });
 
   try {
-    await apiPost('/settings', { key: 'footer.email', value: document.getElementById('footer-email').value.trim() });
-    await apiPost('/settings', { key: 'footer.line', value: document.getElementById('footer-line').value.trim() });
-    await apiPost('/settings', { key: 'footer.company', value: company });
-    await apiPost('/settings', { key: 'footer.address', value: address });
+    await Promise.all([
+      apiPost('/settings', { key: 'footer.email', value: document.getElementById('footer-email').value.trim() }),
+      apiPost('/settings', { key: 'footer.line', value: document.getElementById('footer-line').value.trim() }),
+      apiPost('/settings', { key: 'footer.company', value: company }),
+      apiPost('/settings', { key: 'footer.address', value: address }),
+    ]);
     showToast('頁尾資訊已儲存', 'success');
   } catch (err) {
     showToast('儲存失敗：' + err.message, 'error');
