@@ -266,6 +266,19 @@
       return div.innerHTML;
     }
 
+    function getCurrentLang() {
+      return localStorage.getItem('lang') || 'zh-TW';
+    }
+
+    function localizeField(val, lang) {
+      if (val === null || val === undefined) return '';
+      if (typeof val === 'object' && !Array.isArray(val)) return val[lang] || val['zh-TW'] || '';
+      if (typeof val === 'string' && val.charAt(0) === '{') {
+        try { var o = JSON.parse(val); return o[lang] || o['zh-TW'] || val; } catch(e) {}
+      }
+      return val;
+    }
+
     function getYoutubeEmbedUrl(url) {
       if (!url) return null;
       var m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -313,8 +326,9 @@
       return icons[name] || 'M5 13l4 4L19 7';
     }
 
-    function renderProperty(p) {
-      document.title = p.name + ' | 大阪旅行日民宿';
+    function renderProperty(p, lang) {
+      lang = lang || getCurrentLang();
+      document.title = localizeField(p.name, lang) + ' | 大阪旅行日民宿';
       allImages = (p.images || []).map(function(img) { return img.url; });
 
       var embedUrl = getYoutubeEmbedUrl(p.videoUrl);
@@ -326,11 +340,11 @@
       var fallbackId = 'yt-fallback-' + Date.now();
       if (embedUrl && ytId) {
         videoHtml = '<div id="video-container" class="aspect-video rounded-2xl overflow-hidden shadow-lg relative">' +
-          '<iframe id="' + videoId + '" width="100%" height="100%" src="' + esc(embedUrl) + '" title="' + esc(p.name) + ' 房源影片" ' +
+          '<iframe id="' + videoId + '" width="100%" height="100%" src="' + esc(embedUrl) + '" title="' + esc(localizeField(p.name, lang)) + ' 房源影片" ' +
           'frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" ' +
           'allowfullscreen class="w-full h-full"></iframe>' +
           '<a id="' + fallbackId + '" href="' + esc(p.videoUrl) + '" target="_blank" class="hidden absolute inset-0 group">' +
-          '<img src="https://img.youtube.com/vi/' + esc(ytId) + '/maxresdefault.jpg" alt="' + esc(p.name) + ' 影片縮圖" class="w-full h-full object-cover">' +
+          '<img src="https://img.youtube.com/vi/' + esc(ytId) + '/maxresdefault.jpg" alt="' + esc(localizeField(p.name, lang)) + ' 影片縮圖" class="w-full h-full object-cover">' +
           '<div class="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">' +
           '<div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">' +
           '<svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>' +
@@ -354,8 +368,9 @@
 
       // ========== Introduction ==========
       var introHtml = '';
-      if (p.introduction) {
-        var paragraphs = p.introduction.split(/\n\s*\n|\n/);
+      var introText = localizeField(p.introduction, lang);
+      if (introText) {
+        var paragraphs = introText.split(/\n\s*\n|\n/);
         introHtml = paragraphs.map(function(para) {
           return '<p class="text-amber-800 leading-relaxed mb-4">' + esc(para.trim()) + '</p>';
         }).join('');
@@ -365,11 +380,14 @@
       var qi = p.quickInfo || [];
       var qiHtml = '';
       qi.forEach(function(item) {
-        if (item.title || item.value) {
+        var qiTitle = localizeField(item.title, lang);
+        var qiValue = localizeField(item.value, lang);
+        var qiDesc  = localizeField(item.desc,  lang);
+        if (qiTitle || qiValue) {
           qiHtml += '<div class="info-card">' +
-            '<p class="text-amber-500 text-sm mb-1">' + esc(item.title) + '</p>' +
-            '<p class="font-semibold text-amber-900">' + esc(item.value) + '</p>' +
-            (item.desc ? '<p class="text-amber-600 text-sm">' + esc(item.desc) + '</p>' : '') +
+            '<p class="text-amber-500 text-sm mb-1">' + esc(qiTitle) + '</p>' +
+            '<p class="font-semibold text-amber-900">' + esc(qiValue) + '</p>' +
+            (qiDesc ? '<p class="text-amber-600 text-sm">' + esc(qiDesc) + '</p>' : '') +
             '</div>';
         }
       });
@@ -408,19 +426,22 @@
         'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
       ];
       si.forEach(function(item, idx) {
-        if (item.title) {
+        var siTitle = localizeField(item.title, lang);
+        var siDesc  = localizeField(item.desc,  lang);
+        if (siTitle) {
           siHtml += '<div class="info-card"><h3 class="font-semibold text-amber-900 mb-4 flex items-center gap-2">' +
             '<span class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">' +
             '<svg class="w-5 h-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
             '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + (siIcons[idx] || siIcons[0]) + '"/></svg></span>' +
-            esc(item.title) + '</h3><p class="text-amber-700">' + esc(item.desc) + '</p></div>';
+            esc(siTitle) + '</h3><p class="text-amber-700">' + esc(siDesc) + '</p></div>';
         }
       });
 
       // ========== Transport detail ==========
       var transportLines = '';
-      if (p.transportDetail) {
-        p.transportDetail.split('\n').forEach(function(line) {
+      var transportDetailText = localizeField(p.transportDetail, lang);
+      if (transportDetailText) {
+        transportDetailText.split('\n').forEach(function(line) {
           if (line.trim()) transportLines += '<li>• ' + esc(line.trim()) + '</li>';
         });
       }
@@ -471,8 +492,8 @@
         '<span class="text-amber-600 text-sm tracking-widest uppercase">' + esc(p.regionEn) + '</span>' +
         (p.secondaryBadge ? '<span class="new-badge">' + esc(p.secondaryBadge) + '</span>' : '') +
         '</div>' +
-        '<h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-amber-900 mb-4">' + esc(p.name) + '</h1>' +
-        '<p class="text-xl text-amber-700 mb-4">' + esc(p.transportInfo) + '</p>' +
+        '<h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-amber-900 mb-4">' + esc(localizeField(p.name, lang)) + '</h1>' +
+        '<p class="text-xl text-amber-700 mb-4">' + esc(localizeField(p.transportInfo, lang)) + '</p>' +
         (tagsHtml ? '<div class="flex flex-wrap items-center gap-4 text-amber-600">' + tagsHtml + '</div>' : '') +
         '</div></div></section>';
 
@@ -582,25 +603,14 @@
           '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></div></section>';
       }
 
-      document.getElementById('loadingState').remove();
+      var loadingEl = document.getElementById('loadingState');
+      if (loadingEl) loadingEl.remove();
       document.getElementById('mainContent').innerHTML = html;
 
       // ========== Load Availability Calendar ==========
       if (p.ical_url) {
         loadAvailability(propertyId);
       }
-
-      // ========== Airbnb Click Tracking ==========
-      document.addEventListener('click', function(e) {
-        var link = e.target.closest('.airbnb-cta');
-        if (link && window.gtag) {
-          gtag('event', 'click', {
-            event_category: 'outbound',
-            event_label: 'airbnb_booking',
-            transport_type: 'beacon'
-          });
-        }
-      });
 
       // ========== YouTube fallback detection ==========
       if (embedUrl && ytId) {
@@ -621,6 +631,18 @@
         }, 100);
       }
     }
+
+    // ========== Airbnb Click Tracking (single listener) ==========
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('.airbnb-cta');
+      if (link && window.gtag) {
+        gtag('event', 'click', {
+          event_category: 'outbound',
+          event_label: 'airbnb_booking',
+          transport_type: 'beacon'
+        });
+      }
+    });
 
     // Lightbox
     function openLightbox(index) {
@@ -744,20 +766,43 @@
       if (el) renderCalendar(el);
     };
 
+    // ========== Language-aware re-render wrapper ==========
+    function renderRoomContent(lang) {
+      var p = window.__PROPERTY_DATA;
+      if (!p) return;
+      lang = lang || getCurrentLang();
+      renderProperty(p, lang);
+    }
+
+    // Hook into setLanguage so room content re-renders on language switch
+    (function() {
+      var _origSetLanguage = window.setLanguage;
+      window.setLanguage = function(lang) {
+        if (_origSetLanguage) _origSetLanguage(lang);
+        renderRoomContent(lang);
+      };
+    })();
+
     // Fetch and render
-    fetch('/api/properties/' + encodeURIComponent(propertyId))
-      .then(function(res) {
-        if (!res.ok) throw new Error('找不到此房源');
-        return res.json();
-      })
-      .then(function(data) {
-        renderProperty(data);
-      })
-      .catch(function(err) {
-        document.getElementById('loadingState').innerHTML =
-          '<div class="py-32 text-center"><p class="text-amber-600 text-lg mb-4">' + err.message + '</p>' +
-          '<a href="../index.html" class="btn-primary inline-flex">返回首頁</a></div>';
-      });
+    if (window.__PROPERTY_DATA) {
+      // SSR-provided data: render immediately with current language
+      renderRoomContent(getCurrentLang());
+    } else {
+      fetch('/api/properties/' + encodeURIComponent(propertyId))
+        .then(function(res) {
+          if (!res.ok) throw new Error('找不到此房源');
+          return res.json();
+        })
+        .then(function(data) {
+          window.__PROPERTY_DATA = data;
+          renderProperty(data, getCurrentLang());
+        })
+        .catch(function(err) {
+          document.getElementById('loadingState').innerHTML =
+            '<div class="py-32 text-center"><p class="text-amber-600 text-lg mb-4">' + err.message + '</p>' +
+            '<a href="../index.html" class="btn-primary inline-flex">返回首頁</a></div>';
+        });
+    }
   </script>
 </body>
 </html>
