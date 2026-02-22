@@ -376,17 +376,11 @@
             <input type="hidden" id="f-id">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="form-label">房源名稱 <span class="text-destructive">*</span></label>
-                <input type="text" id="f-name" class="form-input" placeholder="例: 文華園 大正 Guest House" oninput="autoGenerateSlug()" onblur="checkNameDuplicate()">
-              </div>
-              <div>
                 <label class="form-label">所屬區域</label>
                 <select id="f-regionId" class="form-input">
                   <option value="">-- 請選擇區域 --</option>
                 </select>
               </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="form-label">房源類型</label>
                 <select id="f-type" class="form-input">
@@ -395,28 +389,70 @@
                   <option value="Guest House">Guest House</option>
                 </select>
               </div>
-              <div>
-                <label class="form-label">簡短描述</label>
-                <input type="text" id="f-shortDesc" class="form-input" placeholder="例: 全新裝潢・3間浴室">
-              </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="form-label">標籤 Badge</label>
-                <input type="text" id="f-badge" class="form-input" placeholder="例: 包棟民宿">
-              </div>
-              <div>
-                <label class="form-label">次要標籤</label>
-                <input type="text" id="f-secondaryBadge" class="form-input" placeholder="例: 2025新開幕">
-              </div>
+
+            <!-- Language tabs for translatable fields -->
+            <div class="flex gap-1 border-b border-border-subdued">
+              <button type="button" id="prop-tab-zh-TW" onclick="switchPropLangTab('zh-TW')"
+                class="px-4 py-2 text-sm font-medium border-b-2 border-primary text-primary -mb-px transition-colors">繁中</button>
+              <button type="button" id="prop-tab-ja" onclick="switchPropLangTab('ja')"
+                class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">日文</button>
+              <button type="button" id="prop-tab-en" onclick="switchPropLangTab('en')"
+                class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">英文</button>
             </div>
-            <div>
-              <label class="form-label">地址</label>
-              <input type="text" id="f-address" class="form-input" placeholder="例: 大阪市大正區三軒家西1-12-19">
+
+            <!-- zh-TW fields -->
+            <div class="prop-lang-fields space-y-3" data-lang="zh-TW">
+              <div><label class="form-label">房源名稱 (繁中) <span class="text-destructive">*</span></label>
+                <input type="text" id="f-name-zh-TW" class="form-input" placeholder="例: 文華園 大正 Guest House" oninput="autoGenerateSlug()" onblur="checkNameDuplicate()"></div>
+              <div><label class="form-label">簡短描述 (繁中)</label>
+                <input type="text" id="f-shortDesc-zh-TW" class="form-input" placeholder="例: 全新裝潢・3間浴室"></div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="form-label">標籤 Badge (繁中)</label>
+                  <input type="text" id="f-badge-zh-TW" class="form-input" placeholder="例: 包棟民宿"></div>
+                <div><label class="form-label">次要標籤 (繁中)</label>
+                  <input type="text" id="f-secondaryBadge-zh-TW" class="form-input" placeholder="例: 2025新開幕"></div>
+              </div>
+              <div><label class="form-label">地址 (繁中)</label>
+                <input type="text" id="f-address-zh-TW" class="form-input"></div>
+              <div><label class="form-label">交通資訊 (繁中)</label>
+                <input type="text" id="f-transportInfo-zh-TW" class="form-input" placeholder="例: 大正車站4分鐘・心齋橋3站"></div>
             </div>
-            <div>
-              <label class="form-label">交通資訊（卡片簡短顯示）</label>
-              <input type="text" id="f-transportInfo" class="form-input" placeholder="例: 大正車站4分鐘・心齋橋3站">
+
+            <!-- ja fields -->
+            <div class="prop-lang-fields hidden space-y-3" data-lang="ja">
+              <div><label class="form-label">房源名稱 (日文)</label>
+                <input type="text" id="f-name-ja" class="form-input"></div>
+              <div><label class="form-label">簡短描述 (日文)</label>
+                <input type="text" id="f-shortDesc-ja" class="form-input"></div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="form-label">標籤 Badge (日文)</label>
+                  <input type="text" id="f-badge-ja" class="form-input"></div>
+                <div><label class="form-label">次要標籤 (日文)</label>
+                  <input type="text" id="f-secondaryBadge-ja" class="form-input"></div>
+              </div>
+              <div><label class="form-label">地址 (日文)</label>
+                <input type="text" id="f-address-ja" class="form-input"></div>
+              <div><label class="form-label">交通資訊 (日文)</label>
+                <input type="text" id="f-transportInfo-ja" class="form-input"></div>
+            </div>
+
+            <!-- en fields -->
+            <div class="prop-lang-fields hidden space-y-3" data-lang="en">
+              <div><label class="form-label">房源名稱 (英文)</label>
+                <input type="text" id="f-name-en" class="form-input" placeholder="e.g. Bunkaken Taisho Guest House"></div>
+              <div><label class="form-label">簡短描述 (英文)</label>
+                <input type="text" id="f-shortDesc-en" class="form-input"></div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="form-label">標籤 Badge (英文)</label>
+                  <input type="text" id="f-badge-en" class="form-input"></div>
+                <div><label class="form-label">次要標籤 (英文)</label>
+                  <input type="text" id="f-secondaryBadge-en" class="form-input"></div>
+              </div>
+              <div><label class="form-label">地址 (英文)</label>
+                <input type="text" id="f-address-en" class="form-input"></div>
+              <div><label class="form-label">交通資訊 (英文)</label>
+                <input type="text" id="f-transportInfo-en" class="form-input"></div>
             </div>
           </div>
         </div>
@@ -463,7 +499,15 @@
             </div>
             <div>
               <label class="form-label">房源介紹</label>
-              <textarea id="f-introduction" rows="5" class="form-input" placeholder="在這裡撰寫房源的詳細描述...&#10;&#10;每段用空行分隔，會自動分段顯示在詳情頁右側"></textarea>
+              <div class="prop-lang-fields" data-lang="zh-TW">
+                <textarea id="f-introduction-zh-TW" rows="5" class="form-input" placeholder="在這裡撰寫房源的詳細描述...&#10;&#10;每段用空行分隔，會自動分段顯示在詳情頁右側"></textarea>
+              </div>
+              <div class="prop-lang-fields hidden" data-lang="ja">
+                <textarea id="f-introduction-ja" rows="5" class="form-input"></textarea>
+              </div>
+              <div class="prop-lang-fields hidden" data-lang="en">
+                <textarea id="f-introduction-en" rows="5" class="form-input"></textarea>
+              </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -488,15 +532,63 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="bg-surface rounded-lg p-4 space-y-3">
                 <p class="text-xs font-semibold text-text-secondary uppercase">卡片 1</p>
-                <input type="text" id="f-qi1Title" class="form-input" placeholder="標題（例: 房源特色）">
-                <input type="text" id="f-qi1Value" class="form-input" placeholder="數值（例: 2025年新屋）">
-                <input type="text" id="f-qi1Desc" class="form-input" placeholder="描述（例: 全新裝潢設備）">
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <input type="text" id="f-qi1Title-zh-TW" class="form-input" placeholder="標題（例: 房源特色）">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <input type="text" id="f-qi1Title-ja" class="form-input">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <input type="text" id="f-qi1Title-en" class="form-input">
+                </div>
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <input type="text" id="f-qi1Value-zh-TW" class="form-input" placeholder="數值（例: 2025年新屋）">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <input type="text" id="f-qi1Value-ja" class="form-input">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <input type="text" id="f-qi1Value-en" class="form-input">
+                </div>
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <input type="text" id="f-qi1Desc-zh-TW" class="form-input" placeholder="描述（例: 全新裝潢設備）">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <input type="text" id="f-qi1Desc-ja" class="form-input">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <input type="text" id="f-qi1Desc-en" class="form-input">
+                </div>
               </div>
               <div class="bg-surface rounded-lg p-4 space-y-3">
                 <p class="text-xs font-semibold text-text-secondary uppercase">卡片 2</p>
-                <input type="text" id="f-qi2Title" class="form-input" placeholder="標題（例: 房源類型）">
-                <input type="text" id="f-qi2Value" class="form-input" placeholder="數值（例: 整套房源）">
-                <input type="text" id="f-qi2Desc" class="form-input" placeholder="描述（例: 包棟民宿）">
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <input type="text" id="f-qi2Title-zh-TW" class="form-input" placeholder="標題（例: 房源類型）">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <input type="text" id="f-qi2Title-ja" class="form-input">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <input type="text" id="f-qi2Title-en" class="form-input">
+                </div>
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <input type="text" id="f-qi2Value-zh-TW" class="form-input" placeholder="數值（例: 整套房源）">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <input type="text" id="f-qi2Value-ja" class="form-input">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <input type="text" id="f-qi2Value-en" class="form-input">
+                </div>
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <input type="text" id="f-qi2Desc-zh-TW" class="form-input" placeholder="描述（例: 包棟民宿）">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <input type="text" id="f-qi2Desc-ja" class="form-input">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <input type="text" id="f-qi2Desc-en" class="form-input">
+                </div>
               </div>
             </div>
           </div>
@@ -532,23 +624,87 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="bg-surface rounded-lg p-4 space-y-3">
                 <p class="text-xs font-semibold text-text-secondary uppercase">卡片 1</p>
-                <input type="text" id="f-si1Title" class="form-input" placeholder="標題（例: 衛浴設備）">
-                <textarea id="f-si1Desc" rows="2" class="form-input" placeholder="描述"></textarea>
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <input type="text" id="f-si1Title-zh-TW" class="form-input" placeholder="標題（例: 衛浴設備）">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <input type="text" id="f-si1Title-ja" class="form-input">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <input type="text" id="f-si1Title-en" class="form-input">
+                </div>
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <textarea id="f-si1Desc-zh-TW" rows="2" class="form-input" placeholder="描述"></textarea>
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <textarea id="f-si1Desc-ja" rows="2" class="form-input"></textarea>
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <textarea id="f-si1Desc-en" rows="2" class="form-input"></textarea>
+                </div>
               </div>
               <div class="bg-surface rounded-lg p-4 space-y-3">
                 <p class="text-xs font-semibold text-text-secondary uppercase">卡片 2</p>
-                <input type="text" id="f-si2Title" class="form-input" placeholder="標題（例: 適合家庭）">
-                <textarea id="f-si2Desc" rows="2" class="form-input" placeholder="描述"></textarea>
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <input type="text" id="f-si2Title-zh-TW" class="form-input" placeholder="標題（例: 適合家庭）">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <input type="text" id="f-si2Title-ja" class="form-input">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <input type="text" id="f-si2Title-en" class="form-input">
+                </div>
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <textarea id="f-si2Desc-zh-TW" rows="2" class="form-input" placeholder="描述"></textarea>
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <textarea id="f-si2Desc-ja" rows="2" class="form-input"></textarea>
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <textarea id="f-si2Desc-en" rows="2" class="form-input"></textarea>
+                </div>
               </div>
               <div class="bg-surface rounded-lg p-4 space-y-3">
                 <p class="text-xs font-semibold text-text-secondary uppercase">卡片 3</p>
-                <input type="text" id="f-si3Title" class="form-input" placeholder="標題（例: 交通便利）">
-                <textarea id="f-si3Desc" rows="2" class="form-input" placeholder="描述"></textarea>
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <input type="text" id="f-si3Title-zh-TW" class="form-input" placeholder="標題（例: 交通便利）">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <input type="text" id="f-si3Title-ja" class="form-input">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <input type="text" id="f-si3Title-en" class="form-input">
+                </div>
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <textarea id="f-si3Desc-zh-TW" rows="2" class="form-input" placeholder="描述"></textarea>
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <textarea id="f-si3Desc-ja" rows="2" class="form-input"></textarea>
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <textarea id="f-si3Desc-en" rows="2" class="form-input"></textarea>
+                </div>
               </div>
               <div class="bg-surface rounded-lg p-4 space-y-3">
                 <p class="text-xs font-semibold text-text-secondary uppercase">卡片 4</p>
-                <input type="text" id="f-si4Title" class="form-input" placeholder="標題（例: 入住/退房）">
-                <textarea id="f-si4Desc" rows="2" class="form-input" placeholder="描述"></textarea>
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <input type="text" id="f-si4Title-zh-TW" class="form-input" placeholder="標題（例: 入住/退房）">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <input type="text" id="f-si4Title-ja" class="form-input">
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <input type="text" id="f-si4Title-en" class="form-input">
+                </div>
+                <div class="prop-lang-fields" data-lang="zh-TW">
+                  <textarea id="f-si4Desc-zh-TW" rows="2" class="form-input" placeholder="描述"></textarea>
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="ja">
+                  <textarea id="f-si4Desc-ja" rows="2" class="form-input"></textarea>
+                </div>
+                <div class="prop-lang-fields hidden" data-lang="en">
+                  <textarea id="f-si4Desc-en" rows="2" class="form-input"></textarea>
+                </div>
               </div>
             </div>
           </div>
@@ -563,11 +719,27 @@
           <div class="card-body space-y-4">
             <div>
               <label class="form-label">最近車站</label>
-              <input type="text" id="f-nearestStation" class="form-input" placeholder="例: JR / 大阪Metro 大正站">
+              <div class="prop-lang-fields" data-lang="zh-TW">
+                <input type="text" id="f-nearestStation-zh-TW" class="form-input" placeholder="例: 大正駅">
+              </div>
+              <div class="prop-lang-fields hidden" data-lang="ja">
+                <input type="text" id="f-nearestStation-ja" class="form-input">
+              </div>
+              <div class="prop-lang-fields hidden" data-lang="en">
+                <input type="text" id="f-nearestStation-en" class="form-input">
+              </div>
             </div>
             <div>
               <label class="form-label">詳細交通資訊（每行一條）</label>
-              <textarea id="f-transportDetail" rows="4" class="form-input" placeholder="大正站步行4分鐘&#10;心齋橋站 只需3站&#10;難波站 約10分鐘"></textarea>
+              <div class="prop-lang-fields" data-lang="zh-TW">
+                <textarea id="f-transportDetail-zh-TW" rows="4" class="form-input" placeholder="大正站步行4分鐘&#10;心齋橋站 只需3站&#10;難波站 約10分鐘"></textarea>
+              </div>
+              <div class="prop-lang-fields hidden" data-lang="ja">
+                <textarea id="f-transportDetail-ja" rows="4" class="form-input"></textarea>
+              </div>
+              <div class="prop-lang-fields hidden" data-lang="en">
+                <textarea id="f-transportDetail-en" rows="4" class="form-input"></textarea>
+              </div>
             </div>
             <div>
               <label class="form-label">Google Maps 嵌入 URL</label>
@@ -1304,15 +1476,18 @@ function generateSlug(name) {
 
 function autoGenerateSlug() {
   if (!isNewProperty) return; // 編輯時不改變 ID
-  const name = document.getElementById('f-name').value.trim();
+  const name = document.getElementById('f-name-zh-TW').value.trim();
   document.getElementById('f-id').value = generateSlug(name);
 }
 
 function checkNameDuplicate() {
-  const name = document.getElementById('f-name').value.trim();
-  const nameEl = document.getElementById('f-name');
+  const name = document.getElementById('f-name-zh-TW').value.trim();
+  const nameEl = document.getElementById('f-name-zh-TW');
   if (!name) { nameEl.classList.remove('border-destructive'); return; }
-  const existing = properties.find(p => p.name === name && p.id !== currentPropertyId);
+  const existing = properties.find(p => {
+    const n = (typeof p.name === 'object' && p.name) ? (p.name['zh-TW'] || '') : (p.name || '');
+    return n === name && p.id !== currentPropertyId;
+  });
   if (existing) {
     nameEl.classList.add('border-destructive');
     showToast('房源名稱「' + name + '」已存在', 'error');
@@ -1323,12 +1498,20 @@ function checkNameDuplicate() {
 
 function clearForm() {
 
-  ['f-id','f-name','f-badge','f-secondaryBadge',
-   'f-shortDesc','f-capacity','f-size','f-introduction','f-address','f-transportInfo',
-   'f-nearestStation','f-transportDetail','f-mapEmbedUrl','f-airbnbUrl','f-icalUrl','f-checkIn','f-checkOut','f-videoUrl',
-   'f-qi1Title','f-qi1Value','f-qi1Desc','f-qi2Title','f-qi2Value','f-qi2Desc',
-   'f-si1Title','f-si1Desc','f-si2Title','f-si2Desc','f-si3Title','f-si3Desc','f-si4Title','f-si4Desc'
+  ['f-id',
+   'f-capacity','f-size','f-mapEmbedUrl','f-airbnbUrl','f-icalUrl','f-checkIn','f-checkOut','f-videoUrl'
   ].forEach(id => { document.getElementById(id).value = ''; });
+  ['zh-TW','ja','en'].forEach(function(lang) {
+    var sfx = '-' + lang;
+    ['f-name','f-shortDesc','f-badge','f-secondaryBadge','f-address','f-transportInfo',
+     'f-introduction','f-nearestStation','f-transportDetail',
+     'f-qi1Title','f-qi1Value','f-qi1Desc','f-qi2Title','f-qi2Value','f-qi2Desc',
+     'f-si1Title','f-si1Desc','f-si2Title','f-si2Desc','f-si3Title','f-si3Desc','f-si4Title','f-si4Desc'
+    ].forEach(function(base) {
+      var el = document.getElementById(base + sfx);
+      if (el) el.value = '';
+    });
+  });
   document.getElementById('f-type').value = '包棟民宿';
   document.getElementById('f-regionId').value = '';
   currentCoverImage = null;
@@ -1337,21 +1520,21 @@ function clearForm() {
 
 function loadPropertyToForm(prop) {
 
+  function getLang(val, lang) {
+    if (!val) return '';
+    if (typeof val === 'object' && !Array.isArray(val)) return val[lang] || '';
+    if (typeof val === 'string' && val.charAt(0) === '{') {
+      try { var o = JSON.parse(val); return o[lang] || ''; } catch(e) {}
+    }
+    return lang === 'zh-TW' ? val : '';
+  }
+
   document.getElementById('f-id').value = prop.id || '';
-  document.getElementById('f-name').value = prop.name || '';
   document.getElementById('f-type').value = prop.type || '包棟民宿';
   document.getElementById('f-regionId').value = prop.regionId || '';
   currentRegionId = prop.regionId || null;
-  document.getElementById('f-badge').value = prop.badge || '';
-  document.getElementById('f-secondaryBadge').value = prop.secondaryBadge || '';
-  document.getElementById('f-shortDesc').value = prop.shortDesc || '';
   document.getElementById('f-capacity').value = prop.capacity || '';
   document.getElementById('f-size').value = prop.size || '';
-  document.getElementById('f-introduction').value = prop.introduction || '';
-  document.getElementById('f-address').value = prop.address || '';
-  document.getElementById('f-transportInfo').value = prop.transportInfo || '';
-  document.getElementById('f-nearestStation').value = prop.nearestStation || '';
-  document.getElementById('f-transportDetail').value = prop.transportDetail || '';
   document.getElementById('f-mapEmbedUrl').value = prop.mapEmbedUrl || '';
   document.getElementById('f-airbnbUrl').value = prop.airbnbUrl || '';
   document.getElementById('f-icalUrl').value = prop.ical_url || '';
@@ -1359,23 +1542,41 @@ function loadPropertyToForm(prop) {
   document.getElementById('f-checkOut').value = prop.checkOut || '上午10點之前';
   document.getElementById('f-videoUrl').value = prop.videoUrl || '';
 
-  const qi = prop.quickInfo || [{},{}];
-  document.getElementById('f-qi1Title').value = qi[0]?.title || '';
-  document.getElementById('f-qi1Value').value = qi[0]?.value || '';
-  document.getElementById('f-qi1Desc').value = qi[0]?.desc || '';
-  document.getElementById('f-qi2Title').value = qi[1]?.title || '';
-  document.getElementById('f-qi2Value').value = qi[1]?.value || '';
-  document.getElementById('f-qi2Desc').value = qi[1]?.desc || '';
+  ['zh-TW', 'ja', 'en'].forEach(function(lang) {
+    var sfx = '-' + lang;
+    var el = function(base) { return document.getElementById(base + sfx); };
+    if (el('f-name')) el('f-name').value = getLang(prop.name, lang);
+    if (el('f-shortDesc')) el('f-shortDesc').value = getLang(prop.shortDesc, lang);
+    if (el('f-badge')) el('f-badge').value = getLang(prop.badge, lang);
+    if (el('f-secondaryBadge')) el('f-secondaryBadge').value = getLang(prop.secondaryBadge, lang);
+    if (el('f-address')) el('f-address').value = getLang(prop.address, lang);
+    if (el('f-transportInfo')) el('f-transportInfo').value = getLang(prop.transportInfo, lang);
+    if (el('f-introduction')) el('f-introduction').value = getLang(prop.introduction, lang);
+    if (el('f-nearestStation')) el('f-nearestStation').value = getLang(prop.nearestStation, lang);
+    if (el('f-transportDetail')) el('f-transportDetail').value = getLang(prop.transportDetail, lang);
+  });
 
-  const si = prop.spaceIntro || [{},{},{},{}];
-  document.getElementById('f-si1Title').value = si[0]?.title || '';
-  document.getElementById('f-si1Desc').value = si[0]?.desc || '';
-  document.getElementById('f-si2Title').value = si[1]?.title || '';
-  document.getElementById('f-si2Desc').value = si[1]?.desc || '';
-  document.getElementById('f-si3Title').value = si[2]?.title || '';
-  document.getElementById('f-si3Desc').value = si[2]?.desc || '';
-  document.getElementById('f-si4Title').value = si[3]?.title || '';
-  document.getElementById('f-si4Desc').value = si[3]?.desc || '';
+  var qi = (prop.quickInfo && Array.isArray(prop.quickInfo)) ? prop.quickInfo : [{}, {}];
+  ['zh-TW', 'ja', 'en'].forEach(function(lang) {
+    var sfx = '-' + lang;
+    var g = function(id) { return document.getElementById(id + sfx); };
+    if (g('f-qi1Title')) g('f-qi1Title').value = getLang(qi[0] && qi[0].title, lang);
+    if (g('f-qi1Value')) g('f-qi1Value').value = getLang(qi[0] && qi[0].value, lang);
+    if (g('f-qi1Desc'))  g('f-qi1Desc').value  = getLang(qi[0] && qi[0].desc, lang);
+    if (g('f-qi2Title')) g('f-qi2Title').value = getLang(qi[1] && qi[1].title, lang);
+    if (g('f-qi2Value')) g('f-qi2Value').value = getLang(qi[1] && qi[1].value, lang);
+    if (g('f-qi2Desc'))  g('f-qi2Desc').value  = getLang(qi[1] && qi[1].desc, lang);
+  });
+
+  var si = (prop.spaceIntro && Array.isArray(prop.spaceIntro)) ? prop.spaceIntro : [{},{},{},{}];
+  ['zh-TW', 'ja', 'en'].forEach(function(lang) {
+    var sfx = '-' + lang;
+    var g = function(id) { return document.getElementById(id + sfx); };
+    for (var n = 1; n <= 4; n++) {
+      if (g('f-si'+n+'Title')) g('f-si'+n+'Title').value = getLang(si[n-1] && si[n-1].title, lang);
+      if (g('f-si'+n+'Desc'))  g('f-si'+n+'Desc').value  = getLang(si[n-1] && si[n-1].desc, lang);
+    }
+  });
 
   currentAmenities = Array.isArray(prop.amenities) ? [...prop.amenities] : [];
 
@@ -1391,35 +1592,48 @@ function loadPropertyToForm(prop) {
   renderCoverPreview();
   renderImageGrid();
   renderAmenities();
+  switchPropLangTab('zh-TW');
 }
 
 async function saveProperty() {
-  const name = document.getElementById('f-name').value.trim();
-  if (!name) { showToast('請填寫房源名稱', 'error'); return; }
+  function collectLangs(baseId) {
+    var obj = {};
+    ['zh-TW', 'ja', 'en'].forEach(function(l) {
+      var el = document.getElementById(baseId + '-' + l);
+      obj[l] = el ? el.value.trim() : '';
+    });
+    return obj;
+  }
+
+  const nameZhTW = collectLangs('f-name')['zh-TW'];
+  if (!nameZhTW) { showToast('請填寫房源名稱', 'error'); return; }
   let newId = document.getElementById('f-id').value.trim();
-  if (!newId) newId = generateSlug(name) || ('prop-' + Date.now());
-  const dupName = properties.find(p => p.name === name && p.id !== currentPropertyId);
+  if (!newId) newId = generateSlug(nameZhTW) || ('prop-' + Date.now());
+  const dupName = properties.find(p => {
+    const n = (typeof p.name === 'object' && p.name) ? (p.name['zh-TW'] || '') : (p.name || '');
+    return n === nameZhTW && p.id !== currentPropertyId;
+  });
   if (dupName) {
-    showToast('房源名稱「' + name + '」已存在，請使用不同名稱', 'error'); return;
+    showToast('房源名稱「' + nameZhTW + '」已存在，請使用不同名稱', 'error'); return;
   }
 
   const selectedRegionId = document.getElementById('f-regionId').value;
 
   const prop = {
     id: newId,
-    name: name,
+    name: collectLangs('f-name'),
     type: document.getElementById('f-type').value,
     regionId: selectedRegionId || currentRegionId,
-    badge: document.getElementById('f-badge').value.trim(),
-    secondaryBadge: document.getElementById('f-secondaryBadge').value.trim(),
-    shortDesc: document.getElementById('f-shortDesc').value.trim(),
+    badge: collectLangs('f-badge'),
+    secondaryBadge: collectLangs('f-secondaryBadge'),
+    shortDesc: collectLangs('f-shortDesc'),
     capacity: document.getElementById('f-capacity').value.trim(),
     size: document.getElementById('f-size').value.trim(),
-    introduction: document.getElementById('f-introduction').value.trim(),
-    address: document.getElementById('f-address').value.trim(),
-    transportInfo: document.getElementById('f-transportInfo').value.trim(),
-    nearestStation: document.getElementById('f-nearestStation').value.trim(),
-    transportDetail: document.getElementById('f-transportDetail').value.trim(),
+    introduction: collectLangs('f-introduction'),
+    address: collectLangs('f-address'),
+    transportInfo: collectLangs('f-transportInfo'),
+    nearestStation: collectLangs('f-nearestStation'),
+    transportDetail: collectLangs('f-transportDetail'),
     mapEmbedUrl: document.getElementById('f-mapEmbedUrl').value.trim(),
     airbnbUrl: document.getElementById('f-airbnbUrl').value.trim(),
     icalUrl: document.getElementById('f-icalUrl').value.trim(),
@@ -1427,15 +1641,23 @@ async function saveProperty() {
     checkOut: document.getElementById('f-checkOut').value.trim(),
     videoUrl: document.getElementById('f-videoUrl').value.trim(),
     amenities: currentAmenities,
-    spaceIntro: [
-      { title: document.getElementById('f-si1Title').value.trim(), desc: document.getElementById('f-si1Desc').value.trim() },
-      { title: document.getElementById('f-si2Title').value.trim(), desc: document.getElementById('f-si2Desc').value.trim() },
-      { title: document.getElementById('f-si3Title').value.trim(), desc: document.getElementById('f-si3Desc').value.trim() },
-      { title: document.getElementById('f-si4Title').value.trim(), desc: document.getElementById('f-si4Desc').value.trim() },
-    ],
+    spaceIntro: [1,2,3,4].map(function(n) {
+      return {
+        title: collectLangs('f-si'+n+'Title'),
+        desc:  collectLangs('f-si'+n+'Desc')
+      };
+    }),
     quickInfo: [
-      { title: document.getElementById('f-qi1Title').value.trim(), value: document.getElementById('f-qi1Value').value.trim(), desc: document.getElementById('f-qi1Desc').value.trim() },
-      { title: document.getElementById('f-qi2Title').value.trim(), value: document.getElementById('f-qi2Value').value.trim(), desc: document.getElementById('f-qi2Desc').value.trim() },
+      {
+        title: collectLangs('f-qi1Title'),
+        value: collectLangs('f-qi1Value'),
+        desc:  collectLangs('f-qi1Desc')
+      },
+      {
+        title: collectLangs('f-qi2Title'),
+        value: collectLangs('f-qi2Value'),
+        desc:  collectLangs('f-qi2Desc')
+      }
     ],
     images: [
       ...(currentCoverImage ? [{ url: currentCoverImage.url, isLocal: currentCoverImage.isLocal ? 1 : 0, filename: currentCoverImage.filename || '' }] : []),
@@ -1452,7 +1674,7 @@ async function saveProperty() {
     currentRegionId = selectedRegionId || currentRegionId;
     isNewProperty = false;
     await loadData();
-    document.getElementById('formTitle').textContent = '編輯：' + name;
+    document.getElementById('formTitle').textContent = '編輯：' + nameZhTW;
     document.getElementById('btnDelete').classList.remove('hidden');
     document.getElementById('btnDeleteBottom').classList.remove('hidden');
     showToast('儲存成功', 'success');
@@ -1463,7 +1685,7 @@ async function saveProperty() {
 
 async function deleteProperty() {
   if (!currentPropertyId) return;
-  if (!confirm('確定要刪除「' + (document.getElementById('f-name').value || currentPropertyId) + '」嗎？此操作無法復原。')) return;
+  if (!confirm('確定要刪除「' + (document.getElementById('f-name-zh-TW').value || currentPropertyId) + '」嗎？此操作無法復原。')) return;
 
   try {
     await apiDelete('/properties/' + encodeURIComponent(currentPropertyId));
@@ -2074,6 +2296,22 @@ function switchFooterTab(lang) {
     tab.classList.toggle('text-primary', active);
     tab.classList.toggle('border-transparent', !active);
     tab.classList.toggle('text-text-secondary', !active);
+  });
+}
+
+// --- Property form language tabs ---
+function switchPropLangTab(lang) {
+  ['zh-TW', 'ja', 'en'].forEach(function(l) {
+    var tab = document.getElementById('prop-tab-' + l);
+    var fields = document.querySelectorAll('.prop-lang-fields[data-lang="' + l + '"]');
+    if (tab) {
+      var active = l === lang;
+      tab.classList.toggle('border-primary', active);
+      tab.classList.toggle('text-primary', active);
+      tab.classList.toggle('border-transparent', !active);
+      tab.classList.toggle('text-text-secondary', !active);
+    }
+    fields.forEach(function(f) { f.classList.toggle('hidden', l !== lang); });
   });
 }
 
