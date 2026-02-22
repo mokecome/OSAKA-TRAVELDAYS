@@ -490,7 +490,7 @@
         '<div class="container mx-auto px-4 lg:px-8"><div class="max-w-4xl">' +
         '<div class="flex items-center gap-3 mb-2">' +
         '<span class="text-amber-600 text-sm tracking-widest uppercase">' + esc(p.regionEn) + '</span>' +
-        (p.secondaryBadge ? '<span class="new-badge">' + esc(p.secondaryBadge) + '</span>' : '') +
+        (function(){ var secondaryBadgeText = localizeField(p.secondaryBadge, lang); return secondaryBadgeText ? '<span class="new-badge">' + esc(secondaryBadgeText) + '</span>' : ''; })() +
         '</div>' +
         '<h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-amber-900 mb-4">' + esc(localizeField(p.name, lang)) + '</h1>' +
         '<p class="text-xl text-amber-700 mb-4">' + esc(localizeField(p.transportInfo, lang)) + '</p>' +
@@ -542,11 +542,12 @@
         if (p.address) {
           html += '<div class="flex items-start gap-2"><svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
             '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>' +
-            '<span>' + esc(p.address) + '</span></div>';
+            '<span>' + esc(localizeField(p.address, lang)) + '</span></div>';
         }
-        if (p.nearestStation) {
+        var nearestStationText = localizeField(p.nearestStation, lang);
+        if (nearestStationText) {
           var stationLines = '';
-          p.nearestStation.split('\n').forEach(function(line) {
+          nearestStationText.split('\n').forEach(function(line) {
             if (line.trim()) stationLines += '<li>• ' + esc(line.trim()) + '</li>';
           });
           html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">最近車站</p>' +
