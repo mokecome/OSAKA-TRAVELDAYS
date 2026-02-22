@@ -169,11 +169,6 @@ db.exec(`
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
-  CREATE TABLE IF NOT EXISTS ical_cache (
-    property_id TEXT PRIMARY KEY,
-    blocked_dates TEXT NOT NULL DEFAULT '[]',
-    fetched_at INTEGER NOT NULL
-  );
 `);
 
 // Migrate existing DB: add new columns if missing
@@ -351,18 +346,6 @@ function parseIcal(icsText) {
 }
 
 const icalCache = new Map(); // propertyId -> { blockedDates, fetchedAt }
-
-// Warm cache from DB on startup
-(function warmIcalCache() {
-  const rows = db.prepare('SELECT property_id, blocked_dates, fetched_at FROM ical_cache').all();
-  for (const row of rows) {
-    icalCache.set(row.property_id, {
-      blockedDates: JSON.parse(row.blocked_dates || '[]'),
-      fetchedAt: row.fetched_at
-    });
-  }
-  if (rows.length > 0) console.log(`iCal cache warmed: ${rows.length} entries`);
-})();
 
 // ==================== SSR RENDERER ====================
 
@@ -918,11 +901,7 @@ app.get('/api/properties/:id/availability', async (req, res) => {
     if (!response.ok) throw new Error('iCal fetch failed: ' + response.status);
     const text = await response.text();
     const blockedDates = parseIcal(text);
-    const now = Date.now();
-    icalCache.set(req.params.id, { blockedDates, fetchedAt: now });
-    db.prepare(
-      'INSERT OR REPLACE INTO ical_cache (property_id, blocked_dates, fetched_at) VALUES (?, ?, ?)'
-    ).run(req.params.id, JSON.stringify(blockedDates), now);
+    icalCache.set(req.params.id, { blockedDates, fetchedAt: Date.now() });
     res.json({ blockedDates });
   } catch (err) {
     console.error('iCal fetch error:', err.message);
@@ -964,7 +943,6 @@ app.post('/api/properties', requireAuth, (req, res) => {
       );
       // Clear iCal cache so next availability request re-fetches
       icalCache.delete(p.id);
-      db.prepare('DELETE FROM ical_cache WHERE property_id = ?').run(p.id);
     } else {
       db.prepare(`INSERT INTO properties (id, name, type, regionId, regionZh, regionEn, regionDesc, badge,
         secondaryBadge, shortDesc, address, transportInfo, introduction, videoUrl, mapEmbedUrl,
@@ -1006,7 +984,6 @@ app.put('/api/properties/:oldId/rename', requireAuth, (req, res) => {
 
   const transaction = db.transaction(() => {
     db.prepare('UPDATE property_images SET propertyId = ? WHERE propertyId = ?').run(newId, oldId);
-    db.prepare('UPDATE ical_cache SET property_id = ? WHERE property_id = ?').run(newId, oldId);
     db.prepare('UPDATE properties SET id = ? WHERE id = ?').run(newId, oldId);
     const cached = icalCache.get(oldId);
     if (cached) { icalCache.set(newId, cached); icalCache.delete(oldId); }
@@ -1029,7 +1006,6 @@ app.delete('/api/properties/:id', requireAuth, (req, res) => {
 
   const transaction = db.transaction(() => {
     db.prepare('DELETE FROM property_images WHERE propertyId = ?').run(req.params.id);
-    db.prepare('DELETE FROM ical_cache WHERE property_id = ?').run(req.params.id);
     db.prepare('DELETE FROM properties WHERE id = ?').run(req.params.id);
     icalCache.delete(req.params.id);
   });
@@ -1112,7 +1088,6 @@ app.post('/api/import', requireAuth, (req, res) => {
 
   importAll(data);
   invalidateSSRCache();
-  db.prepare('DELETE FROM ical_cache').run();
   icalCache.clear();
   res.json({ success: true, count: data.length });
 });
