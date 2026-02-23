@@ -1137,6 +1137,17 @@ async function login() {
   }
 }
 
+// Extract zh-TW display value from a possibly-JSON multilingual string
+function localDisplay(val, fallback) {
+  fallback = fallback || '(未命名)';
+  if (!val) return fallback;
+  if (typeof val === 'object') return val['zh-TW'] || fallback;
+  if (typeof val === 'string' && val.charAt(0) === '{') {
+    try { var o = JSON.parse(val); return o['zh-TW'] || fallback; } catch(e) {}
+  }
+  return val || fallback;
+}
+
 function logout() {
   AUTH_TOKEN = '';
   sessionStorage.removeItem('admin_token');
@@ -1318,7 +1329,7 @@ function renderDashboard() {
             : '<div class="w-full h-full flex items-center justify-center text-text-disabled"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>'}
         </div>
         <div class="min-w-0 flex-1">
-          <p class="text-sm font-medium truncate">${p.name || '(未命名)'}</p>
+          <p class="text-sm font-medium truncate">${localDisplay(p.name)}</p>
           <p class="text-xs text-text-secondary truncate">${region ? region.nameZh : ''} · ${p.type || ''}</p>
         </div>
         <div class="text-xs text-text-disabled flex-shrink-0">
@@ -1335,7 +1346,7 @@ function renderDashboard() {
 function renderPropertyList() {
   const search = (document.getElementById('propertySearch')?.value || '').toLowerCase();
   const filtered = properties.filter(p =>
-    !search || (p.name || '').toLowerCase().includes(search) || (p.id || '').toLowerCase().includes(search)
+    !search || localDisplay(p.name, '').toLowerCase().includes(search) || (p.id || '').toLowerCase().includes(search)
   );
 
   const table = document.getElementById('propertyTableBody');
@@ -1359,7 +1370,7 @@ function renderPropertyList() {
             : '<div class="w-full h-full flex items-center justify-center text-text-disabled"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>'}
         </div>
         <div class="min-w-0 flex-1">
-          <p class="text-sm font-medium truncate">${p.name || '(未命名)'}</p>
+          <p class="text-sm font-medium truncate">${localDisplay(p.name)}</p>
           <p class="text-xs text-text-secondary truncate">${p.id}</p>
         </div>
         <div class="hidden sm:block text-sm text-text-secondary flex-shrink-0 w-24 truncate">
