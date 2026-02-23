@@ -666,6 +666,7 @@
       // ========== Load Availability Calendar ==========
       if (p.ical_url) {
         loadAvailability(propertyId);
+        setInterval(function() { loadAvailability(propertyId); }, 10000);
       }
 
       // ========== YouTube fallback detection ==========

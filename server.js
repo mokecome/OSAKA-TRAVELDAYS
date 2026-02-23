@@ -919,7 +919,7 @@ app.get('/api/properties/:id', (req, res) => {
 });
 
 // Get availability (blocked dates) from Airbnb iCal
-const ICAL_TTL_MS = 21600000; // 6 hours
+const ICAL_TTL_MS = 30000; // 30 seconds
 app.get('/api/properties/:id/availability', async (req, res) => {
   try {
     const prop = db.prepare('SELECT ical_url FROM properties WHERE id = ?').get(req.params.id);
