@@ -224,6 +224,21 @@
     }
     .lang-btn-nav:hover { background: #fde68a; }
     .lang-btn-nav.active { background: #92400e; color: white; border-radius: 20px; }
+    .room-page-wrapper { display: flex; align-items: flex-start; }
+    .room-main { flex: 1; min-width: 0; }
+    .room-sidebar { display: none; }
+    @media (min-width: 1024px) {
+      .room-sidebar {
+        display: block;
+        width: 420px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 80px;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+        padding: 24px 16px 24px 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -253,12 +268,15 @@
     </div>
   </header>
 
-  <main id="mainContent" class="pt-16">
-    <!-- Loading -->
-    <div id="loadingState" class="py-32 text-center">
-      <p class="text-amber-600 text-lg">載入中...</p>
-    </div>
-  </main>
+  <div class="room-page-wrapper pt-16">
+    <main id="mainContent" class="room-main">
+      <!-- Loading -->
+      <div id="loadingState" class="py-32 text-center">
+        <p class="text-amber-600 text-lg">載入中...</p>
+      </div>
+    </main>
+    <div id="roomSidebar" class="room-sidebar"></div>
+  </div>
 
   <!-- Footer -->
   <footer class="bg-amber-950 text-amber-100 py-12 px-4">
@@ -616,30 +634,34 @@
           '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-12">' + amenitiesHtml + '</div></div></section>';
       }
 
-      // ========== Availability Calendar ==========
-      if (p.ical_url) {
-        html += '<section class="py-12 lg:py-16"><div class="container mx-auto px-4 lg:px-8">' +
-          '<h2 class="text-2xl font-serif text-amber-900 mb-8 section-title">空房日期</h2>' +
-          '<div id="availabilityCalendar" style="min-height:220px">' +
-          '<p style="color:#9ca3af;font-size:0.95rem">載入中...</p></div>' +
-          '</div></section>';
-      }
-
-      // ========== CTA ==========
       var airbnbTrackUrl = p.airbnbUrl ? p.airbnbUrl + (p.airbnbUrl.includes('?') ? '&' : '?') + 'utm_source=osaka-traveldays&utm_medium=website&utm_campaign=room-page' : '';
-      if (p.airbnbUrl) {
-        html += '<section class="py-16 lg:py-24 bg-gradient-to-br from-amber-800 via-amber-900 to-amber-950">' +
-          '<div class="container mx-auto px-4 lg:px-8 text-center">' +
-          '<h2 class="text-3xl md:text-4xl font-serif text-white mb-4">選擇入住日期</h2>' +
-          '<p class="text-amber-200 mb-8 max-w-lg mx-auto">點擊下方按鈕選擇你的入住日期完成預訂</p>' +
-          '<a href="' + esc(airbnbTrackUrl) + '" target="_blank" rel="noopener" class="btn-primary text-lg px-12 py-4 bg-white text-amber-900 hover:bg-amber-50 airbnb-cta">' +
-          '<span>立即預訂</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
-          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></div></section>';
-      }
 
       var loadingEl = document.getElementById('loadingState');
       if (loadingEl) loadingEl.remove();
       document.getElementById('mainContent').innerHTML = html;
+
+      // ========== Populate Sidebar ==========
+      var sidebarEl = document.getElementById('roomSidebar');
+      if (sidebarEl) {
+        var sidebarHtml = '';
+        if (p.ical_url) {
+          sidebarHtml += '<div style="background:#fff;border:1px solid #fde68a;border-radius:12px;padding:20px;margin-bottom:16px">' +
+            '<h3 style="font-size:1rem;font-weight:600;color:#92400e;margin-bottom:12px;font-family:serif">空房日期</h3>' +
+            '<div id="availabilityCalendar" style="min-height:220px">' +
+            '<p style="color:#9ca3af;font-size:0.95rem">載入中...</p></div>' +
+            '</div>';
+        }
+        if (p.airbnbUrl) {
+          sidebarHtml += '<div style="background:linear-gradient(135deg,#78350f,#451a03);border-radius:12px;padding:20px;text-align:center">' +
+            '<h3 style="font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:8px;font-family:serif">選擇入住日期</h3>' +
+            '<p style="color:#fcd34d;font-size:0.85rem;margin-bottom:16px">點擊下方按鈕選擇你的入住日期完成預訂</p>' +
+            '<a href="' + esc(airbnbTrackUrl) + '" target="_blank" rel="noopener" class="btn-primary airbnb-cta" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#78350f;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;width:100%;justify-content:center">' +
+            '<span>立即預訂</span><svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>' +
+            '</div>';
+        }
+        sidebarEl.innerHTML = sidebarHtml;
+      }
 
       // ========== Load Availability Calendar ==========
       if (p.ical_url) {
@@ -736,23 +758,44 @@
       var today = new Date();
       today.setHours(0,0,0,0);
 
-      function buildMonth(year, month) {
-        var monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-        var dayNames = ['日','一','二','三','四','五','六'];
+      function buildMonth(year, month, isFirst) {
+        var lang = (typeof getCurrentLang === 'function') ? getCurrentLang() : 'zh-TW';
+        var monthNames = {
+          'zh-TW': ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+          'ja':    ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+          'en':    ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+        }[lang] || ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+        var dayNames = {
+          'zh-TW': ['日','一','二','三','四','五','六'],
+          'ja':    ['日','月','火','水','木','金','土'],
+          'en':    ['Su','Mo','Tu','We','Th','Fr','Sa']
+        }[lang] || ['日','一','二','三','四','五','六'];
+        var legendAvail = {'zh-TW':'空房','ja':'空室','en':'Available'}[lang] || '空房';
+        var legendBooked = {'zh-TW':'已預訂','ja':'予約済','en':'Booked'}[lang] || '已預訂';
+        var yearLabel = (lang === 'en') ? (year + '') : (year + '年');
+
         var firstDay = new Date(year, month, 1).getDay();
         var daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        var html = '<div style="background:#fff;border:1px solid #fde68a;border-radius:12px;padding:20px;max-width:360px">';
+        var html = '<div style="background:#fff;border:1px solid #fde68a;border-radius:12px;padding:16px">';
         // Header
-        html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
-        html += '<button onclick="calNavigate(-1)" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:#92400e;padding:4px 10px;border-radius:6px" aria-label="上個月">&#8249;</button>';
-        html += '<span style="font-weight:600;color:#92400e;font-size:1rem">' + year + '年' + monthNames[month] + '</span>';
-        html += '<button onclick="calNavigate(1)" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:#92400e;padding:4px 10px;border-radius:6px" aria-label="下個月">&#8250;</button>';
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">';
+        if (isFirst) {
+          html += '<button onclick="calNavigate(-1)" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:#92400e;padding:4px 10px;border-radius:6px" aria-label="prev">&#8249;</button>';
+        } else {
+          html += '<span style="width:38px"></span>';
+        }
+        html += '<span style="font-weight:600;color:#92400e;font-size:0.95rem">' + yearLabel + ' ' + monthNames[month] + '</span>';
+        if (isFirst) {
+          html += '<span style="width:38px"></span>';
+        } else {
+          html += '<button onclick="calNavigate(1)" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:#92400e;padding:4px 10px;border-radius:6px" aria-label="next">&#8250;</button>';
+        }
         html += '</div>';
         // Day headers
-        html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:6px">';
+        html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">';
         dayNames.forEach(function(d) {
-          html += '<div style="text-align:center;font-size:0.75rem;color:#a16207;font-weight:500;padding:4px 0">' + d + '</div>';
+          html += '<div style="text-align:center;font-size:0.72rem;color:#a16207;font-weight:500;padding:3px 0">' + d + '</div>';
         });
         html += '</div>';
         // Days grid
@@ -770,26 +813,34 @@
           if (isPast) {
             bg = '#f9fafb'; color = '#d1d5db'; cursor = 'default'; title = '';
           } else if (isBlocked) {
-            bg = '#e5e7eb'; color = '#9ca3af'; cursor = 'default'; title = '已預訂';
+            bg = '#e5e7eb'; color = '#9ca3af'; cursor = 'default'; title = legendBooked;
           } else {
-            bg = '#f0fdf4'; color = '#15803d'; cursor = 'default'; title = '空房';
+            bg = '#f0fdf4'; color = '#15803d'; cursor = 'default'; title = legendAvail;
           }
 
-          html += '<div title="' + title + '" style="text-align:center;padding:6px 2px;border-radius:6px;' +
-            'background:' + bg + ';color:' + color + ';font-size:0.82rem;cursor:' + cursor + ';' +
+          html += '<div title="' + title + '" style="text-align:center;padding:5px 2px;border-radius:5px;' +
+            'background:' + bg + ';color:' + color + ';font-size:0.8rem;cursor:' + cursor + ';' +
             (isBlocked && !isPast ? 'text-decoration:line-through;' : '') + '">' + day + '</div>';
         }
         html += '</div>';
-        // Legend
-        html += '<div style="display:flex;gap:16px;margin-top:14px;font-size:0.78rem;color:#6b7280">';
-        html += '<span><span style="display:inline-block;width:12px;height:12px;background:#f0fdf4;border:1px solid #86efac;border-radius:3px;margin-right:4px;vertical-align:middle"></span>空房</span>';
-        html += '<span><span style="display:inline-block;width:12px;height:12px;background:#e5e7eb;border-radius:3px;margin-right:4px;vertical-align:middle"></span>已預訂</span>';
-        html += '</div>';
+        if (isFirst) {
+          // Legend only on first month
+          html += '<div style="display:flex;gap:16px;margin-top:12px;font-size:0.75rem;color:#6b7280">';
+          html += '<span><span style="display:inline-block;width:11px;height:11px;background:#f0fdf4;border:1px solid #86efac;border-radius:3px;margin-right:4px;vertical-align:middle"></span>' + legendAvail + '</span>';
+          html += '<span><span style="display:inline-block;width:11px;height:11px;background:#e5e7eb;border-radius:3px;margin-right:4px;vertical-align:middle"></span>' + legendBooked + '</span>';
+          html += '</div>';
+        }
         html += '</div>';
         return html;
       }
 
-      container.innerHTML = buildMonth(calYear, calMonth);
+      var month2 = calMonth === 11 ? 0 : calMonth + 1;
+      var year2  = calMonth === 11 ? calYear + 1 : calYear;
+      container.innerHTML =
+        '<div style="display:flex;flex-direction:column;gap:12px">' +
+        buildMonth(calYear, calMonth, true) +
+        buildMonth(year2, month2, false) +
+        '</div>';
     }
 
     window.calNavigate = function(dir) {

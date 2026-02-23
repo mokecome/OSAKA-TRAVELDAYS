@@ -169,6 +169,12 @@ db.exec(`
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
+  CREATE TABLE IF NOT EXISTS ical_cache (
+    propertyId TEXT PRIMARY KEY,
+    blockedDates TEXT NOT NULL DEFAULT '[]',
+    fetchedAt INTEGER NOT NULL DEFAULT 0
+  );
+
 `);
 
 // Migrate existing DB: add new columns if missing
@@ -345,7 +351,6 @@ function parseIcal(icsText) {
   return Array.from(blocked);
 }
 
-const icalCache = new Map(); // propertyId -> { blockedDates, fetchedAt }
 
 // ==================== SSR RENDERER ====================
 
@@ -419,7 +424,7 @@ function ssrRenderRegion(region, properties, isOdd, lang) {
       `<div class="text-center mb-14">` +
         `<span class="text-amber-500 text-sm tracking-widest uppercase mb-3 block">${escHtml(region.nameEn)}</span>` +
         `<h2 class="text-2xl md:text-3xl lg:text-4xl font-serif text-amber-900 section-title">${escHtml(region.nameZh)}</h2>` +
-        (region.description ? `<p class="text-amber-600 mt-4 max-w-lg mx-auto">${escHtml(region.description)}</p>` : '') +
+        (region.description ? `<p class="text-amber-600 mt-4 max-w-lg mx-auto">${escHtml(localizeField(region.description, lang))}</p>` : '') +
       `</div>` +
       `<div class="${gridClass}">${cardsHtml}</div>` +
     `</div>` +
@@ -914,25 +919,28 @@ app.get('/api/properties/:id', (req, res) => {
 });
 
 // Get availability (blocked dates) from Airbnb iCal
+const ICAL_TTL_MS = 21600000; // 6 hours
 app.get('/api/properties/:id/availability', async (req, res) => {
   try {
     const prop = db.prepare('SELECT ical_url FROM properties WHERE id = ?').get(req.params.id);
     if (!prop) return res.status(404).json({ error: 'Not found' });
     if (!prop.ical_url) return res.json({ blockedDates: [] });
 
-    const cached = icalCache.get(req.params.id);
-    if (cached && Date.now() - cached.fetchedAt < 30 * 1000) {
-      return res.json({ blockedDates: cached.blockedDates });
+    const cached = db.prepare('SELECT blockedDates, fetchedAt FROM ical_cache WHERE propertyId = ?').get(req.params.id);
+    if (cached && Date.now() - cached.fetchedAt < ICAL_TTL_MS) {
+      return res.json({ blockedDates: JSON.parse(cached.blockedDates) });
     }
 
     const response = await fetch(prop.ical_url, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) });
     if (!response.ok) throw new Error('iCal fetch failed: ' + response.status);
     const text = await response.text();
     const blockedDates = parseIcal(text);
-    icalCache.set(req.params.id, { blockedDates, fetchedAt: Date.now() });
+    db.prepare('INSERT OR REPLACE INTO ical_cache (propertyId, blockedDates, fetchedAt) VALUES (?,?,?)').run(req.params.id, JSON.stringify(blockedDates), Date.now());
     res.json({ blockedDates });
   } catch (err) {
     console.error('iCal fetch error:', err.message);
+    const stale = db.prepare('SELECT blockedDates FROM ical_cache WHERE propertyId = ?').get(req.params.id);
+    if (stale) return res.json({ blockedDates: JSON.parse(stale.blockedDates) });
     res.status(502).json({ error: 'iCal fetch failed', blockedDates: [] });
   }
 });
