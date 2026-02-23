@@ -862,6 +862,9 @@
     .region-tab.active { background: #f59e0b; color: white; }
     .scrollbar-hide { scrollbar-width: none; }
     .scrollbar-hide::-webkit-scrollbar { display: none; }
+    @media (max-width: 767px) {
+      .footer-section-mobile { margin-top: 2.5rem; }
+    }
   </style>
 
   <!-- Structured Data: Organization + LodgingBusiness -->
@@ -1234,7 +1237,7 @@
         </div>
 
         <!-- 聯絡資訊 ｜ 営業登記 ｜ 公司資訊 (right) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-14 md:gap-y-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
           <!-- 聯絡資訊 -->
           <div class="min-w-0">
             <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
@@ -1258,7 +1261,7 @@
           </div>
 
           <!-- 営業登記 -->
-          <div>
+          <div class="footer-section-mobile">
             <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
               <span class="w-8 h-0.5 bg-amber-500"></span>
               <span data-i18n="footer.registration">営業登記</span>
@@ -1272,7 +1275,7 @@
           </div>
 
           <!-- 公司資訊 -->
-          <div>
+          <div class="footer-section-mobile">
             <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
               <span class="w-8 h-0.5 bg-amber-500"></span>
               <span data-i18n="footer.company">公司資訊</span>
