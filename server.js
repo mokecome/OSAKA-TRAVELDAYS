@@ -363,9 +363,9 @@ const APARTMENT_ICON_SVG = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox
  */
 function localizeField(val, lang) {
   if (val === null || val === undefined) return '';
-  if (typeof val === 'object') return val[lang] || val['zh-TW'] || '';
+  if (typeof val === 'object') return lang in val ? val[lang] : (val['zh-TW'] ?? '');
   if (typeof val === 'string' && val.startsWith('{')) {
-    try { const o = JSON.parse(val); return o[lang] || o['zh-TW'] || val; } catch (e) {}
+    try { const o = JSON.parse(val); return lang in o ? o[lang] : (o['zh-TW'] ?? ''); } catch (e) {}
   }
   return val;
 }
