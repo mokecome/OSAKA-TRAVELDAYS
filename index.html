@@ -847,7 +847,6 @@
 
     /* Region filter tabs */
     .region-tab {
-      flex-shrink: 0;
       padding: 0.375rem 1rem;
       border-radius: 9999px;
       font-size: 0.875rem;
@@ -1076,7 +1075,7 @@
     <!-- Region Filter Bar -->
     <div id="regionFilterBar" class="hidden sticky top-16 z-30 bg-white/95 backdrop-blur-sm border-b border-amber-100 shadow-sm mb-8">
       <div class="container mx-auto px-4 lg:px-8">
-        <div id="regionFilterTabs" class="flex gap-2 overflow-x-auto py-3 scrollbar-hide"></div>
+        <div id="regionFilterTabs" class="flex flex-wrap gap-2 py-3"></div>
       </div>
     </div>
 
