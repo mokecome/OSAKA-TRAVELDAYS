@@ -1022,8 +1022,7 @@ app.put('/api/properties/:oldId/rename', requireAuth, (req, res) => {
   const transaction = db.transaction(() => {
     db.prepare('UPDATE property_images SET propertyId = ? WHERE propertyId = ?').run(newId, oldId);
     db.prepare('UPDATE properties SET id = ? WHERE id = ?').run(newId, oldId);
-    const cached = icalCache.get(oldId);
-    if (cached) { icalCache.set(newId, cached); icalCache.delete(oldId); }
+    db.prepare('UPDATE ical_cache SET propertyId = ? WHERE propertyId = ?').run(newId, oldId);
   });
 
   transaction();
