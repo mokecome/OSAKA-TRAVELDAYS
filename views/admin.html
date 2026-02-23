@@ -1446,7 +1446,7 @@ function editProperty(id) {
   currentRegionId = prop.regionId || null;
 
   loadPropertyToForm(prop);
-  var nameDisplay = (typeof prop.name === 'object' && prop.name) ? (prop.name['zh-TW'] || '(未命名)') : (prop.name || '(未命名)');
+  var nameDisplay = localDisplay(prop.name);
   document.getElementById('formTitle').textContent = '編輯：' + nameDisplay;
   document.getElementById('btnDelete').classList.remove('hidden');
   document.getElementById('btnDeleteBottom').classList.remove('hidden');
@@ -1497,7 +1497,7 @@ function checkNameDuplicate() {
   const nameEl = document.getElementById('f-name-zh-TW');
   if (!name) { nameEl.classList.remove('border-destructive'); return; }
   const existing = properties.find(p => {
-    const n = (typeof p.name === 'object' && p.name) ? (p.name['zh-TW'] || '') : (p.name || '');
+    const n = localDisplay(p.name, '');
     return n === name && p.id !== currentPropertyId;
   });
   if (existing) {
@@ -1623,7 +1623,7 @@ async function saveProperty() {
   let newId = document.getElementById('f-id').value.trim();
   if (!newId) newId = generateSlug(nameZhTW) || ('prop-' + Date.now());
   const dupName = properties.find(p => {
-    const n = (typeof p.name === 'object' && p.name) ? (p.name['zh-TW'] || '') : (p.name || '');
+    const n = localDisplay(p.name, '');
     return n === nameZhTW && p.id !== currentPropertyId;
   });
   if (dupName) {
