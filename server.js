@@ -170,9 +170,9 @@ db.exec(`
   );
 
   CREATE TABLE IF NOT EXISTS ical_cache (
-    propertyId TEXT PRIMARY KEY,
-    blockedDates TEXT NOT NULL DEFAULT '[]',
-    fetchedAt INTEGER NOT NULL DEFAULT 0
+    property_id TEXT PRIMARY KEY,
+    blocked_dates TEXT NOT NULL DEFAULT '[]',
+    fetched_at INTEGER NOT NULL DEFAULT 0
   );
 
 `);
@@ -926,21 +926,23 @@ app.get('/api/properties/:id/availability', async (req, res) => {
     if (!prop) return res.status(404).json({ error: 'Not found' });
     if (!prop.ical_url) return res.json({ blockedDates: [] });
 
-    const cached = db.prepare('SELECT blockedDates, fetchedAt FROM ical_cache WHERE propertyId = ?').get(req.params.id);
-    if (cached && Date.now() - cached.fetchedAt < ICAL_TTL_MS) {
-      return res.json({ blockedDates: JSON.parse(cached.blockedDates) });
+    const cached = db.prepare('SELECT blocked_dates, fetched_at FROM ical_cache WHERE property_id = ?').get(req.params.id);
+    if (cached && Date.now() - cached.fetched_at < ICAL_TTL_MS) {
+      return res.json({ blockedDates: JSON.parse(cached.blocked_dates) });
     }
 
     const response = await fetch(prop.ical_url, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) });
     if (!response.ok) throw new Error('iCal fetch failed: ' + response.status);
     const text = await response.text();
     const blockedDates = parseIcal(text);
-    db.prepare('INSERT OR REPLACE INTO ical_cache (propertyId, blockedDates, fetchedAt) VALUES (?,?,?)').run(req.params.id, JSON.stringify(blockedDates), Date.now());
+    db.prepare('INSERT OR REPLACE INTO ical_cache (property_id, blocked_dates, fetched_at) VALUES (?,?,?)').run(req.params.id, JSON.stringify(blockedDates), Date.now());
     res.json({ blockedDates });
   } catch (err) {
     console.error('iCal fetch error:', err.message);
-    const stale = db.prepare('SELECT blockedDates FROM ical_cache WHERE propertyId = ?').get(req.params.id);
-    if (stale) return res.json({ blockedDates: JSON.parse(stale.blockedDates) });
+    try {
+      const stale = db.prepare('SELECT blocked_dates FROM ical_cache WHERE property_id = ?').get(req.params.id);
+      if (stale) return res.json({ blockedDates: JSON.parse(stale.blocked_dates) });
+    } catch (_) {}
     res.status(502).json({ error: 'iCal fetch failed', blockedDates: [] });
   }
 });
@@ -1022,7 +1024,7 @@ app.put('/api/properties/:oldId/rename', requireAuth, (req, res) => {
   const transaction = db.transaction(() => {
     db.prepare('UPDATE property_images SET propertyId = ? WHERE propertyId = ?').run(newId, oldId);
     db.prepare('UPDATE properties SET id = ? WHERE id = ?').run(newId, oldId);
-    db.prepare('UPDATE ical_cache SET propertyId = ? WHERE propertyId = ?').run(newId, oldId);
+    db.prepare('UPDATE ical_cache SET property_id = ? WHERE property_id = ?').run(newId, oldId);
   });
 
   transaction();
