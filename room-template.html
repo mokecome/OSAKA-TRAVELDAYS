@@ -323,9 +323,9 @@
 
     function localizeField(val, lang) {
       if (val === null || val === undefined) return '';
-      if (typeof val === 'object' && !Array.isArray(val)) return val[lang] || val['zh-TW'] || '';
+      if (typeof val === 'object' && !Array.isArray(val)) return lang in val ? val[lang] : (val['zh-TW'] != null ? val['zh-TW'] : '');
       if (typeof val === 'string' && val.charAt(0) === '{') {
-        try { var o = JSON.parse(val); return o[lang] || o['zh-TW'] || val; } catch(e) {}
+        try { var o = JSON.parse(val); return lang in o ? o[lang] : (o['zh-TW'] != null ? o['zh-TW'] : ''); } catch(e) {}
       }
       return val;
     }
