@@ -702,6 +702,7 @@ app.get('/rooms/:id.html', (req, res) => {
   html = html.replace('</body>', propDataScript + '\n</body>');
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store');
   res.send(html);
 });
 

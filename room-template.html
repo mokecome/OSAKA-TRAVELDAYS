@@ -239,9 +239,10 @@
         padding: 24px 16px 24px 0;
       }
     }
-    /* Mobile booking bar */
+    /* Mobile booking bar — hidden on desktop, shown on mobile */
     .mobile-booking-bar {
-      display: none;
+      display: flex;
+      align-items: center;
       position: fixed;
       bottom: 0;
       left: 0;
@@ -252,9 +253,10 @@
       z-index: 40;
       box-shadow: 0 -4px 12px rgba(139, 69, 19, 0.1);
     }
-    @media (max-width: 1023px) {
-      .mobile-booking-bar { display: block; }
-      body.has-booking-bar { padding-bottom: 80px; }
+    body.has-booking-bar { padding-bottom: 80px; }
+    @media (min-width: 1024px) {
+      .mobile-booking-bar { display: none; }
+      body.has-booking-bar { padding-bottom: 0; }
     }
   </style>
 </head>
