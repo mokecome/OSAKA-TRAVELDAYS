@@ -296,6 +296,7 @@
     </main>
     <div id="roomSidebar" class="room-sidebar"></div>
   </div>
+  <!-- MOBILE_BOOKING_BAR_PLACEHOLDER -->
 
   <!-- Footer -->
   <footer class="bg-amber-950 text-amber-100 py-12 px-4">
@@ -670,27 +671,6 @@
       var loadingEl = document.getElementById('loadingState');
       if (loadingEl) loadingEl.remove();
       document.getElementById('mainContent').innerHTML = html;
-
-      // ========== Mobile Fixed Booking Bar ==========
-      var existingBar = document.getElementById('mobileBookingBar');
-      if (existingBar) existingBar.remove();
-      if (p.airbnbUrl) {
-        var bar = document.createElement('div');
-        bar.id = 'mobileBookingBar';
-        bar.className = 'mobile-booking-bar';
-        bar.innerHTML = '<a href="' + esc(airbnbTrackUrl) + '" target="_blank" rel="noopener" ' +
-          'class="airbnb-cta btn-primary" ' +
-          'style="width:100%;justify-content:center;gap:8px;border-radius:8px;padding:14px 24px">' +
-          '<span>立即預訂</span>' +
-          '<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
-          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" ' +
-          'd="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>' +
-          '</svg></a>';
-        document.body.appendChild(bar);
-        document.body.classList.add('has-booking-bar');
-      } else {
-        document.body.classList.remove('has-booking-bar');
-      }
 
       // ========== Populate Sidebar ==========
       var sidebarEl = document.getElementById('roomSidebar');
