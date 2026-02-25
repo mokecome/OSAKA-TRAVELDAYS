@@ -651,6 +651,18 @@
           '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-12">' + amenitiesHtml + '</div></div></section>';
       }
 
+      // ========== Mobile Availability Calendar ==========
+      if (p.ical_url) {
+        html += '<section class="py-12 lg:hidden bg-amber-50/50" id="mobileCalendarSection">' +
+          '<div class="container mx-auto px-4">' +
+          '<h2 class="text-2xl font-serif text-amber-900 mb-6 section-title">空房日期</h2>' +
+          '<div id="availabilityCalendarMobile" style="margin-top:2.5rem">' +
+          '<p style="color:#9ca3af;font-size:0.95rem">載入中...</p>' +
+          '</div>' +
+          '</div>' +
+          '</section>';
+      }
+
       var airbnbTrackUrl = p.airbnbUrl ? p.airbnbUrl + (p.airbnbUrl.includes('?') ? '&' : '?') + 'utm_source=osaka-traveldays&utm_medium=website&utm_campaign=room-page' : '';
 
       var loadingEl = document.getElementById('loadingState');
