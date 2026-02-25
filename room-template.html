@@ -795,10 +795,14 @@
           calYear = now.getFullYear();
           calMonth = now.getMonth();
           renderCalendar(el);
+          var mobileEl = document.getElementById('availabilityCalendarMobile');
+          if (mobileEl) renderCalendar(mobileEl);
         })
         .catch(function() {
           var el = document.getElementById('availabilityCalendar');
           if (el) el.innerHTML = '<p style="color:#9ca3af;font-size:0.9rem">無法載入空房資訊，請直接至 Airbnb 查看</p>';
+          var mobileEl = document.getElementById('availabilityCalendarMobile');
+          if (mobileEl) mobileEl.innerHTML = '<p style="color:#9ca3af;font-size:0.9rem">無法載入空房資訊，請直接至 Airbnb 查看</p>';
         });
     }
 
@@ -900,6 +904,8 @@
       if (calMonth > 11) { calMonth = 0; calYear++; }
       var el = document.getElementById('availabilityCalendar');
       if (el) renderCalendar(el);
+      var mobileEl = document.getElementById('availabilityCalendarMobile');
+      if (mobileEl) renderCalendar(mobileEl);
     };
 
     // ========== Language-aware re-render wrapper ==========
