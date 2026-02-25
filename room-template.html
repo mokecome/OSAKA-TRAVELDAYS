@@ -715,8 +715,9 @@
 
       // ========== Load Availability Calendar ==========
       if (p.ical_url) {
+        clearInterval(calPollInterval);
         loadAvailability(propertyId);
-        setInterval(function() { loadAvailability(propertyId); }, 10000);
+        calPollInterval = setInterval(function() { loadAvailability(propertyId); }, 10000);
       }
 
       // ========== YouTube fallback detection ==========
@@ -778,6 +779,7 @@
     // ========== Availability Calendar Functions ==========
     var calBlockedDates = [];
     var calYear, calMonth;
+    var calPollInterval = null;
 
     function loadAvailability(id) {
       fetch('/api/properties/' + encodeURIComponent(id) + '/availability')
