@@ -11,6 +11,7 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 const PORT = 3000;
 const SITE_URL = process.env.SITE_URL || 'https://airbnb.traveldays.com.tw';
+const icalCache = new Map();
 
 // ==================== AUTH ====================
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'CHANGE_ME_NOW';
@@ -705,7 +706,7 @@ app.get('/rooms/:id.html', (req, res) => {
       `style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;` +
       `background:linear-gradient(135deg,#8B4513,#A0522D);color:white;border-radius:8px;` +
       `padding:14px 24px;font-weight:600;text-decoration:none;">` +
-      `<span>立即預訂</span>` +
+      `<span id="mobileBookingBarText">立即預訂</span>` +
       `<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24">` +
       `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>` +
       `</svg></a></div>`;

@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/images/logo.png?v=2">
+  <link rel="shortcut icon" href="/images/logo.png?v=2">
   <title>載入中... | 大阪旅行日民宿</title>
   <meta name="robots" content="index, follow">
   <link rel="stylesheet" href="/css/tailwind.min.css">
@@ -278,9 +280,9 @@
             <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-nav" aria-pressed="false">EN</button>
           </div>
           <nav class="hidden md:flex items-center space-x-8">
-            <a href="../index.html#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">房源一覽</a>
-            <a href="../index.html#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">關於我們</a>
-            <a href="../index.html#contact" class="text-amber-800 hover:text-amber-600 transition-colors font-medium">聯絡我們</a>
+            <a href="../index.html#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n-room="navProperties">房源一覽</a>
+            <a href="../index.html#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n-room="navAbout">關於我們</a>
+            <a href="../index.html#contact" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n-room="navContact">聯絡我們</a>
           </nav>
         </div>
       </div>
@@ -340,6 +342,84 @@
     function getCurrentLang() {
       return localStorage.getItem('lang') || 'zh-TW';
     }
+
+    var ROOM_T = {
+      'zh-TW': {
+        intro: '房源介紹',
+        photos: '瀏覽照片',
+        viewAll: '查看全部照片',
+        photoUnit: ' 張',
+        spaceIntro: '空間介紹',
+        address: '住宿地址',
+        transport: '交通資訊',
+        station: '最近車站',
+        travelTime: '交通時間',
+        attractions: '周邊景點',
+        parking: '停車資訊',
+        amenities: '有提供的設備和服務',
+        availability: '空房日期',
+        selectDates: '選擇入住日期',
+        selectDatesDesc: '點擊下方按鈕選擇你的入住日期完成預訂',
+        bookNow: '立即預訂',
+        loading: '載入中...',
+        videoSoon: '影片即將推出',
+        watchYoutube: '點擊前往 YouTube 觀看',
+        watchVideo: '點擊觀看影片',
+        navProperties: '房源一覽',
+        navAbout: '關於我們',
+        navContact: '聯絡我們'
+      },
+      'ja': {
+        intro: '物件紹介',
+        photos: '写真を見る',
+        viewAll: 'すべての写真を見る',
+        photoUnit: ' 枚',
+        spaceIntro: 'スペース紹介',
+        address: '宿泊先住所',
+        transport: '交通情報',
+        station: '最寄り駅',
+        travelTime: '所要時間',
+        attractions: '周辺スポット',
+        parking: '駐車場情報',
+        amenities: '設備・サービス',
+        availability: '空き日程',
+        selectDates: '宿泊日を選択',
+        selectDatesDesc: '下のボタンから日程を選んでご予約ください',
+        bookNow: '今すぐ予約',
+        loading: '読み込み中...',
+        videoSoon: '動画準備中',
+        watchYoutube: 'YouTubeで見る',
+        watchVideo: '動画を見る',
+        navProperties: '物件一覧',
+        navAbout: '私たちについて',
+        navContact: 'お問い合わせ'
+      },
+      'en': {
+        intro: 'Property Description',
+        photos: 'Browse Photos',
+        viewAll: 'View All Photos',
+        photoUnit: ' more',
+        spaceIntro: 'Space Introduction',
+        address: 'Property Address',
+        transport: 'Transportation Info',
+        station: 'Nearest Station',
+        travelTime: 'Travel Time',
+        attractions: 'Nearby Attractions',
+        parking: 'Parking Info',
+        amenities: 'Amenities & Services',
+        availability: 'Availability',
+        selectDates: 'Select Your Dates',
+        selectDatesDesc: 'Click below to select your check-in date and complete your booking',
+        bookNow: 'Book Now',
+        loading: 'Loading...',
+        videoSoon: 'Video Coming Soon',
+        watchYoutube: 'Watch on YouTube',
+        watchVideo: 'Watch Video',
+        navProperties: 'Properties',
+        navAbout: 'About Us',
+        navContact: 'Contact'
+      }
+    };
 
     function localizeField(val, lang) {
       if (val === null || val === undefined) return '';
@@ -420,21 +500,21 @@
           '<div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">' +
           '<svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>' +
           '</div></div>' +
-          '<div class="absolute bottom-4 left-4 text-white text-sm bg-black/60 px-3 py-1 rounded-full">點擊前往 YouTube 觀看</div>' +
+          '<div class="absolute bottom-4 left-4 text-white text-sm bg-black/60 px-3 py-1 rounded-full">' + ROOM_T[lang].watchYoutube + '</div>' +
           '</a></div>';
       } else if (p.videoUrl) {
         videoHtml = '<div class="aspect-video rounded-2xl overflow-hidden shadow-lg">' +
           '<a href="' + esc(p.videoUrl) + '" target="_blank" class="block w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">' +
           '<div class="text-center text-white"><div class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">' +
           '<svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>' +
-          '</div><p>點擊觀看影片</p></div></a></div>';
+          '</div><p>' + ROOM_T[lang].watchVideo + '</p></div></a></div>';
       } else {
         // No video: show "coming soon" placeholder to keep 2-column layout
         videoHtml = '<div class="video-placeholder">' +
           '<div class="play-btn">' +
           '<svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">' +
           '<path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>' +
-          '</div><p class="text-white/70">影片即將推出</p></div>';
+          '</div><p class="text-white/70">' + ROOM_T[lang].videoSoon + '</p></div>';
       }
 
       // ========== Introduction ==========
@@ -478,7 +558,7 @@
             galleryHtml += '<div class="gallery-item relative" onclick="openLightbox(' + (i + 1) + ')">' +
               '<img src="' + esc(url) + '" alt="房源照片 ' + (i + 2) + '" loading="lazy">' +
               '<div class="absolute inset-0 bg-black/50 flex items-center justify-center">' +
-              '<span class="text-white font-semibold">+' + remaining + ' 張</span>' +
+              '<span class="text-white font-semibold">+' + remaining + ROOM_T[lang].photoUnit + '</span>' +
               '</div></div>';
           } else {
             galleryHtml += '<div class="gallery-item" onclick="openLightbox(' + (i + 1) + ')">' +
@@ -572,7 +652,7 @@
       if (videoHtml || introHtml || qiHtml) {
         html += '<section class="py-12 lg:py-16"><div class="container mx-auto px-4 lg:px-8">';
         html += '<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">' + videoHtml +
-          '<div><h2 class="text-2xl font-serif text-amber-900 mb-4 section-title">房源介紹</h2>' +
+          '<div><h2 class="text-2xl font-serif text-amber-900 mb-4 section-title">' + ROOM_T[lang].intro + '</h2>' +
           '<div class="prose prose-amber mt-8">' + introHtml + '</div>' +
           (qiHtml ? '<div class="mt-8 grid grid-cols-2 gap-4">' + qiHtml + '</div>' : '') +
           '</div></div>';
@@ -581,11 +661,11 @@
         if (galleryHtml) {
           html += '<div class="mt-12">' +
             '<div class="flex items-center justify-between mb-6">' +
-            '<h3 class="text-xl font-serif text-amber-900">瀏覽照片</h3>' +
+            '<h3 class="text-xl font-serif text-amber-900">' + ROOM_T[lang].photos + '</h3>' +
             '<button onclick="openLightbox(0)" class="text-amber-600 hover:text-amber-800 flex items-center gap-2">' +
             '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
             '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>' +
-            '查看全部照片</button>' +
+            ROOM_T[lang].viewAll + '</button>' +
             '</div>' +
             '<div class="gallery-grid">' + galleryHtml + '</div></div>';
         }
@@ -595,21 +675,21 @@
       // ========== Space Introduction ==========
       if (siHtml) {
         html += '<section class="py-12 lg:py-16 bg-amber-50/50"><div class="container mx-auto px-4 lg:px-8">' +
-          '<h2 class="text-2xl font-serif text-amber-900 mb-8 section-title">空間介紹</h2>' +
+          '<h2 class="text-2xl font-serif text-amber-900 mb-8 section-title">' + ROOM_T[lang].spaceIntro + '</h2>' +
           '<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">' + siHtml + '</div></div></section>';
       }
 
       // ========== Address & Transport ==========
       if (p.address || p.mapEmbedUrl || p.nearestStation || transportLines) {
         html += '<section class="py-12 lg:py-16"><div class="container mx-auto px-4 lg:px-8">' +
-          '<h2 class="text-2xl font-serif text-amber-900 mb-8 section-title">住宿地址</h2>' +
+          '<h2 class="text-2xl font-serif text-amber-900 mb-8 section-title">' + ROOM_T[lang].address + '</h2>' +
           '<div class="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">';
         if (p.mapEmbedUrl) {
           html += '<div class="lg:col-span-2"><div class="rounded-2xl overflow-hidden shadow-lg">' +
             '<iframe src="' + esc(p.mapEmbedUrl) + '" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div>';
         }
         html += '<div class="info-card' + (p.mapEmbedUrl ? '' : ' lg:col-span-3') + '">' +
-          '<h3 class="font-semibold text-amber-900 mb-4">交通資訊</h3><div class="space-y-3 text-amber-700 text-sm">';
+          '<h3 class="font-semibold text-amber-900 mb-4">' + ROOM_T[lang].transport + '</h3><div class="space-y-3 text-amber-700 text-sm">';
         if (p.address) {
           html += '<div class="flex items-start gap-2"><svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
             '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>' +
@@ -621,11 +701,11 @@
           nearestStationText.split('\n').forEach(function(line) {
             if (line.trim()) stationLines += '<li>• ' + esc(line.trim()) + '</li>';
           });
-          html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">最近車站</p>' +
+          html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">' + ROOM_T[lang].station + '</p>' +
             '<ul class="space-y-1">' + stationLines + '</ul></div>';
         }
         if (transportLines) {
-          html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">交通時間</p>' +
+          html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">' + ROOM_T[lang].travelTime + '</p>' +
             '<ul class="space-y-1">' + transportLines + '</ul></div>';
         }
         // Nearby attractions
@@ -635,13 +715,13 @@
             if (line.trim()) attractionLines += '<li>• ' + esc(line.trim()) + '</li>';
           });
           if (attractionLines) {
-            html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">周邊景點</p>' +
+            html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">' + ROOM_T[lang].attractions + '</p>' +
               '<ul class="space-y-1">' + attractionLines + '</ul></div>';
           }
         }
         // Parking info
         if (p.parkingInfo) {
-          html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">停車資訊</p>' +
+          html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">' + ROOM_T[lang].parking + '</p>' +
             '<ul class="space-y-1"><li>• ' + esc(p.parkingInfo) + '</li></ul></div>';
         }
         html += '</div></div></div></div></section>';
@@ -650,7 +730,7 @@
       // ========== Amenities ==========
       if (amenitiesHtml) {
         html += '<section class="py-12 lg:py-16 bg-amber-50/50"><div class="container mx-auto px-4 lg:px-8">' +
-          '<h2 class="text-2xl font-serif text-amber-900 mb-8 section-title">有提供的設備和服務</h2>' +
+          '<h2 class="text-2xl font-serif text-amber-900 mb-8 section-title">' + ROOM_T[lang].amenities + '</h2>' +
           '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-12">' + amenitiesHtml + '</div></div></section>';
       }
 
@@ -658,9 +738,9 @@
       if (p.ical_url) {
         html += '<section class="py-12 lg:hidden bg-amber-50/50" id="mobileCalendarSection">' +
           '<div class="container mx-auto px-4">' +
-          '<h2 class="text-2xl font-serif text-amber-900 mb-6 section-title">空房日期</h2>' +
+          '<h2 class="text-2xl font-serif text-amber-900 mb-6 section-title">' + ROOM_T[lang].availability + '</h2>' +
           '<div id="availabilityCalendarMobile" style="margin-top:2.5rem">' +
-          '<p style="color:#9ca3af;font-size:0.95rem">載入中...</p>' +
+          '<p style="color:#9ca3af;font-size:0.95rem">' + ROOM_T[lang].loading + '</p>' +
           '</div>' +
           '</div>' +
           '</section>';
@@ -678,17 +758,17 @@
         var sidebarHtml = '';
         if (p.ical_url) {
           sidebarHtml += '<div style="background:#fff;border:1px solid #fde68a;border-radius:12px;padding:20px;margin-bottom:16px">' +
-            '<h3 style="font-size:1rem;font-weight:600;color:#92400e;margin-bottom:12px;font-family:serif">空房日期</h3>' +
+            '<h3 style="font-size:1rem;font-weight:600;color:#92400e;margin-bottom:12px;font-family:serif">' + ROOM_T[lang].availability + '</h3>' +
             '<div id="availabilityCalendar" style="min-height:220px">' +
-            '<p style="color:#9ca3af;font-size:0.95rem">載入中...</p></div>' +
+            '<p style="color:#9ca3af;font-size:0.95rem">' + ROOM_T[lang].loading + '</p></div>' +
             '</div>';
         }
         if (p.airbnbUrl) {
           sidebarHtml += '<div style="background:linear-gradient(135deg,#78350f,#451a03);border-radius:12px;padding:20px;text-align:center">' +
-            '<h3 style="font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:8px;font-family:serif">選擇入住日期</h3>' +
-            '<p style="color:#fcd34d;font-size:0.85rem;margin-bottom:16px">點擊下方按鈕選擇你的入住日期完成預訂</p>' +
+            '<h3 style="font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:8px;font-family:serif">' + ROOM_T[lang].selectDates + '</h3>' +
+            '<p style="color:#fcd34d;font-size:0.85rem;margin-bottom:16px">' + ROOM_T[lang].selectDatesDesc + '</p>' +
             '<a href="' + esc(airbnbTrackUrl) + '" target="_blank" rel="noopener" class="btn-primary airbnb-cta" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#78350f;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;width:100%;justify-content:center">' +
-            '<span>立即預訂</span><svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+            '<span>' + ROOM_T[lang].bookNow + '</span><svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
             '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>' +
             '</div>';
         }
@@ -906,6 +986,16 @@
       window.setLanguage = function(lang) {
         if (_origSetLanguage) _origSetLanguage(lang);
         renderRoomContent(lang);
+        // Update mobile booking bar text
+        var mobileBarText = document.getElementById('mobileBookingBarText');
+        if (mobileBarText && ROOM_T[lang]) mobileBarText.textContent = ROOM_T[lang].bookNow;
+        // Update nav links
+        if (ROOM_T[lang]) {
+          document.querySelectorAll('[data-i18n-room]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n-room');
+            if (ROOM_T[lang][key] !== undefined) el.textContent = ROOM_T[lang][key];
+          });
+        }
         // Sync language button active state
         document.querySelectorAll('.lang-btn-nav').forEach(function(btn) {
           var isActive = btn.getAttribute('data-lang') === lang;
@@ -929,7 +1019,18 @@
     // Fetch and render
     if (window.__PROPERTY_DATA) {
       // SSR-provided data: render immediately with current language
-      renderRoomContent(getCurrentLang());
+      var _initLang = getCurrentLang();
+      renderRoomContent(_initLang);
+      // Sync mobile booking bar text to initial language
+      var _mbarText = document.getElementById('mobileBookingBarText');
+      if (_mbarText && ROOM_T[_initLang]) _mbarText.textContent = ROOM_T[_initLang].bookNow;
+      // Sync nav links to initial language
+      if (ROOM_T[_initLang]) {
+        document.querySelectorAll('[data-i18n-room]').forEach(function(el) {
+          var key = el.getAttribute('data-i18n-room');
+          if (ROOM_T[_initLang][key] !== undefined) el.textContent = ROOM_T[_initLang][key];
+        });
+      }
     } else {
       fetch('/api/properties/' + encodeURIComponent(propertyId))
         .then(function(res) {
