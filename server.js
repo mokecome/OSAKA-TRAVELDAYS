@@ -442,9 +442,11 @@ function ssrRenderAllRegions(regions) {
 }
 
 let ssrCache = null; // string | null — invalidated on property/region changes
+let ssrCacheMtime = 0; // mtime of index.html when cache was built
 
 function invalidateSSRCache() {
   ssrCache = null;
+  ssrCacheMtime = 0;
 }
 
 // ==================== HELPERS ====================
@@ -767,6 +769,13 @@ app.get('/sitemap.xml', (req, res) => {
 
 app.get('/', (req, res) => {
   try {
+    // Invalidate cache if index.html has been modified since last build
+    const indexPath = path.join(__dirname, 'index.html');
+    const currentMtime = fs.statSync(indexPath).mtimeMs;
+    if (ssrCache && currentMtime !== ssrCacheMtime) {
+      ssrCache = null;
+    }
+
     if (!ssrCache) {
       const regions = getRegionsWithProperties();
 
@@ -798,6 +807,7 @@ app.get('/', (req, res) => {
       pageHtml = pageHtml.replace('</body>', hydrationScript + '\n</body>');
 
       ssrCache = pageHtml;
+      ssrCacheMtime = currentMtime;
     }
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
