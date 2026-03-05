@@ -96,6 +96,15 @@ app.use('/api/', rateLimit({
   max: 100,
   message: { error: '請求過於頻繁，請稍後再試' }
 }));
+
+// Prevent nginx / browser from caching any API response
+app.use('/api/', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('X-Accel-Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  next();
+});
 app.post('/api/upload', rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
