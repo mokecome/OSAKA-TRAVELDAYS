@@ -2254,6 +2254,8 @@
           // Use innerHTML for keys that contain line breaks rendered as <br>
           if (key === 'hero.desc') {
             el.innerHTML = text.replace(/\n/g, '<br class="hidden sm:block">');
+          } else if (/^faq\.a\d+$/.test(key)) {
+            el.innerHTML = text;
           } else {
             el.textContent = text;
           }
@@ -2346,13 +2348,7 @@
               TRANSLATIONS[lang]['faq.q' + n] = item.q[lang];
             }
             if (item.a && item.a[lang] !== undefined) {
-              var aKey = 'faq.a' + n;
-              // faq.a4 for zh-TW is hardcoded in static HTML with <strong> tags;
-              // overriding via TRANSLATIONS would cause setLanguage() (which uses
-              // textContent) to render those tags as literal text.
-              if (!(aKey === 'faq.a4' && lang === 'zh-TW')) {
-                TRANSLATIONS[lang][aKey] = item.a[lang];
-              }
+              TRANSLATIONS[lang]['faq.a' + n] = item.a[lang];
             }
           });
         });
