@@ -67,7 +67,7 @@ app.use((req, res, next) => {
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https:",
     "connect-src 'self'",
-    "frame-src https://www.google.com",
+    "frame-src https://www.google.com https://www.youtube.com",
     "object-src 'none'",
     "base-uri 'self'"
   ].join('; '));
