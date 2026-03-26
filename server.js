@@ -987,8 +987,32 @@ app.get('/api/properties/:id/availability', async (req, res) => {
   }
 });
 
+// Normalize Google Maps URL to embed format
+async function normalizeMapUrl(url) {
+  if (!url) return '';
+  if (url.includes('/maps/embed')) return url;
+
+  let resolvedUrl = url;
+  // Short link → follow redirect to get real URL
+  if (url.includes('maps.app.goo.gl') || url.includes('goo.gl/maps')) {
+    try {
+      const r = await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(5000) });
+      const location = r.headers.get('location');
+      if (location) resolvedUrl = location;
+    } catch (_) {}
+  }
+
+  // Extract @lat,lng from URL
+  const m = resolvedUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (m) {
+    return `https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3000!2d${m[2]}!3d${m[1]}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1szh-TW!2sjp`;
+  }
+
+  return url;
+}
+
 // Create or update property
-app.post('/api/properties', requireAuth, (req, res) => {
+app.post('/api/properties', requireAuth, async (req, res) => {
   const p = req.body;
   const ml = (v) => v && typeof v === 'object' && !Array.isArray(v) ? JSON.stringify(v) : (v || '');
   if (!p.id || !p.name) return res.status(400).json({ error: 'ID and name are required' });
@@ -1003,6 +1027,8 @@ app.post('/api/properties', requireAuth, (req, res) => {
 
   const existing = db.prepare('SELECT id FROM properties WHERE id = ?').get(p.id);
 
+  const mapEmbedUrl = await normalizeMapUrl(p.mapEmbedUrl);
+
   const transaction = db.transaction(() => {
     if (existing) {
       db.prepare(`UPDATE properties SET
@@ -1014,7 +1040,7 @@ app.post('/api/properties', requireAuth, (req, res) => {
         WHERE id=?`).run(
         ml(p.name), p.type || '包棟民宿', p.regionId || null, regionZh, regionEn, regionDesc,
         ml(p.badge), ml(p.secondaryBadge), ml(p.shortDesc), ml(p.address),
-        ml(p.transportInfo), ml(p.introduction), p.videoUrl || '', p.mapEmbedUrl || '',
+        ml(p.transportInfo), ml(p.introduction), p.videoUrl || '', mapEmbedUrl,
         p.airbnbUrl || '', p.capacity || '', p.size || '', p.checkIn || '下午3點以後',
         p.checkOut || '上午10點之前', ml(p.transportDetail),
         JSON.stringify(p.quickInfo || []), JSON.stringify(p.amenities || []),
@@ -1030,7 +1056,7 @@ app.post('/api/properties', requireAuth, (req, res) => {
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
         p.id, ml(p.name), p.type || '包棟民宿', p.regionId || null, regionZh, regionEn, regionDesc,
         ml(p.badge), ml(p.secondaryBadge), ml(p.shortDesc), ml(p.address),
-        ml(p.transportInfo), ml(p.introduction), p.videoUrl || '', p.mapEmbedUrl || '',
+        ml(p.transportInfo), ml(p.introduction), p.videoUrl || '', mapEmbedUrl,
         p.airbnbUrl || '', p.capacity || '', p.size || '', p.checkIn || '下午3點以後',
         p.checkOut || '上午10點之前', ml(p.transportDetail), JSON.stringify(p.quickInfo || []),
         JSON.stringify(p.amenities || []), JSON.stringify(p.spaceIntro || []),
