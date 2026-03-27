@@ -732,7 +732,7 @@
         var parkingText = localizeField(p.parkingInfo, lang);
         if (parkingText) {
           html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">' + ROOM_T[lang].parking + '</p>' +
-            '<ul class="space-y-1"><li>• ' + esc(parkingText) + '</li></ul></div>';
+            '<p class="text-amber-700 text-sm">• ' + esc(parkingText) + '</p></div>';
         }
         html += '</div></div></div></div></section>';
       }

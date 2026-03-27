@@ -1003,7 +1003,7 @@ async function normalizeMapUrl(url) {
       const r = await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(5000) });
       const location = r.headers.get('location');
       if (location) resolvedUrl = location;
-    } catch (_) {}
+    } catch (e) { console.warn('normalizeMapUrl redirect failed:', e.message); }
   }
 
   // Extract @lat,lng from URL
@@ -1161,9 +1161,14 @@ app.get('/api/export', requireAuth, (req, res) => {
 });
 
 // Import data from JSON
-app.post('/api/import', requireAuth, (req, res) => {
+app.post('/api/import', requireAuth, async (req, res) => {
   const data = req.body;
   if (!Array.isArray(data)) return res.status(400).json({ error: 'Array expected' });
+
+  // Normalize map URLs before entering synchronous transaction
+  for (const p of data) {
+    p.mapEmbedUrl = await normalizeMapUrl(p.mapEmbedUrl);
+  }
 
   const insertProp = db.prepare(`INSERT OR REPLACE INTO properties (id, name, type, regionZh, regionEn,
     regionDesc, badge, secondaryBadge, shortDesc, address, transportInfo, introduction, videoUrl,
@@ -1179,7 +1184,7 @@ app.post('/api/import', requireAuth, (req, res) => {
       insertProp.run(p.id, p.name, p.type || '', p.regionZh || '', p.regionEn || '',
         p.regionDesc || '', p.badge || '', p.secondaryBadge || '', p.shortDesc || '',
         p.address || '', p.transportInfo || '', p.introduction || '', p.videoUrl || '',
-        p.mapEmbedUrl || '', p.airbnbUrl || '', p.capacity || '', p.size || '',
+        p.mapEmbedUrl, p.airbnbUrl || '', p.capacity || '', p.size || '',
         p.checkIn || '', p.checkOut || '', p.transportDetail || '',
         JSON.stringify(p.quickInfo || []),
         JSON.stringify(p.amenities || []), JSON.stringify(p.spaceIntro || []),
