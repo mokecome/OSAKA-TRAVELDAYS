@@ -151,6 +151,8 @@ db.exec(`
     amenities TEXT DEFAULT '[]',
     spaceIntro TEXT DEFAULT '[]',
     nearestStation TEXT DEFAULT '',
+    nearbyAttractions TEXT DEFAULT '',
+    parkingInfo TEXT DEFAULT '',
     createdAt TEXT DEFAULT (datetime('now','localtime')),
     updatedAt TEXT DEFAULT (datetime('now','localtime'))
   );
@@ -193,7 +195,9 @@ const migrations = [
   "ALTER TABLE properties ADD COLUMN spaceIntro TEXT DEFAULT '[]'",
   "ALTER TABLE properties ADD COLUMN nearestStation TEXT DEFAULT ''",
   "ALTER TABLE properties ADD COLUMN regionId INTEGER DEFAULT NULL",
-  "ALTER TABLE properties ADD COLUMN ical_url TEXT DEFAULT ''"
+  "ALTER TABLE properties ADD COLUMN ical_url TEXT DEFAULT ''",
+  "ALTER TABLE properties ADD COLUMN nearbyAttractions TEXT DEFAULT ''",
+  "ALTER TABLE properties ADD COLUMN parkingInfo TEXT DEFAULT ''"
 ];
 for (const sql of migrations) {
   try { db.exec(sql); } catch(e) {
@@ -1035,7 +1039,7 @@ app.post('/api/properties', requireAuth, async (req, res) => {
         name=?, type=?, regionId=?, regionZh=?, regionEn=?, regionDesc=?, badge=?, secondaryBadge=?,
         shortDesc=?, address=?, transportInfo=?, introduction=?, videoUrl=?, mapEmbedUrl=?,
         airbnbUrl=?, capacity=?, size=?, checkIn=?, checkOut=?, transportDetail=?,
-        quickInfo=?, amenities=?, spaceIntro=?, nearestStation=?, ical_url=?,
+        quickInfo=?, amenities=?, spaceIntro=?, nearestStation=?, nearbyAttractions=?, parkingInfo=?, ical_url=?,
         updatedAt=datetime('now','localtime')
         WHERE id=?`).run(
         ml(p.name), p.type || '包棟民宿', p.regionId || null, regionZh, regionEn, regionDesc,
@@ -1044,7 +1048,7 @@ app.post('/api/properties', requireAuth, async (req, res) => {
         p.airbnbUrl || '', p.capacity || '', p.size || '', p.checkIn || '下午3點以後',
         p.checkOut || '上午10點之前', ml(p.transportDetail),
         JSON.stringify(p.quickInfo || []), JSON.stringify(p.amenities || []),
-        JSON.stringify(p.spaceIntro || []), ml(p.nearestStation), p.icalUrl || '', p.id
+        JSON.stringify(p.spaceIntro || []), ml(p.nearestStation), ml(p.nearbyAttractions), ml(p.parkingInfo), p.icalUrl || '', p.id
       );
       // Clear iCal cache so next availability request re-fetches
       icalCache.delete(p.id);
@@ -1052,15 +1056,15 @@ app.post('/api/properties', requireAuth, async (req, res) => {
       db.prepare(`INSERT INTO properties (id, name, type, regionId, regionZh, regionEn, regionDesc, badge,
         secondaryBadge, shortDesc, address, transportInfo, introduction, videoUrl, mapEmbedUrl,
         airbnbUrl, capacity, size, checkIn, checkOut, transportDetail, quickInfo,
-        amenities, spaceIntro, nearestStation, ical_url)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
+        amenities, spaceIntro, nearestStation, nearbyAttractions, parkingInfo, ical_url)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
         p.id, ml(p.name), p.type || '包棟民宿', p.regionId || null, regionZh, regionEn, regionDesc,
         ml(p.badge), ml(p.secondaryBadge), ml(p.shortDesc), ml(p.address),
         ml(p.transportInfo), ml(p.introduction), p.videoUrl || '', mapEmbedUrl,
         p.airbnbUrl || '', p.capacity || '', p.size || '', p.checkIn || '下午3點以後',
         p.checkOut || '上午10點之前', ml(p.transportDetail), JSON.stringify(p.quickInfo || []),
         JSON.stringify(p.amenities || []), JSON.stringify(p.spaceIntro || []),
-        ml(p.nearestStation), p.icalUrl || ''
+        ml(p.nearestStation), ml(p.nearbyAttractions), ml(p.parkingInfo), p.icalUrl || ''
       );
     }
 
@@ -1164,8 +1168,8 @@ app.post('/api/import', requireAuth, (req, res) => {
   const insertProp = db.prepare(`INSERT OR REPLACE INTO properties (id, name, type, regionZh, regionEn,
     regionDesc, badge, secondaryBadge, shortDesc, address, transportInfo, introduction, videoUrl,
     mapEmbedUrl, airbnbUrl, capacity, size, checkIn, checkOut, transportDetail, quickInfo,
-    amenities, spaceIntro, nearestStation, createdAt, updatedAt)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+    amenities, spaceIntro, nearestStation, nearbyAttractions, parkingInfo, createdAt, updatedAt)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
 
   const delImgs = db.prepare('DELETE FROM property_images WHERE propertyId = ?');
   const insertImg = db.prepare('INSERT INTO property_images (propertyId, url, isLocal, filename, sortOrder) VALUES (?,?,?,?,?)');
@@ -1179,7 +1183,7 @@ app.post('/api/import', requireAuth, (req, res) => {
         p.checkIn || '', p.checkOut || '', p.transportDetail || '',
         JSON.stringify(p.quickInfo || []),
         JSON.stringify(p.amenities || []), JSON.stringify(p.spaceIntro || []),
-        p.nearestStation || '',
+        p.nearestStation || '', p.nearbyAttractions || '', p.parkingInfo || '',
         p.createdAt || new Date().toISOString(),
         p.updatedAt || new Date().toISOString());
 

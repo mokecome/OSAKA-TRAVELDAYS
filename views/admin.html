@@ -746,6 +746,30 @@
               <input type="text" id="f-mapEmbedUrl" class="form-input" placeholder="貼上任何 Google Maps 網址（分享連結、一般網址或嵌入網址皆可）">
               <p class="form-hint">系統會自動轉換為嵌入格式</p>
             </div>
+            <div>
+              <label class="form-label">周邊景點</label>
+              <div class="prop-lang-fields" data-lang="zh-TW">
+                <textarea id="f-nearbyAttractions-zh-TW" rows="3" class="form-input" placeholder="大阪城 步行10分鐘&#10;道頓堀 電車15分鐘&#10;每行一個景點"></textarea>
+              </div>
+              <div class="prop-lang-fields hidden" data-lang="ja">
+                <textarea id="f-nearbyAttractions-ja" rows="3" class="form-input"></textarea>
+              </div>
+              <div class="prop-lang-fields hidden" data-lang="en">
+                <textarea id="f-nearbyAttractions-en" rows="3" class="form-input"></textarea>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">停車資訊</label>
+              <div class="prop-lang-fields" data-lang="zh-TW">
+                <input type="text" id="f-parkingInfo-zh-TW" class="form-input" placeholder="例: 附設免費私人車庫">
+              </div>
+              <div class="prop-lang-fields hidden" data-lang="ja">
+                <input type="text" id="f-parkingInfo-ja" class="form-input">
+              </div>
+              <div class="prop-lang-fields hidden" data-lang="en">
+                <input type="text" id="f-parkingInfo-en" class="form-input">
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1517,7 +1541,7 @@ function clearForm() {
   ['zh-TW','ja','en'].forEach(function(lang) {
     var sfx = '-' + lang;
     ['f-name','f-shortDesc','f-badge','f-secondaryBadge','f-address','f-transportInfo',
-     'f-introduction','f-nearestStation','f-transportDetail',
+     'f-introduction','f-nearestStation','f-transportDetail','f-nearbyAttractions','f-parkingInfo',
      'f-qi1Title','f-qi1Value','f-qi1Desc','f-qi2Title','f-qi2Value','f-qi2Desc',
      'f-si1Title','f-si1Desc','f-si2Title','f-si2Desc','f-si3Title','f-si3Desc','f-si4Title','f-si4Desc'
     ].forEach(function(base) {
@@ -1568,6 +1592,8 @@ function loadPropertyToForm(prop) {
     if (el('f-introduction')) el('f-introduction').value = getLang(prop.introduction, lang);
     if (el('f-nearestStation')) el('f-nearestStation').value = getLang(prop.nearestStation, lang);
     if (el('f-transportDetail')) el('f-transportDetail').value = getLang(prop.transportDetail, lang);
+    if (el('f-nearbyAttractions')) el('f-nearbyAttractions').value = getLang(prop.nearbyAttractions, lang);
+    if (el('f-parkingInfo')) el('f-parkingInfo').value = getLang(prop.parkingInfo, lang);
   });
 
   var qi = (prop.quickInfo && Array.isArray(prop.quickInfo)) ? prop.quickInfo : [{}, {}];
@@ -1648,6 +1674,8 @@ async function saveProperty() {
     transportInfo: collectLangs('f-transportInfo'),
     nearestStation: collectLangs('f-nearestStation'),
     transportDetail: collectLangs('f-transportDetail'),
+    nearbyAttractions: collectLangs('f-nearbyAttractions'),
+    parkingInfo: collectLangs('f-parkingInfo'),
     mapEmbedUrl: document.getElementById('f-mapEmbedUrl').value.trim(),
     airbnbUrl: document.getElementById('f-airbnbUrl').value.trim(),
     icalUrl: document.getElementById('f-icalUrl').value.trim(),

@@ -717,9 +717,10 @@
             '<ul class="space-y-1">' + transportLines + '</ul></div>';
         }
         // Nearby attractions
-        if (p.nearbyAttractions) {
+        var attractionsText = localizeField(p.nearbyAttractions, lang);
+        if (attractionsText) {
           var attractionLines = '';
-          p.nearbyAttractions.split('\n').forEach(function(line) {
+          attractionsText.split('\n').forEach(function(line) {
             if (line.trim()) attractionLines += '<li>• ' + esc(line.trim()) + '</li>';
           });
           if (attractionLines) {
@@ -728,9 +729,10 @@
           }
         }
         // Parking info
-        if (p.parkingInfo) {
+        var parkingText = localizeField(p.parkingInfo, lang);
+        if (parkingText) {
           html += '<div class="border-t border-amber-100 pt-3 mt-3"><p class="font-medium text-amber-900 mb-2">' + ROOM_T[lang].parking + '</p>' +
-            '<ul class="space-y-1"><li>• ' + esc(p.parkingInfo) + '</li></ul></div>';
+            '<ul class="space-y-1"><li>• ' + esc(parkingText) + '</li></ul></div>';
         }
         html += '</div></div></div></div></section>';
       }
