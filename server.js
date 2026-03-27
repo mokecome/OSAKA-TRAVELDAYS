@@ -1033,39 +1033,32 @@ app.post('/api/properties', requireAuth, async (req, res) => {
 
   const mapEmbedUrl = await normalizeMapUrl(p.mapEmbedUrl);
 
+  // Shared column→value mapping (add new columns here only)
+  const cols = {
+    name: ml(p.name), type: p.type || '包棟民宿', regionId: p.regionId || null,
+    regionZh, regionEn, regionDesc,
+    badge: ml(p.badge), secondaryBadge: ml(p.secondaryBadge), shortDesc: ml(p.shortDesc),
+    address: ml(p.address), transportInfo: ml(p.transportInfo), introduction: ml(p.introduction),
+    videoUrl: p.videoUrl || '', mapEmbedUrl,
+    airbnbUrl: p.airbnbUrl || '', capacity: p.capacity || '', size: p.size || '',
+    checkIn: p.checkIn || '下午3點以後', checkOut: p.checkOut || '上午10點之前',
+    transportDetail: ml(p.transportDetail),
+    quickInfo: JSON.stringify(p.quickInfo || []), amenities: JSON.stringify(p.amenities || []),
+    spaceIntro: JSON.stringify(p.spaceIntro || []), nearestStation: ml(p.nearestStation),
+    nearbyAttractions: ml(p.nearbyAttractions), parkingInfo: ml(p.parkingInfo),
+    ical_url: p.icalUrl || ''
+  };
+  const colNames = Object.keys(cols);
+  const colValues = Object.values(cols);
+
   const transaction = db.transaction(() => {
     if (existing) {
-      db.prepare(`UPDATE properties SET
-        name=?, type=?, regionId=?, regionZh=?, regionEn=?, regionDesc=?, badge=?, secondaryBadge=?,
-        shortDesc=?, address=?, transportInfo=?, introduction=?, videoUrl=?, mapEmbedUrl=?,
-        airbnbUrl=?, capacity=?, size=?, checkIn=?, checkOut=?, transportDetail=?,
-        quickInfo=?, amenities=?, spaceIntro=?, nearestStation=?, nearbyAttractions=?, parkingInfo=?, ical_url=?,
-        updatedAt=datetime('now','localtime')
-        WHERE id=?`).run(
-        ml(p.name), p.type || '包棟民宿', p.regionId || null, regionZh, regionEn, regionDesc,
-        ml(p.badge), ml(p.secondaryBadge), ml(p.shortDesc), ml(p.address),
-        ml(p.transportInfo), ml(p.introduction), p.videoUrl || '', mapEmbedUrl,
-        p.airbnbUrl || '', p.capacity || '', p.size || '', p.checkIn || '下午3點以後',
-        p.checkOut || '上午10點之前', ml(p.transportDetail),
-        JSON.stringify(p.quickInfo || []), JSON.stringify(p.amenities || []),
-        JSON.stringify(p.spaceIntro || []), ml(p.nearestStation), ml(p.nearbyAttractions), ml(p.parkingInfo), p.icalUrl || '', p.id
-      );
-      // Clear iCal cache so next availability request re-fetches
+      db.prepare(`UPDATE properties SET ${colNames.map(c => c + '=?').join(', ')}, updatedAt=datetime('now','localtime') WHERE id=?`)
+        .run(...colValues, p.id);
       icalCache.delete(p.id);
     } else {
-      db.prepare(`INSERT INTO properties (id, name, type, regionId, regionZh, regionEn, regionDesc, badge,
-        secondaryBadge, shortDesc, address, transportInfo, introduction, videoUrl, mapEmbedUrl,
-        airbnbUrl, capacity, size, checkIn, checkOut, transportDetail, quickInfo,
-        amenities, spaceIntro, nearestStation, nearbyAttractions, parkingInfo, ical_url)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
-        p.id, ml(p.name), p.type || '包棟民宿', p.regionId || null, regionZh, regionEn, regionDesc,
-        ml(p.badge), ml(p.secondaryBadge), ml(p.shortDesc), ml(p.address),
-        ml(p.transportInfo), ml(p.introduction), p.videoUrl || '', mapEmbedUrl,
-        p.airbnbUrl || '', p.capacity || '', p.size || '', p.checkIn || '下午3點以後',
-        p.checkOut || '上午10點之前', ml(p.transportDetail), JSON.stringify(p.quickInfo || []),
-        JSON.stringify(p.amenities || []), JSON.stringify(p.spaceIntro || []),
-        ml(p.nearestStation), ml(p.nearbyAttractions), ml(p.parkingInfo), p.icalUrl || ''
-      );
+      db.prepare(`INSERT INTO properties (id, ${colNames.join(', ')}) VALUES (${Array(colNames.length + 1).fill('?').join(',')})`)
+        .run(p.id, ...colValues);
     }
 
     // Sync images
@@ -1170,17 +1163,18 @@ app.post('/api/import', requireAuth, async (req, res) => {
     p.mapEmbedUrl = await normalizeMapUrl(p.mapEmbedUrl);
   }
 
-  const insertProp = db.prepare(`INSERT OR REPLACE INTO properties (id, name, type, regionZh, regionEn,
-    regionDesc, badge, secondaryBadge, shortDesc, address, transportInfo, introduction, videoUrl,
-    mapEmbedUrl, airbnbUrl, capacity, size, checkIn, checkOut, transportDetail, quickInfo,
-    amenities, spaceIntro, nearestStation, nearbyAttractions, parkingInfo, createdAt, updatedAt)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+  const importCols = ['id','name','type','regionZh','regionEn','regionDesc','badge','secondaryBadge',
+    'shortDesc','address','transportInfo','introduction','videoUrl','mapEmbedUrl','airbnbUrl',
+    'capacity','size','checkIn','checkOut','transportDetail','quickInfo','amenities','spaceIntro',
+    'nearestStation','nearbyAttractions','parkingInfo','createdAt','updatedAt'];
+  const insertProp = db.prepare(`INSERT OR REPLACE INTO properties (${importCols.join(',')}) VALUES (${importCols.map(() => '?').join(',')})`);
 
   const delImgs = db.prepare('DELETE FROM property_images WHERE propertyId = ?');
   const insertImg = db.prepare('INSERT INTO property_images (propertyId, url, isLocal, filename, sortOrder) VALUES (?,?,?,?,?)');
 
   const importAll = db.transaction((items) => {
     for (const p of items) {
+      const now = new Date().toISOString();
       insertProp.run(p.id, p.name, p.type || '', p.regionZh || '', p.regionEn || '',
         p.regionDesc || '', p.badge || '', p.secondaryBadge || '', p.shortDesc || '',
         p.address || '', p.transportInfo || '', p.introduction || '', p.videoUrl || '',
@@ -1189,8 +1183,7 @@ app.post('/api/import', requireAuth, async (req, res) => {
         JSON.stringify(p.quickInfo || []),
         JSON.stringify(p.amenities || []), JSON.stringify(p.spaceIntro || []),
         p.nearestStation || '', p.nearbyAttractions || '', p.parkingInfo || '',
-        p.createdAt || new Date().toISOString(),
-        p.updatedAt || new Date().toISOString());
+        p.createdAt || now, p.updatedAt || now);
 
       delImgs.run(p.id);
       (p.images || []).forEach((img, i) => {
