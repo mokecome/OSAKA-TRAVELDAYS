@@ -1163,10 +1163,10 @@ app.post('/api/import', requireAuth, async (req, res) => {
     p.mapEmbedUrl = await normalizeMapUrl(p.mapEmbedUrl);
   }
 
-  const importCols = ['id','name','type','regionZh','regionEn','regionDesc','badge','secondaryBadge',
+  const importCols = ['id','name','type','regionId','regionZh','regionEn','regionDesc','badge','secondaryBadge',
     'shortDesc','address','transportInfo','introduction','videoUrl','mapEmbedUrl','airbnbUrl',
     'capacity','size','checkIn','checkOut','transportDetail','quickInfo','amenities','spaceIntro',
-    'nearestStation','nearbyAttractions','parkingInfo','createdAt','updatedAt'];
+    'nearestStation','nearbyAttractions','parkingInfo','ical_url','createdAt','updatedAt'];
   const insertProp = db.prepare(`INSERT OR REPLACE INTO properties (${importCols.join(',')}) VALUES (${importCols.map(() => '?').join(',')})`);
 
   const delImgs = db.prepare('DELETE FROM property_images WHERE propertyId = ?');
@@ -1175,7 +1175,7 @@ app.post('/api/import', requireAuth, async (req, res) => {
   const importAll = db.transaction((items) => {
     for (const p of items) {
       const now = new Date().toISOString();
-      insertProp.run(p.id, p.name, p.type || '', p.regionZh || '', p.regionEn || '',
+      insertProp.run(p.id, p.name, p.type || '', p.regionId || null, p.regionZh || '', p.regionEn || '',
         p.regionDesc || '', p.badge || '', p.secondaryBadge || '', p.shortDesc || '',
         p.address || '', p.transportInfo || '', p.introduction || '', p.videoUrl || '',
         p.mapEmbedUrl, p.airbnbUrl || '', p.capacity || '', p.size || '',
@@ -1183,6 +1183,7 @@ app.post('/api/import', requireAuth, async (req, res) => {
         JSON.stringify(p.quickInfo || []),
         JSON.stringify(p.amenities || []), JSON.stringify(p.spaceIntro || []),
         p.nearestStation || '', p.nearbyAttractions || '', p.parkingInfo || '',
+        p.icalUrl || p.ical_url || '',
         p.createdAt || now, p.updatedAt || now);
 
       delImgs.run(p.id);
