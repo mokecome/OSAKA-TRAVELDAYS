@@ -1021,6 +1021,24 @@ app.post('/api/properties', requireAuth, async (req, res) => {
   const ml = (v) => v && typeof v === 'object' && !Array.isArray(v) ? JSON.stringify(v) : (v || '');
   if (!p.id || !p.name) return res.status(400).json({ error: 'ID and name are required' });
 
+  // Validate name is not blank after trimming
+  const nameZh = typeof p.name === 'object' ? (p.name['zh-TW'] || '').trim() : (p.name || '').trim();
+  if (!nameZh) return res.status(400).json({ error: '房源名稱不可為空' });
+
+  // Check duplicate zh-TW name (exclude self)
+  const existingByName = db.prepare("SELECT id, name FROM properties WHERE id != ?").all(p.id);
+  const dupName = existingByName.find(row => {
+    try { const n = JSON.parse(row.name); return (n['zh-TW'] || '').trim() === nameZh; }
+    catch { return row.name === nameZh; }
+  });
+  if (dupName) return res.status(409).json({ error: '房源名稱「' + nameZh + '」已存在' });
+
+  // Validate URL fields
+  const urlRegex = /^https?:\/\//;
+  for (const [field, label] of [['airbnbUrl','Airbnb URL'],['videoUrl','影片 URL'],['icalUrl','iCal URL']]) {
+    if (p[field] && !urlRegex.test(p[field])) return res.status(400).json({ error: label + '：無效的 URL 格式' });
+  }
+
   // Validate regionId before touching the DB
   let regionZh = '', regionEn = '', regionDesc = '';
   if (p.regionId) {

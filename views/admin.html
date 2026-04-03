@@ -1657,6 +1657,19 @@ async function saveProperty() {
     showToast('房源名稱「' + nameZhTW + '」已存在，請使用不同名稱', 'error'); return;
   }
 
+  // URL 格式基本檢查
+  const urlFields = [
+    { id: 'f-airbnbUrl', label: 'Airbnb 網址' },
+    { id: 'f-videoUrl', label: '影片網址' },
+    { id: 'f-icalUrl', label: 'iCal 網址' }
+  ];
+  for (const uf of urlFields) {
+    const val = document.getElementById(uf.id).value.trim();
+    if (val && !/^https?:\/\//.test(val)) {
+      showToast(uf.label + '：請輸入有效的網址（需以 http 開頭）', 'error'); return;
+    }
+  }
+
   const selectedRegionId = document.getElementById('f-regionId').value;
 
   const prop = {
@@ -1706,6 +1719,11 @@ async function saveProperty() {
       ...currentImages.map(img => ({ url: img.url, isLocal: img.isLocal ? 1 : 0, filename: img.filename || '' }))
     ]
   };
+
+  // 圖片提醒（非強制）
+  if (prop.images.length === 0) {
+    if (!confirm('尚未上傳圖片，確定要儲存嗎？')) return;
+  }
 
   try {
     if (!isNewProperty && currentPropertyId && currentPropertyId !== newId) {
