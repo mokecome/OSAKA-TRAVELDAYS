@@ -1624,7 +1624,6 @@ function loadPropertyToForm(prop) {
     filename: img.filename || '',
     isCover: !!img.isCover
   }));
-  // Use isCover flag to separate cover from gallery
   currentCoverImage = allImages.find(img => img.isCover) || null;
   currentImages = allImages.filter(img => !img.isCover);
 
@@ -1722,6 +1721,8 @@ async function saveProperty() {
   // 圖片提醒（非強制）
   if (prop.images.length === 0) {
     if (!confirm('尚未上傳圖片，確定要儲存嗎？')) return;
+  } else if (!currentCoverImage) {
+    if (!confirm('尚未設定封面圖片，首頁卡片將不會顯示圖片。確定要儲存嗎？')) return;
   }
 
   try {

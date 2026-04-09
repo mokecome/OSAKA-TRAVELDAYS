@@ -207,18 +207,24 @@ for (const sql of migrations) {
   }
 }
 
-// Migrate: mark sortOrder=0 images as cover for existing data (one-time)
+// Migrate: one-time mark of first image as cover for existing data before isCover feature
 {
-  const unmarked = db.prepare("SELECT COUNT(*) as c FROM property_images WHERE isCover = 1").get();
-  if (unmarked.c === 0) {
+  const migrated = db.prepare("SELECT value FROM site_settings WHERE key = 'migration.isCover'").get();
+  if (!migrated) {
     const count = db.prepare(`
       UPDATE property_images SET isCover = 1
       WHERE id IN (
-        SELECT id FROM property_images
-        WHERE sortOrder = (SELECT MIN(sortOrder) FROM property_images p2 WHERE p2.propertyId = property_images.propertyId)
+        SELECT pi.id FROM property_images pi
+        INNER JOIN (
+          SELECT propertyId, MIN(sortOrder) as minSort
+          FROM property_images
+          GROUP BY propertyId
+          HAVING SUM(isCover) = 0
+        ) noCover ON pi.propertyId = noCover.propertyId AND pi.sortOrder = noCover.minSort
       )
     `).run();
     if (count.changes > 0) console.log(`[migration] Marked ${count.changes} existing cover images`);
+    db.prepare("INSERT OR REPLACE INTO site_settings (key, value, updatedAt) VALUES ('migration.isCover', '\"done\"', datetime('now','localtime'))").run();
   }
 }
 
@@ -409,7 +415,8 @@ function ssrRenderCard(property, delay, lang) {
   const secondaryBadge = localizeField(property.secondaryBadge, lang);
   const address       = localizeField(property.address, lang);
   const transportInfo = localizeField(property.transportInfo, lang);
-  const coverUrl = (property.images && property.images.length > 0) ? property.images[0].url || '' : '';
+  const coverImg = property.images && property.images.find(img => img.isCover);
+  const coverUrl = coverImg ? coverImg.url || '' : '';
   const badgeIcon = (badge === '公寓式民宿' || property.type === '公寓式民宿') ? APARTMENT_ICON_SVG : HOUSE_ICON_SVG;
   const delayAttr = delay > 0 ? ` style="animation-delay: ${delay}s;"` : '';
 
@@ -613,8 +620,8 @@ app.get('/rooms/:id.html', (req, res) => {
 
   const p = getPropertyWithImages(prop);
   const coverImg = p.images && p.images.find(img => img.isCover);
-  const coverImage = coverImg ? coverImg.url : (p.images && p.images.length > 0 ? p.images[0].url : '');
-  const fullCoverUrl = coverImage.startsWith('http') ? coverImage : `${SITE_URL}/${coverImage}`;
+  const coverImage = coverImg ? coverImg.url : '';
+  const fullCoverUrl = coverImage ? (coverImage.startsWith('http') ? coverImage : `${SITE_URL}/${coverImage}`) : '';
   const pageUrl = `${SITE_URL}/rooms/${propertyId}.html`;
 
   // Build meta description (always zh-TW for SEO)
@@ -710,16 +717,16 @@ app.get('/rooms/:id.html', (req, res) => {
   <meta property="og:type" content="website">
   <meta property="og:title" content="${escHtml(_nameZh)} | 大阪旅行日民宿">
   <meta property="og:description" content="${escHtml(metaDescription)}">
-  <meta property="og:image" content="${escHtml(fullCoverUrl)}">
+  ${fullCoverUrl ? `<meta property="og:image" content="${escHtml(fullCoverUrl)}">` : ''}
   <meta property="og:url" content="${pageUrl}">
   <meta property="og:site_name" content="大阪旅行日民宿 OSAKA TRAVELDAYS">
   <meta property="og:locale" content="zh_TW">
 
   <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:card" content="${fullCoverUrl ? 'summary_large_image' : 'summary'}">
   <meta name="twitter:title" content="${escHtml(_nameZh)} | 大阪旅行日民宿">
   <meta name="twitter:description" content="${escHtml(metaDescription)}">
-  <meta name="twitter:image" content="${escHtml(fullCoverUrl)}">
+  ${fullCoverUrl ? `<meta name="twitter:image" content="${escHtml(fullCoverUrl)}">` : ''}
 
   <!-- Structured Data -->
   <script type="application/ld+json">${JSON.stringify(jsonLd).replace(/<\/script>/gi, '<\\/script>')}</script>
