@@ -6,6 +6,7 @@ const fs = require('fs');
 const zlib = require('zlib');
 const crypto = require('crypto');
 
+const sharp = require('sharp');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
@@ -362,7 +363,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowed = /\.(jpg|jpeg|png|gif|webp|svg)$/i;
     cb(null, allowed.test(path.extname(file.originalname)));
@@ -1173,7 +1174,7 @@ app.post('/api/upload', requireAuth, (req, res) => {
   upload.array('images', 20)(req, res, (err) => {
     if (err instanceof multer.MulterError) {
       const messages = {
-        LIMIT_FILE_SIZE: '檔案大小超過 10MB 限制',
+        LIMIT_FILE_SIZE: '檔案大小超過 20MB 限制',
         LIMIT_FILE_COUNT: '一次最多上傳 20 張',
         LIMIT_UNEXPECTED_FILE: '欄位名稱不正確'
       };
@@ -1185,12 +1186,38 @@ app.post('/api/upload', requireAuth, (req, res) => {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: '未收到有效的圖片檔案（僅支援 jpg/png/gif/webp/svg）' });
     }
-    const files = req.files.map(f => ({
-      url: 'images/uploads/' + f.filename,
-      isLocal: 1,
-      filename: f.originalname
-    }));
-    res.json(files);
+
+    // Compress images (skip svg/gif)
+    const compressible = /\.(jpg|jpeg|png|webp)$/i;
+    const MAX_WIDTH = 1920;
+    const QUALITY = 80;
+
+    Promise.all(req.files.map(async (f) => {
+      if (!compressible.test(f.originalname)) return f;
+      const filePath = path.join(uploadDir, f.filename);
+      const ext = path.extname(f.originalname).toLowerCase();
+      try {
+        const img = sharp(filePath);
+        const meta = await img.metadata();
+        if (meta.width <= MAX_WIDTH && f.size < 500 * 1024) return f; // small enough, skip
+        let pipeline = img.resize({ width: MAX_WIDTH, withoutEnlargement: true });
+        if (ext === '.png') pipeline = pipeline.png({ quality: QUALITY });
+        else if (ext === '.webp') pipeline = pipeline.webp({ quality: QUALITY });
+        else pipeline = pipeline.jpeg({ quality: QUALITY, mozjpeg: true });
+        const tmpPath = filePath + '.tmp';
+        await pipeline.toFile(tmpPath);
+        fs.renameSync(tmpPath, filePath);
+      } catch (e) { /* keep original if compression fails */ }
+      return f;
+    })).then(files => {
+      res.json(files.map(f => ({
+        url: 'images/uploads/' + f.filename,
+        isLocal: 1,
+        filename: f.originalname
+      })));
+    }).catch(e => {
+      res.status(500).json({ error: '圖片壓縮失敗：' + e.message });
+    });
   });
 });
 
