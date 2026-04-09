@@ -1851,10 +1851,9 @@
       }
 
       function getCoverImage(property) {
-        if (property.images && property.images.length > 0) {
-          return property.images[0].url || '';
-        }
-        return '';
+        if (!property.images || property.images.length === 0) return '';
+        var cover = property.images.find(function(img) { return img.isCover; });
+        return cover ? (cover.url || '') : (property.images[0].url || '');
       }
 
       // escHtml is defined in the i18n script block below.

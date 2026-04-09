@@ -164,6 +164,7 @@ db.exec(`
     isLocal INTEGER DEFAULT 0,
     filename TEXT DEFAULT '',
     sortOrder INTEGER DEFAULT 0,
+    isCover INTEGER DEFAULT 0,
     FOREIGN KEY (propertyId) REFERENCES properties(id) ON DELETE CASCADE
   );
 
@@ -197,11 +198,27 @@ const migrations = [
   "ALTER TABLE properties ADD COLUMN regionId INTEGER DEFAULT NULL",
   "ALTER TABLE properties ADD COLUMN ical_url TEXT DEFAULT ''",
   "ALTER TABLE properties ADD COLUMN nearbyAttractions TEXT DEFAULT ''",
-  "ALTER TABLE properties ADD COLUMN parkingInfo TEXT DEFAULT ''"
+  "ALTER TABLE properties ADD COLUMN parkingInfo TEXT DEFAULT ''",
+  "ALTER TABLE property_images ADD COLUMN isCover INTEGER DEFAULT 0"
 ];
 for (const sql of migrations) {
   try { db.exec(sql); } catch(e) {
     if (!e.message.includes('duplicate column name')) console.error('[migration]', e.message);
+  }
+}
+
+// Migrate: mark sortOrder=0 images as cover for existing data (one-time)
+{
+  const unmarked = db.prepare("SELECT COUNT(*) as c FROM property_images WHERE isCover = 1").get();
+  if (unmarked.c === 0) {
+    const count = db.prepare(`
+      UPDATE property_images SET isCover = 1
+      WHERE id IN (
+        SELECT id FROM property_images
+        WHERE sortOrder = (SELECT MIN(sortOrder) FROM property_images p2 WHERE p2.propertyId = property_images.propertyId)
+      )
+    `).run();
+    if (count.changes > 0) console.log(`[migration] Marked ${count.changes} existing cover images`);
   }
 }
 
@@ -490,7 +507,7 @@ function getRegionsWithProperties() {
     const propIds = allProps.map(p => p.id);
     const imgPlaceholders = propIds.map(() => '?').join(',');
     const allImages = db.prepare(
-      `SELECT id, propertyId, url, isLocal, filename, sortOrder
+      `SELECT id, propertyId, url, isLocal, filename, sortOrder, isCover
          FROM property_images
         WHERE propertyId IN (${imgPlaceholders})
         ORDER BY sortOrder`
@@ -535,7 +552,7 @@ function getRegionsWithProperties() {
 
 function getPropertyWithImages(prop) {
   if (!prop) return null;
-  prop.images = db.prepare('SELECT id, propertyId, url, isLocal, filename, sortOrder FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(prop.id);
+  prop.images = db.prepare('SELECT id, propertyId, url, isLocal, filename, sortOrder, isCover FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(prop.id);
   prop.images = prop.images.map(img => {
     if (img.isLocal && img.url) {
       try {
@@ -595,7 +612,8 @@ app.get('/rooms/:id.html', (req, res) => {
   }
 
   const p = getPropertyWithImages(prop);
-  const coverImage = (p.images && p.images.length > 0) ? p.images[0].url : '';
+  const coverImg = p.images && p.images.find(img => img.isCover);
+  const coverImage = coverImg ? coverImg.url : (p.images && p.images.length > 0 ? p.images[0].url : '');
   const fullCoverUrl = coverImage.startsWith('http') ? coverImage : `${SITE_URL}/${coverImage}`;
   const pageUrl = `${SITE_URL}/rooms/${propertyId}.html`;
 
@@ -931,7 +949,7 @@ app.get('/api/properties', (req, res) => {
     const ids = props.map(p => p.id);
     const placeholders = ids.map(() => '?').join(',');
     const allImages = db.prepare(
-      `SELECT id, propertyId, url, isLocal, filename, sortOrder FROM property_images WHERE propertyId IN (${placeholders}) ORDER BY sortOrder`
+      `SELECT id, propertyId, url, isLocal, filename, sortOrder, isCover FROM property_images WHERE propertyId IN (${placeholders}) ORDER BY sortOrder`
     ).all(...ids);
     const imagesByPropId = {};
     for (const img of allImages) {
@@ -1081,9 +1099,9 @@ app.post('/api/properties', requireAuth, async (req, res) => {
 
     // Sync images
     db.prepare('DELETE FROM property_images WHERE propertyId = ?').run(p.id);
-    const insertImg = db.prepare('INSERT INTO property_images (propertyId, url, isLocal, filename, sortOrder) VALUES (?,?,?,?,?)');
+    const insertImg = db.prepare('INSERT INTO property_images (propertyId, url, isLocal, filename, sortOrder, isCover) VALUES (?,?,?,?,?,?)');
     (p.images || []).forEach((img, i) => {
-      insertImg.run(p.id, img.url, img.isLocal ? 1 : 0, img.filename || '', i);
+      insertImg.run(p.id, img.url, img.isLocal ? 1 : 0, img.filename || '', i, img.isCover ? 1 : 0);
     });
   });
 
@@ -1135,13 +1153,29 @@ app.delete('/api/properties/:id', requireAuth, (req, res) => {
 });
 
 // Upload images
-app.post('/api/upload', requireAuth, upload.array('images', 20), (req, res) => {
-  const files = req.files.map(f => ({
-    url: 'images/uploads/' + f.filename,
-    isLocal: 1,
-    filename: f.originalname
-  }));
-  res.json(files);
+app.post('/api/upload', requireAuth, (req, res) => {
+  upload.array('images', 20)(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      const messages = {
+        LIMIT_FILE_SIZE: '檔案大小超過 10MB 限制',
+        LIMIT_FILE_COUNT: '一次最多上傳 20 張',
+        LIMIT_UNEXPECTED_FILE: '欄位名稱不正確'
+      };
+      return res.status(400).json({ error: messages[err.code] || err.message });
+    }
+    if (err) {
+      return res.status(500).json({ error: '上傳發生錯誤：' + err.message });
+    }
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: '未收到有效的圖片檔案（僅支援 jpg/png/gif/webp/svg）' });
+    }
+    const files = req.files.map(f => ({
+      url: 'images/uploads/' + f.filename,
+      isLocal: 1,
+      filename: f.originalname
+    }));
+    res.json(files);
+  });
 });
 
 // Delete uploaded image file
@@ -1162,7 +1196,7 @@ app.delete('/api/upload/:filename', requireAuth, (req, res) => {
 app.get('/api/export', requireAuth, (req, res) => {
   const props = db.prepare('SELECT * FROM properties ORDER BY updatedAt DESC').all();
   props.forEach(p => {
-    p.images = db.prepare('SELECT url, isLocal, filename, sortOrder FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(p.id);
+    p.images = db.prepare('SELECT url, isLocal, filename, sortOrder, isCover FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(p.id);
     p.quickInfo  = safeParseJSON(p.quickInfo);
     p.amenities  = safeParseJSON(p.amenities);
     p.spaceIntro = safeParseJSON(p.spaceIntro);
@@ -1188,7 +1222,7 @@ app.post('/api/import', requireAuth, async (req, res) => {
   const insertProp = db.prepare(`INSERT OR REPLACE INTO properties (${importCols.join(',')}) VALUES (${importCols.map(() => '?').join(',')})`);
 
   const delImgs = db.prepare('DELETE FROM property_images WHERE propertyId = ?');
-  const insertImg = db.prepare('INSERT INTO property_images (propertyId, url, isLocal, filename, sortOrder) VALUES (?,?,?,?,?)');
+  const insertImg = db.prepare('INSERT INTO property_images (propertyId, url, isLocal, filename, sortOrder, isCover) VALUES (?,?,?,?,?,?)');
 
   const importAll = db.transaction((items) => {
     for (const p of items) {
@@ -1206,7 +1240,7 @@ app.post('/api/import', requireAuth, async (req, res) => {
 
       delImgs.run(p.id);
       (p.images || []).forEach((img, i) => {
-        insertImg.run(p.id, img.url, img.isLocal ? 1 : 0, img.filename || '', i);
+        insertImg.run(p.id, img.url, img.isLocal ? 1 : 0, img.filename || '', i, img.isCover ? 1 : 0);
       });
     }
   });

@@ -63,11 +63,6 @@
       to { opacity: 1; transform: translateX(0); }
     }
     .img-thumb { position: relative; }
-    .img-thumb:first-child::after {
-      content: '封面'; position: absolute; top: 4px; left: 4px;
-      background: var(--c-primary); color: white; font-size: 10px;
-      padding: 2px 6px; border-radius: 4px;
-    }
     .img-thumb .delete-img {
       position: absolute; top: 4px; right: 4px;
       background: rgba(0,0,0,0.6); color: white;
@@ -1243,7 +1238,10 @@ async function apiUpload(files) {
   for (const file of files) formData.append('images', file);
   const res = await fetch(API_BASE + '/upload', { method: 'POST', headers: { 'X-Admin-Token': AUTH_TOKEN }, body: formData });
   if (res.status === 401) { logout(); return; }
-  if (!res.ok) throw new Error('Upload failed');
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || '上傳失敗');
+  }
   return res.json();
 }
 
@@ -1623,11 +1621,12 @@ function loadPropertyToForm(prop) {
   const allImages = (prop.images || []).map(img => ({
     url: img.url,
     isLocal: !!img.isLocal,
-    filename: img.filename || ''
+    filename: img.filename || '',
+    isCover: !!img.isCover
   }));
-  // First image = cover, rest = gallery
-  currentCoverImage = allImages.length > 0 ? allImages[0] : null;
-  currentImages = allImages.slice(1);
+  // Use isCover flag to separate cover from gallery
+  currentCoverImage = allImages.find(img => img.isCover) || null;
+  currentImages = allImages.filter(img => !img.isCover);
 
   renderCoverPreview();
   renderImageGrid();
@@ -1715,8 +1714,8 @@ async function saveProperty() {
       }
     ],
     images: [
-      ...(currentCoverImage ? [{ url: currentCoverImage.url, isLocal: currentCoverImage.isLocal ? 1 : 0, filename: currentCoverImage.filename || '' }] : []),
-      ...currentImages.map(img => ({ url: img.url, isLocal: img.isLocal ? 1 : 0, filename: img.filename || '' }))
+      ...(currentCoverImage ? [{ url: currentCoverImage.url, isLocal: currentCoverImage.isLocal ? 1 : 0, filename: currentCoverImage.filename || '', isCover: 1 }] : []),
+      ...currentImages.map(img => ({ url: img.url, isLocal: img.isLocal ? 1 : 0, filename: img.filename || '', isCover: 0 }))
     ]
   };
 
