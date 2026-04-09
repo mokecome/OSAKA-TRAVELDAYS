@@ -350,6 +350,9 @@ db.exec(`
 }
 
 // ==================== IMAGE UPLOAD ====================
+const COMPRESSIBLE_EXT = /\.(jpg|jpeg|png|webp)$/i;
+const COMPRESS_MAX_WIDTH = 1920;
+const COMPRESS_QUALITY = 80;
 const uploadDir = path.join(__dirname, 'images', 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -1187,27 +1190,22 @@ app.post('/api/upload', requireAuth, (req, res) => {
       return res.status(400).json({ error: '未收到有效的圖片檔案（僅支援 jpg/png/gif/webp/svg）' });
     }
 
-    // Compress images (skip svg/gif)
-    const compressible = /\.(jpg|jpeg|png|webp)$/i;
-    const MAX_WIDTH = 1920;
-    const QUALITY = 80;
-
     Promise.all(req.files.map(async (f) => {
-      if (!compressible.test(f.originalname)) return f;
+      if (!COMPRESSIBLE_EXT.test(f.originalname)) return f;
       const filePath = path.join(uploadDir, f.filename);
       const ext = path.extname(f.originalname).toLowerCase();
       try {
         const img = sharp(filePath);
         const meta = await img.metadata();
-        if (meta.width <= MAX_WIDTH && f.size < 500 * 1024) return f; // small enough, skip
-        let pipeline = img.resize({ width: MAX_WIDTH, withoutEnlargement: true });
-        if (ext === '.png') pipeline = pipeline.png({ quality: QUALITY });
-        else if (ext === '.webp') pipeline = pipeline.webp({ quality: QUALITY });
-        else pipeline = pipeline.jpeg({ quality: QUALITY, mozjpeg: true });
-        const tmpPath = filePath + '.tmp';
+        if (meta.width <= COMPRESS_MAX_WIDTH && f.size < 500 * 1024) return f;
+        let pipeline = img.resize({ width: COMPRESS_MAX_WIDTH, withoutEnlargement: true });
+        if (ext === '.png') pipeline = pipeline.png({ quality: COMPRESS_QUALITY });
+        else if (ext === '.webp') pipeline = pipeline.webp({ quality: COMPRESS_QUALITY });
+        else pipeline = pipeline.jpeg({ quality: COMPRESS_QUALITY, mozjpeg: true });
+        const tmpPath = filePath + '.' + crypto.randomBytes(4).toString('hex') + '.tmp';
         await pipeline.toFile(tmpPath);
         fs.renameSync(tmpPath, filePath);
-      } catch (e) { /* keep original if compression fails */ }
+      } catch (e) { console.warn('[upload] compression skipped:', f.originalname, e.message); }
       return f;
     })).then(files => {
       res.json(files.map(f => ({
