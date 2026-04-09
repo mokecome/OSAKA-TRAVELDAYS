@@ -524,6 +524,9 @@ function getRegionsWithProperties() {
     const imagesByPropId = {};
     for (const img of allImages) {
       if (!imagesByPropId[img.propertyId]) imagesByPropId[img.propertyId] = [];
+      if (img.url && !img.url.startsWith('http') && !img.url.startsWith('/')) {
+        img.url = '/' + img.url;
+      }
       // Apply local-image cache-busting (same as getPropertyWithImages)
       if (img.isLocal && img.url) {
         try {
@@ -561,6 +564,9 @@ function getPropertyWithImages(prop) {
   if (!prop) return null;
   prop.images = db.prepare('SELECT id, propertyId, url, isLocal, filename, sortOrder, isCover FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(prop.id);
   prop.images = prop.images.map(img => {
+    if (img.url && !img.url.startsWith('http') && !img.url.startsWith('/')) {
+      img.url = '/' + img.url;
+    }
     if (img.isLocal && img.url) {
       try {
         const filePath = path.join(__dirname, img.url.replace(/^\//, ''));
@@ -961,6 +967,9 @@ app.get('/api/properties', (req, res) => {
     const imagesByPropId = {};
     for (const img of allImages) {
       if (!imagesByPropId[img.propertyId]) imagesByPropId[img.propertyId] = [];
+      if (img.url && !img.url.startsWith('http') && !img.url.startsWith('/')) {
+        img.url = '/' + img.url;
+      }
       if (img.isLocal && img.url) {
         try {
           const filePath = path.join(__dirname, img.url.replace(/^\//, ''));

@@ -483,7 +483,7 @@
     function renderProperty(p, lang) {
       lang = lang || getCurrentLang();
       document.title = localizeField(p.name, lang) + ' | 大阪旅行日民宿';
-      allImages = (p.images || []).map(function(img) { return img.url; });
+      allImages = (p.images || []).filter(function(img) { return !img.isCover; }).map(function(img) { return img.url; });
 
       var embedUrl = getYoutubeEmbedUrl(p.videoUrl);
       var ytId = getYoutubeId(p.videoUrl);
@@ -548,7 +548,7 @@
 
       // ========== Gallery (show up to 8, with "+N 張" overlay on last) ==========
       var galleryHtml = '';
-      var galleryImages = allImages.slice(1); // skip cover
+      var galleryImages = allImages;
       var maxShow = 8; // show up to 8 photos like original
       if (galleryImages.length > 0) {
         var showCount = Math.min(galleryImages.length, maxShow);
