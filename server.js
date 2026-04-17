@@ -11,7 +11,7 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = 3000;
-const SITE_URL = process.env.SITE_URL || 'https://airbnb.traveldays.com.tw';
+const SITE_URL = process.env.SITE_URL || 'https://stay.traveldays.com.tw';
 const icalCache = new Map();
 
 // ==================== AUTH ====================
@@ -77,7 +77,7 @@ app.use((req, res, next) => {
 
 // CORS whitelist
 const ALLOWED_ORIGINS = [
-  'https://airbnb.traveldays.com.tw',
+  'https://stay.traveldays.com.tw',
   'https://phpstack-1267721-6206156.cloudwaysapps.com'
 ];
 app.use((req, res, next) => {
