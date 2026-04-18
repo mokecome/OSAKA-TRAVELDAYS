@@ -790,6 +790,17 @@
           </div>
         </div>
 
+        <!-- 分類標籤 (高性價比 / 出差推薦 / 主題特色 / 家庭推薦 / 品牌體驗) -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">分類標籤</h2>
+            <span class="text-xs text-text-disabled">首頁可依此篩選，卡片上會顯示標籤</span>
+          </div>
+          <div class="card-body">
+            <div id="categoryTagsGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+          </div>
+        </div>
+
         <!-- 設備清單 (詳情頁) -->
         <div class="card mb-4">
           <div class="card-header">
@@ -1094,6 +1105,32 @@
           </div>
         </div>
 
+        <!-- Section 5: Partners -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">合作夥伴</h2>
+            <span class="text-xs text-text-disabled">首頁 Footer 合作 logo 列</span>
+          </div>
+          <div class="card-body">
+            <div id="partners-list" class="space-y-3 mb-4"></div>
+            <input type="file" id="partnerLogoFileInput" class="hidden" accept="image/*" onchange="onPartnerLogoFileChange(event)">
+            <div class="flex gap-2 flex-wrap pt-4 border-t border-border-subdued">
+              <button onclick="addPartner()" class="btn btn-default">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                + 新增合作夥伴
+              </button>
+              <button onclick="savePartners()" class="btn btn-primary">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                儲存合作夥伴
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -1141,6 +1178,13 @@
 // ==================== CONFIG ====================
 const API_BASE = '/api';
 const DEFAULT_AMENITIES = ['Wi-Fi','電視','廚房','洗衣機','空調設備','吹風機','冰箱','自助入住','停車場','浴缸','微波爐'];
+const CATEGORY_TAGS = [
+  { key: 'highValue',       label: '高性價比' },
+  { key: 'businessTravel',  label: '出差推薦' },
+  { key: 'themed',          label: '主題特色' },
+  { key: 'familyFriendly',  label: '家庭推薦' },
+  { key: 'brandExperience', label: '品牌體驗' }
+];
 let AUTH_TOKEN = sessionStorage.getItem('admin_token') || '';
 
 // ==================== STATE ====================
@@ -1153,6 +1197,7 @@ let currentRegionId = null;
 let currentCoverImage = null;
 let currentImages = [];
 let currentAmenities = [];
+let currentCategoryTags = [];
 let isNewProperty = false;
 let editingRegionId = null;
 
@@ -1478,6 +1523,7 @@ function startNewPropertyInRegion(regionId) {
   renderCoverPreview();
   renderImageGrid();
   renderAmenities();
+  renderCategoryTags();
   populateRegionSelect();
   navigate('property-form');
 }
@@ -1575,6 +1621,7 @@ function clearForm() {
   document.getElementById('f-hasElevator').checked = false;
   currentCoverImage = null;
   currentAmenities = [];
+  currentCategoryTags = [];
   switchPropLangTab('zh-TW');
 }
 
@@ -1643,6 +1690,7 @@ function loadPropertyToForm(prop) {
   });
 
   currentAmenities = Array.isArray(prop.amenities) ? [...prop.amenities] : [];
+  currentCategoryTags = Array.isArray(prop.categoryTags) ? [...prop.categoryTags] : [];
 
   const allImages = (prop.images || []).map(img => ({
     url: img.url,
@@ -1656,6 +1704,7 @@ function loadPropertyToForm(prop) {
   renderCoverPreview();
   renderImageGrid();
   renderAmenities();
+  renderCategoryTags();
   switchPropLangTab('zh-TW');
 }
 
@@ -1721,6 +1770,7 @@ async function saveProperty() {
     videoUrl: document.getElementById('f-videoUrl').value.trim(),
     hasStairs: document.getElementById('f-hasStairs').checked ? 1 : 0,
     hasElevator: document.getElementById('f-hasElevator').checked ? 1 : 0,
+    categoryTags: currentCategoryTags,
     amenities: currentAmenities,
     spaceIntro: [1,2,3,4].map(function(n) {
       return {
@@ -1947,6 +1997,35 @@ function removeCustomAmenity(name) {
   renderAmenities();
 }
 
+// ==================== CATEGORY TAGS ====================
+function renderCategoryTags() {
+  const grid = document.getElementById('categoryTagsGrid');
+  if (!grid) return;
+  grid.innerHTML = CATEGORY_TAGS.map(tag => {
+    const checked = currentCategoryTags.includes(tag.key);
+    const id = 'cat-' + tag.key;
+    return `
+      <div>
+        <input type="checkbox" id="${id}" class="amenity-check hidden" ${checked ? 'checked' : ''} onchange="toggleCategoryTag('${tag.key}', this.checked)">
+        <label for="${id}" class="amenity-label">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          ${tag.label}
+        </label>
+      </div>`;
+  }).join('');
+}
+
+function toggleCategoryTag(key, checked) {
+  if (checked) {
+    if (!currentCategoryTags.includes(key)) currentCategoryTags.push(key);
+  } else {
+    currentCategoryTags = currentCategoryTags.filter(t => t !== key);
+  }
+  renderCategoryTags();
+}
+
 // ==================== REGION LIST ====================
 function renderRegionList() {
   const table = document.getElementById('regionTableBody');
@@ -2075,6 +2154,8 @@ function showToast(msg, type = 'info') {
 
 // Track current FAQ items in memory
 let faqItems = [];
+let partners = [];
+let partnerLogoUploadIdx = null; // idx currently waiting for logo upload
 
 async function loadHomepageSettings() {
   try {
@@ -2122,6 +2203,10 @@ async function loadHomepageSettings() {
       document.getElementById('footer-company-' + lang).value = footerCompany[lang] || '';
       document.getElementById('footer-address-' + lang).value = footerAddress[lang] || '';
     });
+
+    // --- Partners ---
+    partners = Array.isArray(settings['footer.partners']) ? JSON.parse(JSON.stringify(settings['footer.partners'])) : [];
+    renderPartnersList();
   } catch (err) {
     showToast('載入首頁設定失敗：' + err.message, 'error');
   }
@@ -2333,6 +2418,120 @@ function faqDrop(e, i) {
   faqItems.splice(i, 0, item);
   faqDragIndex = null;
   renderFAQList(faqItems);
+}
+
+// ==================== PARTNERS ====================
+function collectPartnersFromDOM() {
+  const list = document.getElementById('partners-list');
+  const cards = list.querySelectorAll('.partner-item-card');
+  return Array.from(cards).map(card => {
+    const idx = Number(card.dataset.idx);
+    const name = (card.querySelector('[data-partner-name]') || {}).value || '';
+    const url = (card.querySelector('[data-partner-url]') || {}).value || '';
+    const logoUrl = (partners[idx] && partners[idx].logoUrl) || '';
+    return { name: name.trim(), url: url.trim(), logoUrl };
+  });
+}
+
+function renderPartnersList() {
+  const list = document.getElementById('partners-list');
+  if (!list) return;
+  if (!partners || partners.length === 0) {
+    list.innerHTML = '<p class="text-sm text-text-disabled py-4 text-center">尚無合作夥伴，點擊「+ 新增合作夥伴」開始建立</p>';
+    return;
+  }
+  list.innerHTML = partners.map((p, i) => {
+    const name = (p && p.name) || '';
+    const url = (p && p.url) || '';
+    const logoUrl = (p && p.logoUrl) || '';
+    const preview = logoUrl
+      ? `<img src="${escHtml(logoUrl)}" alt="${escHtml(name)}" class="h-16 w-16 object-contain bg-white border border-border-subdued rounded">`
+      : `<div class="h-16 w-16 flex items-center justify-center bg-surface-hover border border-border-subdued rounded text-text-disabled text-xs">無圖</div>`;
+    return `
+      <div class="partner-item-card border border-border-default rounded-xl p-4 flex flex-col md:flex-row gap-3 items-start md:items-center" data-idx="${i}">
+        <div class="flex items-center gap-3 md:gap-4 flex-shrink-0">
+          <button onclick="triggerPartnerLogoUpload(${i})" class="focus:outline-none" title="點擊上傳 logo">
+            ${preview}
+          </button>
+          <div class="flex flex-col gap-1">
+            <button onclick="movePartner(${i},-1)" ${i === 0 ? 'disabled' : ''} class="text-xs px-2 py-0.5 border border-border-subdued rounded hover:bg-surface-hover disabled:opacity-30">↑</button>
+            <button onclick="movePartner(${i},1)" ${i === partners.length - 1 ? 'disabled' : ''} class="text-xs px-2 py-0.5 border border-border-subdued rounded hover:bg-surface-hover disabled:opacity-30">↓</button>
+          </div>
+        </div>
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+          <div>
+            <label class="form-label text-xs">名稱</label>
+            <input type="text" class="form-input" data-partner-name value="${escHtml(name)}" placeholder="例: OST不動産">
+          </div>
+          <div>
+            <label class="form-label text-xs">連結 URL（選填）</label>
+            <input type="text" class="form-input" data-partner-url value="${escHtml(url)}" placeholder="https://...">
+          </div>
+        </div>
+        <button onclick="deletePartner(${i})" class="text-text-disabled hover:text-destructive transition-colors text-xl leading-none px-2" title="刪除">&times;</button>
+      </div>`;
+  }).join('');
+}
+
+function addPartner() {
+  partners = collectPartnersFromDOM();
+  partners.push({ name: '', url: '', logoUrl: '' });
+  renderPartnersList();
+}
+
+function deletePartner(i) {
+  partners = collectPartnersFromDOM();
+  partners.splice(i, 1);
+  renderPartnersList();
+}
+
+function movePartner(i, dir) {
+  partners = collectPartnersFromDOM();
+  const j = i + dir;
+  if (j < 0 || j >= partners.length) return;
+  const tmp = partners[i];
+  partners[i] = partners[j];
+  partners[j] = tmp;
+  renderPartnersList();
+}
+
+function triggerPartnerLogoUpload(i) {
+  partnerLogoUploadIdx = i;
+  const input = document.getElementById('partnerLogoFileInput');
+  input.value = '';
+  input.click();
+}
+
+async function onPartnerLogoFileChange(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file || partnerLogoUploadIdx === null) return;
+  const idx = partnerLogoUploadIdx;
+  partnerLogoUploadIdx = null;
+  showToast('Logo 上傳中...', 'info');
+  try {
+    partners = collectPartnersFromDOM();
+    const uploaded = await apiUpload([file]);
+    if (uploaded && uploaded[0] && uploaded[0].url) {
+      const url = uploaded[0].url.startsWith('/') ? uploaded[0].url : '/' + uploaded[0].url;
+      partners[idx] = partners[idx] || { name: '', url: '', logoUrl: '' };
+      partners[idx].logoUrl = url;
+      renderPartnersList();
+      showToast('Logo 已上傳（記得按儲存）', 'success');
+    }
+  } catch (err) {
+    showToast('Logo 上傳失敗：' + err.message, 'error');
+  }
+}
+
+async function savePartners() {
+  const items = collectPartnersFromDOM();
+  try {
+    await apiPost('/settings', { key: 'footer.partners', value: items });
+    partners = items;
+    showToast('合作夥伴已儲存', 'success');
+  } catch (err) {
+    showToast('儲存失敗：' + err.message, 'error');
+  }
 }
 
 // --- Footer save ---

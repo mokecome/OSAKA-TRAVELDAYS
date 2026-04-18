@@ -202,6 +202,7 @@ const migrations = [
   "ALTER TABLE properties ADD COLUMN parkingInfo TEXT DEFAULT ''",
   "ALTER TABLE properties ADD COLUMN hasStairs INTEGER DEFAULT 0",
   "ALTER TABLE properties ADD COLUMN hasElevator INTEGER DEFAULT 0",
+  "ALTER TABLE properties ADD COLUMN categoryTags TEXT DEFAULT '[]'",
   "ALTER TABLE property_images ADD COLUMN isCover INTEGER DEFAULT 0"
 ];
 for (const sql of migrations) {
@@ -422,6 +423,11 @@ function parseIcal(icsText) {
 
 const HOUSE_ICON_SVG = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>';
 const APARTMENT_ICON_SVG = '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/></svg>';
+const CATEGORY_TAG_LABELS = {
+  'zh-TW': { highValue: '高性價比', businessTravel: '出差推薦', themed: '主題特色', familyFriendly: '家庭推薦', brandExperience: '品牌體驗' },
+  'ja':    { highValue: 'コスパ抜群', businessTravel: 'ビジネス向け', themed: 'テーマ特化', familyFriendly: 'ファミリー向け', brandExperience: 'ブランド体験' },
+  'en':    { highValue: 'Best Value', businessTravel: 'Business Travel', themed: 'Themed', familyFriendly: 'Family-Friendly', brandExperience: 'Brand Experience' }
+};
 
 /**
  * Extract the display value for `lang` from a multilingual field.
@@ -458,7 +464,14 @@ function ssrRenderCard(property, delay, lang) {
     `</div>` +
     `<div class="p-6 flex flex-col flex-1">` +
       `<h3 class="font-bold text-xl text-amber-900 mb-1">${escHtml(name)}</h3>` +
-      `<p class="text-amber-500 text-sm mb-4">${escHtml(shortDesc)}</p>` +
+      `<p class="text-amber-500 text-sm mb-2">${escHtml(shortDesc)}</p>` +
+      (function(){
+        const tags = Array.isArray(property.categoryTags) ? property.categoryTags : [];
+        if (!tags.length) return '';
+        const labels = CATEGORY_TAG_LABELS[lang] || CATEGORY_TAG_LABELS['zh-TW'];
+        const pills = tags.map(k => `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">${escHtml(labels[k] || k)}</span>`).join('');
+        return `<div class="flex flex-wrap gap-1.5 mb-3">${pills}</div>`;
+      })() +
       `<div class="space-y-1 mb-5">` +
         `<div class="info-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>${escHtml(address)}</span></div>` +
         `<div class="info-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span>${escHtml(transportInfo)}</span></div>` +
@@ -481,9 +494,11 @@ function ssrRenderRegion(region, properties, isOdd, lang) {
   let cardsHtml = '';
   for (let i = 0; i < count; i++) {
     const delay = i * 0.1;
-    if (count === 1) cardsHtml += `<div class="w-full max-w-sm">${ssrRenderCard(properties[i], delay, lang)}</div>`;
-    else if (count >= 5) cardsHtml += `<div class="w-full md:w-[calc(33.333%-1.4rem)]">${ssrRenderCard(properties[i], delay, lang)}</div>`;
-    else cardsHtml += ssrRenderCard(properties[i], delay, lang);
+    const p = properties[i];
+    const catAttr = escHtml((Array.isArray(p.categoryTags) ? p.categoryTags : []).join(','));
+    if (count === 1) cardsHtml += `<div class="property-slot w-full max-w-sm" data-category-tags="${catAttr}">${ssrRenderCard(p, delay, lang)}</div>`;
+    else if (count >= 5) cardsHtml += `<div class="property-slot w-full md:w-[calc(33.333%-1.4rem)]" data-category-tags="${catAttr}">${ssrRenderCard(p, delay, lang)}</div>`;
+    else cardsHtml += `<div class="property-slot contents" data-category-tags="${catAttr}">${ssrRenderCard(p, delay, lang)}</div>`;
   }
 
   return `<div class="py-16 lg:py-20 ${bgClass}" data-region-id="${escHtml(String(region.id))}">` +
@@ -569,10 +584,11 @@ function getRegionsWithProperties() {
 
     // Attach images + parse JSON fields to each property
     for (const p of allProps) {
-      p.images     = imagesByPropId[p.id] || [];
-      p.quickInfo  = safeParseJSON(p.quickInfo);
-      p.amenities  = safeParseJSON(p.amenities);
-      p.spaceIntro = safeParseJSON(p.spaceIntro);
+      p.images       = imagesByPropId[p.id] || [];
+      p.quickInfo    = safeParseJSON(p.quickInfo);
+      p.amenities    = safeParseJSON(p.amenities);
+      p.spaceIntro   = safeParseJSON(p.spaceIntro);
+      p.categoryTags = safeParseJSON(p.categoryTags);
     }
   }
 
@@ -605,9 +621,10 @@ function getPropertyWithImages(prop) {
     }
     return img;
   });
-  prop.quickInfo  = safeParseJSON(prop.quickInfo);
-  prop.amenities  = safeParseJSON(prop.amenities);
-  prop.spaceIntro = safeParseJSON(prop.spaceIntro);
+  prop.quickInfo    = safeParseJSON(prop.quickInfo);
+  prop.amenities    = safeParseJSON(prop.amenities);
+  prop.spaceIntro   = safeParseJSON(prop.spaceIntro);
+  prop.categoryTags = safeParseJSON(prop.categoryTags);
   return prop;
 }
 
@@ -1128,6 +1145,7 @@ app.post('/api/properties', requireAuth, async (req, res) => {
     spaceIntro: JSON.stringify(p.spaceIntro || []), nearestStation: ml(p.nearestStation),
     nearbyAttractions: ml(p.nearbyAttractions), parkingInfo: ml(p.parkingInfo),
     hasStairs: p.hasStairs ? 1 : 0, hasElevator: p.hasElevator ? 1 : 0,
+    categoryTags: JSON.stringify(Array.isArray(p.categoryTags) ? p.categoryTags : []),
     ical_url: p.icalUrl || ''
   };
   const colNames = Object.keys(cols);
@@ -1321,7 +1339,8 @@ app.post('/api/import', requireAuth, async (req, res) => {
 // ---- SITE SETTINGS ----
 const ALLOWED_SETTINGS_KEYS = new Set([
   'hero.image', 'hero.title', 'hero.subtitle', 'hero.desc', 'hero.cta',
-  'faq.items', 'footer.email', 'footer.line', 'footer.company', 'footer.address'
+  'faq.items', 'footer.email', 'footer.line', 'footer.company', 'footer.address',
+  'footer.partners'
 ]);
 
 // Get all settings (public)
