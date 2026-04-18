@@ -863,6 +863,33 @@
     .region-tab:hover { background: #fef3c7; }
     .region-tab.active { background: #f59e0b; color: white; }
     #regionFilterBar { position: sticky; z-index: 40; background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid #fef3c7; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    /* Category chips inside hero — refined ghost style */
+    #categoryFilterBar .region-tab {
+      padding: 0.45rem 1rem;
+      margin: 0.35rem 0.45rem;
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.35);
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 0.05em;
+      font-weight: 400;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    }
+    @media (min-width: 768px) {
+      #categoryFilterBar .region-tab { padding: 0.5rem 1.25rem; margin: 0.5rem 0.65rem; }
+    }
+    @media (hover: hover) {
+      #categoryFilterBar .region-tab:hover {
+        background: rgba(255,255,255,0.18);
+        border-color: rgba(255,255,255,0.9);
+      }
+    }
+    #categoryFilterBar .region-tab.active {
+      background: #f59e0b;
+      color: white;
+      border-color: #f59e0b;
+    }
     /* Mobile nav dropdown */
     #mobileNav { position: fixed; left: 0; right: 0; z-index: 45; background: white; border-bottom: 1px solid #fef3c7; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
     #mobileNav.open { max-height: 180px; }
@@ -1061,11 +1088,13 @@
       </div>
 
       <!-- Category Filter (inside hero, below CTA; not sticky) -->
-      <div id="categoryFilterBar" class="hidden mt-10 animate-fadeInUp" style="animation-delay: 0.6s;">
-        <div class="flex items-center justify-center flex-wrap gap-3">
-          <span class="text-white/80 text-xs tracking-[0.2em] uppercase shrink-0" data-i18n="filter.label.category">類型</span>
-          <div id="categoryFilterTabs" class="flex flex-wrap gap-2 justify-center"></div>
+      <div id="categoryFilterBar" class="hidden mt-12 md:mt-16">
+        <div class="flex items-center justify-center gap-3 mb-6 animate-fadeInUp" style="animation-delay: 0.55s;">
+          <span class="h-px w-12 bg-white/30"></span>
+          <span class="text-amber-300/90 text-sm">✦</span>
+          <span class="h-px w-12 bg-white/30"></span>
         </div>
+        <div id="categoryFilterTabs" class="flex flex-wrap justify-center max-w-3xl mx-auto"></div>
       </div>
     </div>
 
@@ -1106,10 +1135,7 @@
     <!-- Region Filter Bar (sticky) -->
     <div id="regionFilterBar" class="hidden bg-white/95 backdrop-blur-sm border-b border-amber-100 shadow-sm mb-8">
       <div class="container mx-auto px-4 lg:px-8">
-        <div class="flex items-center gap-4 py-3">
-          <span class="text-sm text-amber-700 font-semibold shrink-0 whitespace-nowrap" data-i18n="filter.label.region">地區</span>
-          <div id="regionFilterTabs" class="flex flex-wrap gap-2 flex-1"></div>
-        </div>
+        <div id="regionFilterTabs" class="flex flex-wrap gap-2 py-3"></div>
       </div>
     </div>
     <div id="filterEmpty" class="hidden container mx-auto px-4 lg:px-8 text-center text-amber-700 py-8" data-i18n="filter.empty">尚無符合的房源</div>
@@ -2133,10 +2159,11 @@
         }
 
         if (catTabs) {
-          var chtml = '<button class="region-tab category-tab active" data-cat="all" data-i18n="filter.allCategories" aria-pressed="true">' + allCategoriesLabel + '</button>';
-          CATEGORY_TAG_KEYS.forEach(function(k) {
+          var chtml = '<button class="region-tab category-tab active animate-fadeInUp" data-cat="all" data-i18n="filter.allCategories" aria-pressed="true" style="animation-delay: 0.60s;">' + allCategoriesLabel + '</button>';
+          CATEGORY_TAG_KEYS.forEach(function(k, i) {
             var lbl = t['category.' + k] || k;
-            chtml += '<button class="region-tab category-tab" data-cat="' + escHtml(k) + '" data-i18n="category.' + escHtml(k) + '" aria-pressed="false">' + escHtml(lbl) + '</button>';
+            var delay = (0.60 + (i + 1) * 0.06).toFixed(2);
+            chtml += '<button class="region-tab category-tab animate-fadeInUp" data-cat="' + escHtml(k) + '" data-i18n="category.' + escHtml(k) + '" aria-pressed="false" style="animation-delay: ' + delay + 's;">' + escHtml(lbl) + '</button>';
           });
           catTabs.innerHTML = chtml;
           catTabs.onclick = function(e) {
