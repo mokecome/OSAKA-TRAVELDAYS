@@ -10,3 +10,8 @@ scrape-results/
 .claude-install/
 .claude/
 .worktrees/
+
+# Internal specs / source data with sensitive info (credentials, GA accounts)
+*.xlsx
+*.XLSX
+1.pdf
