@@ -241,6 +241,75 @@
         padding: 24px 16px 24px 0;
       }
     }
+    /* Sidebar booking: 立即預訂 button + hover popup with 3 options */
+    .booking-wrapper { position: relative; }
+    .booking-primary {
+      display:inline-flex;align-items:center;justify-content:center;gap:10px;
+      width:100%;padding:14px 24px;cursor:pointer;
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.18), rgba(217, 119, 6, 0.22));
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(252, 211, 77, 0.5);
+      color: #fef3c7;
+      border-radius:10px;
+      font-weight:600;font-size:1.05rem;letter-spacing:0.03em;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .booking-primary:hover {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.35), rgba(217, 119, 6, 0.4));
+      border-color: rgba(252, 211, 77, 0.85);
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+      transform: translateY(-1px);
+      color: #fff;
+    }
+    .booking-primary:active { transform: translateY(0); }
+    .booking-primary svg { transition: transform 0.2s ease; }
+    .booking-wrapper:hover .booking-primary svg,
+    .booking-wrapper.open .booking-primary svg { transform: rotate(180deg); }
+    .booking-popup {
+      position: absolute;
+      bottom: 100%; left: 0; right: 0;
+      margin-bottom: 8px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 8px;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(6px);
+      transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+      z-index: 30;
+    }
+    @media (hover: hover) {
+      .booking-wrapper:hover .booking-popup { opacity: 1; visibility: visible; transform: translateY(0); }
+    }
+    .booking-wrapper.open .booking-popup { opacity: 1; visibility: visible; transform: translateY(0); }
+    .booking-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      text-align: left;
+      color: rgba(255, 255, 255, 0.95);
+      font-weight: 500;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+    .booking-btn + .booking-btn { border-top: 1px solid rgba(255, 255, 255, 0.18); }
+    .booking-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+    .booking-icon {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center; justify-content: center;
+    }
+    .booking-label { flex: 1; }
+    .booking-arrow { color: rgba(255,255,255,0.45); flex-shrink: 0; }
+
     /* Mobile booking bar — hidden on desktop, shown on mobile */
     .mobile-booking-bar {
       display: flex;
@@ -255,7 +324,7 @@
       z-index: 40;
       box-shadow: 0 -4px 12px rgba(139, 69, 19, 0.1);
     }
-    body.has-booking-bar { padding-bottom: 80px; }
+    body.has-booking-bar { padding-bottom: 70px; }
     @media (min-width: 1024px) {
       .mobile-booking-bar { display: none; }
       body.has-booking-bar { padding-bottom: 0; }
@@ -371,7 +440,10 @@
         navContact: '聯絡我們',
         accessStairs: '樓梯',
         accessElevator: '電梯',
-        toothbrushNote: '請自備牙刷牙膏'
+        toothbrushNote: '請自備牙刷牙膏',
+        bookingAirbnbTitle: '線上預約',
+        bookingLineTitle: 'LINE專人客服訂房',
+        bookingWaTitle: '電話·WhatsApp預約'
       },
       'ja': {
         intro: '物件紹介',
@@ -400,7 +472,10 @@
         navContact: 'お問い合わせ',
         accessStairs: '階段',
         accessElevator: 'エレベーター',
-        toothbrushNote: '歯ブラシ・歯磨き粉はご持参ください'
+        toothbrushNote: '歯ブラシ・歯磨き粉はご持参ください',
+        bookingAirbnbTitle: 'オンライン予約',
+        bookingLineTitle: 'LINE カスタマー予約',
+        bookingWaTitle: '電話・WhatsApp予約'
       },
       'en': {
         intro: 'Property Description',
@@ -429,7 +504,10 @@
         navContact: 'Contact',
         accessStairs: 'Stairs',
         accessElevator: 'Elevator',
-        toothbrushNote: 'Please bring your own toothbrush and toothpaste'
+        toothbrushNote: 'Please bring your own toothbrush and toothpaste',
+        bookingAirbnbTitle: 'Book Online',
+        bookingLineTitle: 'LINE Concierge',
+        bookingWaTitle: 'Phone · WhatsApp'
       }
     };
 
@@ -800,15 +878,29 @@
             '<p style="color:#9ca3af;font-size:0.95rem">' + ROOM_T[lang].loading + '</p></div>' +
             '</div>';
         }
+        // Booking box: 立即預訂 primary + hover popup with 3 options
+        sidebarHtml += '<div style="background:linear-gradient(135deg,#78350f,#451a03);border-radius:12px;padding:20px">' +
+          '<h3 style="font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:8px;font-family:serif;text-align:center">' + ROOM_T[lang].selectDates + '</h3>' +
+          '<p style="color:#fcd34d;font-size:0.85rem;margin-bottom:16px;text-align:center">' + ROOM_T[lang].selectDatesDesc + '</p>' +
+          '<div class="booking-wrapper">' +
+          '<button type="button" class="booking-primary" onclick="toggleBookingPopup(this)">' +
+          '<span>' + ROOM_T[lang].bookNow + '</span>' +
+          '<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg></button>' +
+          '<div class="booking-popup">';
+        var iconAirbnb = '<span class="booking-icon" style="background:#FF5A5F"><svg style="width:18px;height:18px" fill="#fff" viewBox="0 0 24 24"><path d="M12 2C7 2 3 6 3 11c0 3 1.5 5.5 3.5 7C8 19.5 10 22 12 22s4-2.5 5.5-4c2-1.5 3.5-4 3.5-7 0-5-4-9-9-9zm0 13.5c-2 0-3.5-1.5-3.5-3.5S10 8.5 12 8.5s3.5 1.5 3.5 3.5-1.5 3.5-3.5 3.5z"/></svg></span>';
+        var iconLine = '<span class="booking-icon" style="background:#06C755"><svg style="width:18px;height:18px" fill="#fff" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 5.68 2 10.2c0 4.05 3.56 7.44 8.37 8.08.33.07.77.22.89.5.1.26.07.66.03.93l-.14.88c-.04.26-.21 1.02.89.56 1.1-.46 5.93-3.5 8.1-5.98C21.66 13.6 22 11.97 22 10.2 22 5.68 17.52 2 12 2z"/></svg></span>';
+        var iconWa = '<span class="booking-icon" style="background:#25D366"><svg style="width:18px;height:18px" fill="#fff" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.84.5 3.57 1.38 5.06L2 22l5.06-1.37C8.47 21.5 10.17 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm5.17 14.3c-.22.62-1.29 1.18-1.79 1.25-.46.06-1.04.09-1.68-.11-.39-.12-.89-.3-1.54-.58-2.7-1.17-4.46-3.89-4.6-4.07-.14-.18-1.1-1.46-1.1-2.78 0-1.32.69-1.96.94-2.24.24-.27.53-.34.71-.34.18 0 .35.01.5.02.16.01.38-.06.6.46.22.53.76 1.85.83 1.99.07.13.12.29.03.47-.09.18-.13.29-.27.44-.14.15-.29.34-.42.46-.14.12-.28.26-.12.5.16.24.71 1.17 1.53 1.9 1.05.93 1.94 1.22 2.18 1.35.24.12.38.11.52-.06.14-.18.6-.7.76-.94.15-.24.31-.2.52-.12.21.08 1.33.63 1.56.74.23.12.38.18.44.28.06.11.06.62-.16 1.23z"/></svg></span>';
+        var chevron = '<svg class="booking-arrow" style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
         if (p.airbnbUrl) {
-          sidebarHtml += '<div style="background:linear-gradient(135deg,#78350f,#451a03);border-radius:12px;padding:20px;text-align:center">' +
-            '<h3 style="font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:8px;font-family:serif">' + ROOM_T[lang].selectDates + '</h3>' +
-            '<p style="color:#fcd34d;font-size:0.85rem;margin-bottom:16px">' + ROOM_T[lang].selectDatesDesc + '</p>' +
-            '<a href="' + esc(airbnbTrackUrl) + '" target="_blank" rel="noopener" class="btn-primary airbnb-cta" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#78350f;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;width:100%;justify-content:center">' +
-            '<span>' + ROOM_T[lang].bookNow + '</span><svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
-            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>' +
-            '</div>';
+          sidebarHtml += '<a href="' + esc(airbnbTrackUrl) + '" target="_blank" rel="noopener" class="booking-btn airbnb-cta">' +
+            iconAirbnb + '<span class="booking-label">' + ROOM_T[lang].bookingAirbnbTitle + '</span>' + chevron + '</a>';
         }
+        sidebarHtml += '<a href="https://lin.ee/YDEZNOL" target="_blank" rel="noopener" class="booking-btn" data-gtag-label="line_booking">' +
+          iconLine + '<span class="booking-label">' + ROOM_T[lang].bookingLineTitle + '</span>' + chevron + '</a>';
+        sidebarHtml += '<a href="https://wa.me/+819054076414" target="_blank" rel="noopener" class="booking-btn" data-gtag-label="whatsapp_booking">' +
+          iconWa + '<span class="booking-label">' + ROOM_T[lang].bookingWaTitle + '</span>' + chevron + '</a>';
+        sidebarHtml += '</div></div></div>';
         sidebarEl.innerHTML = sidebarHtml;
       }
 
@@ -839,16 +931,24 @@
       }
     }
 
-    // ========== Airbnb Click Tracking (single listener) ==========
+    // ========== Booking click tracking (delegated) ==========
     document.addEventListener('click', function(e) {
-      var link = e.target.closest('.airbnb-cta');
-      if (link && window.gtag) {
-        gtag('event', 'click', {
-          event_category: 'outbound',
-          event_label: 'airbnb_booking',
-          transport_type: 'beacon'
-        });
-      }
+      var link = e.target.closest('a[data-gtag-label], .airbnb-cta');
+      if (!link || !window.gtag) return;
+      var label = link.getAttribute('data-gtag-label') || 'airbnb_booking';
+      gtag('event', 'click', { event_category: 'outbound', event_label: label, transport_type: 'beacon' });
+    });
+
+    // ========== Booking popup toggle (click + click-outside) ==========
+    window.toggleBookingPopup = function(btn) {
+      var wrapper = btn.closest('.booking-wrapper');
+      if (wrapper) wrapper.classList.toggle('open');
+    };
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.booking-wrapper')) return;
+      document.querySelectorAll('.booking-wrapper.open').forEach(function(w) {
+        w.classList.remove('open');
+      });
     });
 
     // Lightbox
@@ -1085,5 +1185,6 @@
         });
     }
   </script>
+
 </body>
 </html>

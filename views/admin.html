@@ -1105,6 +1105,48 @@
           </div>
         </div>
 
+        <!-- Section 5.5: Menu 外部連結 -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">Menu 外部連結</h2>
+            <span class="text-xs text-text-disabled">Nav 加一個指向外部頁面的連結（留空則不顯示）</span>
+          </div>
+          <div class="card-body space-y-4">
+            <div>
+              <label class="form-label">URL</label>
+              <input type="url" id="menu-product-url" class="form-input" placeholder="https://shop.example.com">
+            </div>
+            <div class="border-t border-border-subdued pt-4">
+              <p class="form-label mb-3">顯示名稱（多語言）</p>
+              <div class="flex gap-1 mb-4 border-b border-border-subdued">
+                <button onclick="switchMenuProductTab('zh-TW')" id="menu-product-tab-zh-TW"
+                  class="px-4 py-2 text-sm font-medium border-b-2 border-primary text-primary -mb-px transition-colors">繁中</button>
+                <button onclick="switchMenuProductTab('ja')" id="menu-product-tab-ja"
+                  class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">日文</button>
+                <button onclick="switchMenuProductTab('en')" id="menu-product-tab-en"
+                  class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">英文</button>
+              </div>
+              <div id="menu-product-fields-zh-TW">
+                <input type="text" id="menu-product-label-zh-TW" class="form-input" placeholder="例: 旅行日商品">
+              </div>
+              <div id="menu-product-fields-ja" class="hidden">
+                <input type="text" id="menu-product-label-ja" class="form-input" placeholder="例: 旅行日グッズ">
+              </div>
+              <div id="menu-product-fields-en" class="hidden">
+                <input type="text" id="menu-product-label-en" class="form-input" placeholder="例: Shop">
+              </div>
+            </div>
+            <div class="pt-4 border-t border-border-subdued">
+              <button onclick="saveMenuProduct()" class="btn btn-primary">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                儲存 Menu 連結
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Section 5: Partners -->
         <div class="card mb-6">
           <div class="card-header">
@@ -2207,8 +2249,46 @@ async function loadHomepageSettings() {
     // --- Partners ---
     partners = Array.isArray(settings['footer.partners']) ? JSON.parse(JSON.stringify(settings['footer.partners'])) : [];
     renderPartnersList();
+
+    // --- Menu product link ---
+    const mp = settings['menu.product'] || {};
+    document.getElementById('menu-product-url').value = mp.url || '';
+    langs.forEach(lang => {
+      const el = document.getElementById('menu-product-label-' + lang);
+      if (el) el.value = (mp.label && mp.label[lang]) || '';
+    });
   } catch (err) {
     showToast('載入首頁設定失敗：' + err.message, 'error');
+  }
+}
+
+// --- Menu product: tab + save ---
+function switchLangTabs(prefix, lang) {
+  ['zh-TW', 'ja', 'en'].forEach(l => {
+    const fields = document.getElementById(prefix + '-fields-' + l);
+    const tab = document.getElementById(prefix + '-tab-' + l);
+    if (!fields || !tab) return;
+    const active = l === lang;
+    fields.classList.toggle('hidden', !active);
+    tab.classList.toggle('border-primary', active);
+    tab.classList.toggle('text-primary', active);
+    tab.classList.toggle('border-transparent', !active);
+    tab.classList.toggle('text-text-secondary', !active);
+  });
+}
+function switchMenuProductTab(lang) { switchLangTabs('menu-product', lang); }
+
+async function saveMenuProduct() {
+  const url = document.getElementById('menu-product-url').value.trim();
+  const label = {};
+  ['zh-TW', 'ja', 'en'].forEach(lang => {
+    label[lang] = document.getElementById('menu-product-label-' + lang).value.trim();
+  });
+  try {
+    await apiPost('/settings', { key: 'menu.product', value: { url, label } });
+    showToast('Menu 連結已儲存', 'success');
+  } catch (err) {
+    showToast('儲存失敗：' + err.message, 'error');
   }
 }
 
@@ -2557,34 +2637,8 @@ async function saveFooter() {
 }
 
 // --- Hero text language tabs ---
-function switchHeroTextTab(lang) {
-  ['zh-TW', 'ja', 'en'].forEach(l => {
-    const fields = document.getElementById('hero-fields-' + l);
-    const tab = document.getElementById('hero-tab-' + l);
-    if (!fields || !tab) return;
-    const active = l === lang;
-    fields.classList.toggle('hidden', !active);
-    tab.classList.toggle('border-primary', active);
-    tab.classList.toggle('text-primary', active);
-    tab.classList.toggle('border-transparent', !active);
-    tab.classList.toggle('text-text-secondary', !active);
-  });
-}
-
-// --- Footer language tabs ---
-function switchFooterTab(lang) {
-  ['zh-TW', 'ja', 'en'].forEach(l => {
-    const fields = document.getElementById('footer-fields-' + l);
-    const tab = document.getElementById('footer-tab-' + l);
-    if (!fields || !tab) return;
-    const active = l === lang;
-    fields.classList.toggle('hidden', !active);
-    tab.classList.toggle('border-primary', active);
-    tab.classList.toggle('text-primary', active);
-    tab.classList.toggle('border-transparent', !active);
-    tab.classList.toggle('text-text-secondary', !active);
-  });
-}
+function switchHeroTextTab(lang) { switchLangTabs('hero', lang); }
+function switchFooterTab(lang) { switchLangTabs('footer', lang); }
 
 // --- Property form language tabs ---
 function switchPropLangTab(lang) {

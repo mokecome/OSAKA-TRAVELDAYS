@@ -791,20 +791,24 @@ app.get('/rooms/:id.html', (req, res) => {
   // Inject SSR content after the loading div
   html = html.replace('</main>', ssrContent + '\n  </main>');
   // Inject mobile booking bar (SSR — no JS dependency)
-  if (p.airbnbUrl) {
-    const trackUrl = p.airbnbUrl + (p.airbnbUrl.includes('?') ? '&' : '?') + 'utm_source=osaka-traveldays&utm_medium=website&utm_campaign=room-page';
-    const mobileBarHtml = `<div id="mobileBookingBar" class="mobile-booking-bar">` +
-      `<a href="${escHtml(trackUrl)}" target="_blank" rel="noopener" class="airbnb-cta" ` +
-      `style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;` +
-      `background:linear-gradient(135deg,#8B4513,#A0522D);color:white;border-radius:8px;` +
-      `padding:14px 24px;font-weight:600;text-decoration:none;">` +
+  {
+    const trackUrl = p.airbnbUrl ? p.airbnbUrl + (p.airbnbUrl.includes('?') ? '&' : '?') + 'utm_source=osaka-traveldays&utm_medium=website&utm_campaign=room-page' : '';
+    const iconAirbnb = `<span class="booking-icon" style="background:#FF5A5F"><svg style="width:18px;height:18px" fill="#fff" viewBox="0 0 24 24"><path d="M12 2C7 2 3 6 3 11c0 3 1.5 5.5 3.5 7C8 19.5 10 22 12 22s4-2.5 5.5-4c2-1.5 3.5-4 3.5-7 0-5-4-9-9-9zm0 13.5c-2 0-3.5-1.5-3.5-3.5S10 8.5 12 8.5s3.5 1.5 3.5 3.5-1.5 3.5-3.5 3.5z"/></svg></span>`;
+    const iconLine = `<span class="booking-icon" style="background:#06C755"><svg style="width:18px;height:18px" fill="#fff" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 5.68 2 10.2c0 4.05 3.56 7.44 8.37 8.08.33.07.77.22.89.5.1.26.07.66.03.93l-.14.88c-.04.26-.21 1.02.89.56 1.1-.46 5.93-3.5 8.1-5.98C21.66 13.6 22 11.97 22 10.2 22 5.68 17.52 2 12 2z"/></svg></span>`;
+    const iconWa = `<span class="booking-icon" style="background:#25D366"><svg style="width:18px;height:18px" fill="#fff" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.84.5 3.57 1.38 5.06L2 22l5.06-1.37C8.47 21.5 10.17 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg></span>`;
+    const chevron = `<svg class="booking-arrow" style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>`;
+    const airbnbBtn = p.airbnbUrl
+      ? `<a href="${escHtml(trackUrl)}" target="_blank" rel="noopener" class="booking-btn airbnb-cta">${iconAirbnb}<span class="booking-label">線上預約</span>${chevron}</a>`
+      : '';
+    const lineBtn = `<a href="https://lin.ee/YDEZNOL" target="_blank" rel="noopener" class="booking-btn" data-gtag-label="line_booking">${iconLine}<span class="booking-label">LINE專人客服訂房</span>${chevron}</a>`;
+    const waBtn = `<a href="https://wa.me/+819054076414" target="_blank" rel="noopener" class="booking-btn" data-gtag-label="whatsapp_booking">${iconWa}<span class="booking-label">電話·WhatsApp預約</span>${chevron}</a>`;
+    const mobileBarHtml = `<div id="mobileBookingBar" class="mobile-booking-bar booking-wrapper" style="flex-direction:column;align-items:stretch;padding:0;background:transparent;border-top:none;box-shadow:none;">` +
+      `<div class="booking-popup" style="bottom:100%;top:auto;margin:0 0 8px 0;">${airbnbBtn}${lineBtn}${waBtn}</div>` +
+      `<button type="button" class="booking-primary" onclick="toggleBookingPopup(this)" style="border-radius:0;">` +
       `<span id="mobileBookingBarText">立即預訂</span>` +
-      `<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24">` +
-      `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>` +
-      `</svg></a></div>`;
+      `<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>` +
+      `</button></div>`;
     html = html.replace('<!-- MOBILE_BOOKING_BAR_PLACEHOLDER -->', mobileBarHtml);
-  } else {
-    html = html.replace('<!-- MOBILE_BOOKING_BAR_PLACEHOLDER -->', '');
   }
   // Inject full multilingual property data for client-side language switching
   const propDataScript = `<script>window.__PROPERTY_DATA = ${JSON.stringify(p).replace(/<\/script>/gi, '<\\/script>')};</script>`;
@@ -1340,7 +1344,7 @@ app.post('/api/import', requireAuth, async (req, res) => {
 const ALLOWED_SETTINGS_KEYS = new Set([
   'hero.image', 'hero.title', 'hero.subtitle', 'hero.desc', 'hero.cta',
   'faq.items', 'footer.email', 'footer.line', 'footer.company', 'footer.address',
-  'footer.partners'
+  'footer.partners', 'menu.product'
 ]);
 
 // Get all settings (public)

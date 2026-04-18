@@ -1034,6 +1034,7 @@
             <a href="#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.rooms">房源一覽</a>
             <a href="#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.about">關於我們</a>
             <a href="#contact" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.contact">聯絡我們</a>
+            <a id="nav-product-desktop" class="hidden text-amber-800 hover:text-amber-600 transition-colors font-medium" target="_blank" rel="noopener"></a>
           </nav>
         </div>
         <button class="md:hidden p-2 text-amber-800" aria-label="開啟選單" id="mobileMenuBtn">
@@ -1050,6 +1051,7 @@
     <a href="#properties" data-i18n="nav.rooms">房源一覽</a>
     <a href="#about" data-i18n="nav.about">關於我們</a>
     <a href="#contact" data-i18n="nav.contact">聯絡我們</a>
+    <a id="nav-product-mobile" class="hidden" target="_blank" rel="noopener"></a>
   </nav>
 
   <main id="mainContent">
@@ -1309,7 +1311,7 @@
               <p class="text-amber-400 text-xs tracking-widest">OSAKA TRAVELDAYS</p>
             </div>
           </div>
-          <p class="text-amber-300/80 leading-relaxed text-sm" data-i18n="footer.tagline">精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。無論是家庭旅遊、朋友出遊或商務出差，都能找到最適合的住宿選擇。</p>
+          <p class="text-white leading-relaxed text-sm" data-i18n="footer.tagline">精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。無論是家庭旅遊、朋友出遊或商務出差，都能找到最適合的住宿選擇。</p>
         </div>
 
         <!-- 聯絡資訊 ｜ 営業登記 ｜ 公司資訊 (right) -->
@@ -1328,7 +1330,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                   </svg>
                 </span>
-                <span id="footerEmail" class="text-sm break-all text-amber-300 group-hover:text-white transition-colors duration-200">service.traveldays@gmail.com</span>
+                <span id="footerEmail" class="text-sm break-all text-white font-medium group-hover:text-amber-200 transition-colors duration-200">service.traveldays@gmail.com</span>
               </a>
               <!-- LINE -->
               <a id="footerLineLink" href="https://lin.ee/pGrA7Ej" target="_blank" class="group flex items-center gap-3 cursor-pointer">
@@ -1337,7 +1339,7 @@
                     <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
                   </svg>
                 </span>
-                <span id="footerLine" class="text-amber-300 group-hover:text-white transition-colors duration-200">LINE: @fgk8695x</span>
+                <span id="footerLine" class="text-white font-medium group-hover:text-amber-200 transition-colors duration-200">LINE: @fgk8695x</span>
               </a>
               <!-- Facebook -->
               <a href="https://www.facebook.com/2016traveldays" target="_blank" rel="noopener"
@@ -1347,7 +1349,7 @@
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                   </svg>
                 </span>
-                <span class="text-sm text-amber-300 group-hover:text-white transition-colors duration-200">Facebook</span>
+                <span class="text-sm text-white font-medium group-hover:text-amber-200 transition-colors duration-200">Facebook</span>
               </a>
               <!-- Instagram -->
               <a href="https://www.instagram.com/travel_days_osaka/" target="_blank" rel="noopener"
@@ -1357,7 +1359,7 @@
                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
                   </svg>
                 </span>
-                <span class="text-sm text-amber-300 group-hover:text-white transition-colors duration-200">Instagram</span>
+                <span class="text-sm text-white font-medium group-hover:text-amber-200 transition-colors duration-200">Instagram</span>
               </a>
             </div>
           </div>
@@ -1368,11 +1370,11 @@
               <span class="w-8 h-0.5 bg-amber-500"></span>
               <span data-i18n="footer.registration">営業登記</span>
             </h4>
-            <div class="text-amber-400/80 text-sm space-y-2">
+            <div class="text-white text-sm space-y-2 font-medium">
               <p>大阪戦略特区民泊</p>
               <p>旅館業法 簡易宿所</p>
               <p>住宅宿泊管理業者</p>
-              <p class="text-amber-500 mt-3" data-i18n="footer.legal.note">旅行日民宿均為合法經營・安心入住</p>
+              <p class="text-amber-200 mt-3 font-semibold" data-i18n="footer.legal.note">旅行日民宿均為合法經營・安心入住</p>
             </div>
           </div>
 
@@ -1382,8 +1384,8 @@
               <span class="w-8 h-0.5 bg-amber-500"></span>
               <span data-i18n="footer.company">公司資訊</span>
             </h4>
-            <div class="text-amber-400/80 text-sm space-y-2">
-              <p id="footerCompanyName" class="text-white font-semibold" data-i18n="footer.company.name">DAIDODO合同会社</p>
+            <div class="text-white text-sm space-y-2 font-medium">
+              <p id="footerCompanyName" class="text-white font-bold" data-i18n="footer.company.name">DAIDODO合同会社</p>
               <p id="footerAddress" data-i18n="footer.address">大阪市中央区上本町西3−3−２</p>
             </div>
           </div>
@@ -1391,16 +1393,20 @@
       </div>
 
       <!-- Partners -->
-      <div id="partnersSection" class="hidden mb-10 pt-8 border-t border-amber-800/40">
-        <p class="text-amber-400/70 text-[10px] tracking-[0.3em] uppercase text-center mb-4" data-i18n="footer.partners.eyebrow">Partner</p>
-        <div id="partnersContainer" class="flex flex-wrap items-center justify-center gap-x-7 gap-y-4"></div>
+      <div id="partnersSection" class="hidden mb-10 pt-10 border-t border-amber-800/40">
+        <div class="flex items-center justify-center gap-3 mb-6">
+          <span class="h-px w-10 bg-amber-500/40"></span>
+          <p class="text-amber-400 text-[11px] tracking-[0.4em] uppercase font-medium" data-i18n="footer.partners.eyebrow">Partner</p>
+          <span class="h-px w-10 bg-amber-500/40"></span>
+        </div>
+        <div id="partnersContainer" class="flex flex-wrap items-center justify-center gap-5 md:gap-6"></div>
       </div>
 
       <div class="border-t border-amber-800/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p class="text-amber-500/80 text-sm">© 2026 大阪旅行日民宿 OSAKA TRAVELDAYS. All rights reserved.</p>
+        <p class="text-white text-sm font-medium">© 2026 大阪旅行日民宿 OSAKA TRAVELDAYS. All rights reserved.</p>
         <div class="flex items-center gap-6">
-          <a href="privacy.html" class="text-amber-400 hover:text-white transition-colors text-sm" data-i18n="footer.privacy">隱私政策</a>
-          <a href="terms.html" class="text-amber-400 hover:text-white transition-colors text-sm" data-i18n="footer.terms">使用條款</a>
+          <a href="privacy.html" class="text-white hover:text-amber-200 transition-colors text-sm font-medium" data-i18n="footer.privacy">隱私政策</a>
+          <a href="terms.html" class="text-white hover:text-amber-200 transition-colors text-sm font-medium" data-i18n="footer.terms">使用條款</a>
         </div>
       </div>
     </div>
@@ -2485,6 +2491,7 @@
       if (window.__API_REGIONS && typeof window.renderAllRegions === 'function') {
         window.renderAllRegions(window.__API_REGIONS);
       }
+      renderMenuProduct(lang);
     }
 
     // ─── HTML escape helper (XSS prevention) ─────────────────────────────────
@@ -2609,29 +2616,54 @@
 
       // 6. Footer partners
       renderPartners(settings['footer.partners']);
+
+      // 7. Menu product external link (render triggered by setLanguage)
+      window.__MENU_PRODUCT = settings['menu.product'] || null;
+    }
+
+    function renderMenuProduct(lang) {
+      var mp = window.__MENU_PRODUCT;
+      var ids = ['nav-product-desktop', 'nav-product-mobile'];
+      var url = mp && mp.url ? mp.url : '';
+      if (!url) {
+        ids.forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) { el.classList.add('hidden'); el.textContent = ''; el.removeAttribute('href'); }
+        });
+        return;
+      }
+      lang = lang || localStorage.getItem('lang') || 'zh-TW';
+      var label = (mp.label && (mp.label[lang] || mp.label['zh-TW'])) || '';
+      ids.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.href = url;
+        el.textContent = label;
+        el.classList.remove('hidden');
+      });
     }
 
     function renderPartners(partners) {
       var section = document.getElementById('partnersSection');
       var container = document.getElementById('partnersContainer');
       if (!section || !container) return;
-      if (!Array.isArray(partners) || partners.length === 0) {
+      var list = (Array.isArray(partners) ? partners : []).filter(function(p) { return p && p.logoUrl; });
+      if (list.length === 0) {
         section.classList.add('hidden');
         container.innerHTML = '';
         return;
       }
-      var html = partners.map(function(p) {
-        var name = (p && p.name) ? p.name : '';
-        var logoUrl = (p && p.logoUrl) ? p.logoUrl : '';
-        var url = (p && p.url) ? p.url : '';
-        if (!logoUrl) return '';
-        var inner = '<img src="' + escHtml(logoUrl) + '" alt="' + escHtml(name) + '" ' +
-          'class="h-16 md:h-20 w-auto object-contain bg-white rounded-md p-2 opacity-95 hover:opacity-100 transition-opacity" ' +
-          'title="' + escHtml(name) + '">';
+      var html = list.map(function(p, i) {
+        var name = p.name || '';
+        var url = p.url || '';
+        var delay = (0.05 * i).toFixed(2);
+        var cardClass = 'partner-card flex items-center justify-center w-24 h-14 md:w-28 md:h-16 bg-white rounded-lg border border-amber-200/30 shadow-sm transition-all duration-300 animate-fadeInUp';
+        var imgTag = '<img src="' + escHtml(p.logoUrl) + '" alt="' + escHtml(name) + '" title="' + escHtml(name) + '" class="max-h-[80%] max-w-[88%] object-contain">';
+        var style = 'style="animation-delay: ' + delay + 's;"';
         if (url) {
-          return '<a href="' + escHtml(url) + '" target="_blank" rel="noopener" class="inline-flex">' + inner + '</a>';
+          return '<a href="' + escHtml(url) + '" target="_blank" rel="noopener" class="' + cardClass + ' hover:border-amber-400/60 hover:shadow-lg hover:shadow-amber-500/10 hover:-translate-y-0.5 cursor-pointer" ' + style + '>' + imgTag + '</a>';
         }
-        return '<span class="inline-flex">' + inner + '</span>';
+        return '<div class="' + cardClass + '" ' + style + '>' + imgTag + '</div>';
       }).join('');
       container.innerHTML = html;
       section.classList.remove('hidden');
