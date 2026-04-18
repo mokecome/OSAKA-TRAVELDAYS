@@ -768,6 +768,28 @@
           </div>
         </div>
 
+        <!-- 出入方式 (樓梯 / 電梯) -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">出入方式</h2>
+            <span class="text-xs text-text-disabled">顯示於首頁卡片與房源頁標題</span>
+          </div>
+          <div class="card-body">
+            <div class="flex flex-wrap gap-4">
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" id="f-hasStairs" class="form-checkbox">
+                <img src="/images/icons/stairs.png" alt="樓梯" class="w-6 h-6 object-contain">
+                <span class="text-sm">樓梯</span>
+              </label>
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" id="f-hasElevator" class="form-checkbox">
+                <img src="/images/icons/elevator.png" alt="電梯" class="w-6 h-6 object-contain">
+                <span class="text-sm">電梯</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
         <!-- 設備清單 (詳情頁) -->
         <div class="card mb-4">
           <div class="card-header">
@@ -1118,7 +1140,7 @@
 <script>
 // ==================== CONFIG ====================
 const API_BASE = '/api';
-const DEFAULT_AMENITIES = ['Wi-Fi','電視','廚房','洗衣機','空調設備','吹風機','冰箱','自助入住','停車場','浴缸','微波爐','電梯'];
+const DEFAULT_AMENITIES = ['Wi-Fi','電視','廚房','洗衣機','空調設備','吹風機','冰箱','自助入住','停車場','浴缸','微波爐'];
 let AUTH_TOKEN = sessionStorage.getItem('admin_token') || '';
 
 // ==================== STATE ====================
@@ -1549,6 +1571,8 @@ function clearForm() {
   });
   document.getElementById('f-type').value = '包棟民宿';
   document.getElementById('f-regionId').value = '';
+  document.getElementById('f-hasStairs').checked = false;
+  document.getElementById('f-hasElevator').checked = false;
   currentCoverImage = null;
   currentAmenities = [];
   switchPropLangTab('zh-TW');
@@ -1577,6 +1601,8 @@ function loadPropertyToForm(prop) {
   document.getElementById('f-checkIn').value = prop.checkIn || '下午3點以後';
   document.getElementById('f-checkOut').value = prop.checkOut || '上午10點之前';
   document.getElementById('f-videoUrl').value = prop.videoUrl || '';
+  document.getElementById('f-hasStairs').checked = !!prop.hasStairs;
+  document.getElementById('f-hasElevator').checked = !!prop.hasElevator;
 
   ['zh-TW', 'ja', 'en'].forEach(function(lang) {
     var sfx = '-' + lang;
@@ -1693,6 +1719,8 @@ async function saveProperty() {
     checkIn: document.getElementById('f-checkIn').value.trim(),
     checkOut: document.getElementById('f-checkOut').value.trim(),
     videoUrl: document.getElementById('f-videoUrl').value.trim(),
+    hasStairs: document.getElementById('f-hasStairs').checked ? 1 : 0,
+    hasElevator: document.getElementById('f-hasElevator').checked ? 1 : 0,
     amenities: currentAmenities,
     spaceIntro: [1,2,3,4].map(function(n) {
       return {

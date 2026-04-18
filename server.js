@@ -200,6 +200,8 @@ const migrations = [
   "ALTER TABLE properties ADD COLUMN ical_url TEXT DEFAULT ''",
   "ALTER TABLE properties ADD COLUMN nearbyAttractions TEXT DEFAULT ''",
   "ALTER TABLE properties ADD COLUMN parkingInfo TEXT DEFAULT ''",
+  "ALTER TABLE properties ADD COLUMN hasStairs INTEGER DEFAULT 0",
+  "ALTER TABLE properties ADD COLUMN hasElevator INTEGER DEFAULT 0",
   "ALTER TABLE property_images ADD COLUMN isCover INTEGER DEFAULT 0"
 ];
 for (const sql of migrations) {
@@ -1102,6 +1104,7 @@ app.post('/api/properties', requireAuth, async (req, res) => {
     quickInfo: JSON.stringify(p.quickInfo || []), amenities: JSON.stringify(p.amenities || []),
     spaceIntro: JSON.stringify(p.spaceIntro || []), nearestStation: ml(p.nearestStation),
     nearbyAttractions: ml(p.nearbyAttractions), parkingInfo: ml(p.parkingInfo),
+    hasStairs: p.hasStairs ? 1 : 0, hasElevator: p.hasElevator ? 1 : 0,
     ical_url: p.icalUrl || ''
   };
   const colNames = Object.keys(cols);

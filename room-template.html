@@ -368,7 +368,10 @@
         openMaps: '在 Google Maps 中查看',
         navProperties: '房源一覽',
         navAbout: '關於我們',
-        navContact: '聯絡我們'
+        navContact: '聯絡我們',
+        accessStairs: '樓梯',
+        accessElevator: '電梯',
+        toothbrushNote: '請自備牙刷牙膏'
       },
       'ja': {
         intro: '物件紹介',
@@ -394,7 +397,10 @@
         openMaps: 'Google Mapsで見る',
         navProperties: '物件一覧',
         navAbout: '私たちについて',
-        navContact: 'お問い合わせ'
+        navContact: 'お問い合わせ',
+        accessStairs: '階段',
+        accessElevator: 'エレベーター',
+        toothbrushNote: '歯ブラシ・歯磨き粉はご持参ください'
       },
       'en': {
         intro: 'Property Description',
@@ -420,7 +426,10 @@
         openMaps: 'View on Google Maps',
         navProperties: 'Properties',
         navAbout: 'About Us',
-        navContact: 'Contact'
+        navContact: 'Contact',
+        accessStairs: 'Stairs',
+        accessElevator: 'Elevator',
+        toothbrushNote: 'Please bring your own toothbrush and toothpaste'
       }
     };
 
@@ -640,6 +649,23 @@
         }
       });
 
+      // Access pills (stairs / elevator) + toothbrush note
+      var accessHtml = '';
+      if (p.hasStairs) {
+        accessHtml += '<span class="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-amber-300 rounded-full text-sm font-medium text-amber-900 shadow-sm">' +
+          '<img src="/images/icons/stairs.png" alt="" class="w-5 h-5 object-contain">' +
+          '<span>' + esc(ROOM_T[lang].accessStairs) + '</span></span>';
+      }
+      if (p.hasElevator) {
+        accessHtml += '<span class="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-amber-300 rounded-full text-sm font-medium text-amber-900 shadow-sm">' +
+          '<img src="/images/icons/elevator.png" alt="" class="w-5 h-5 object-contain">' +
+          '<span>' + esc(ROOM_T[lang].accessElevator) + '</span></span>';
+      }
+      accessHtml += '<span class="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-100 border border-amber-400 rounded-full text-sm font-medium text-amber-900 shadow-sm">' +
+        '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' +
+        '<span>' + esc(ROOM_T[lang].toothbrushNote) + '</span></span>';
+
       html += '<section class="py-8 lg:py-12 bg-gradient-to-b from-amber-50 to-white">' +
         '<div class="container mx-auto px-4 lg:px-8"><div class="max-w-4xl">' +
         '<div class="flex items-center gap-3 mb-2">' +
@@ -648,7 +674,8 @@
         '</div>' +
         '<h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-amber-900 mb-4">' + esc(localizeField(p.name, lang)) + '</h1>' +
         '<p class="text-xl text-amber-700 mb-4">' + esc(localizeField(p.transportInfo, lang)) + '</p>' +
-        (tagsHtml ? '<div class="flex flex-wrap items-center gap-4 text-amber-600">' + tagsHtml + '</div>' : '') +
+        (tagsHtml ? '<div class="flex flex-wrap items-center gap-4 text-amber-600 mb-4">' + tagsHtml + '</div>' : '') +
+        (accessHtml ? '<div class="flex flex-wrap items-center gap-2.5">' + accessHtml + '</div>' : '') +
         '</div></div></section>';
 
       // ========== Media & Introduction (always 2-column: video/placeholder left, intro right) ==========
