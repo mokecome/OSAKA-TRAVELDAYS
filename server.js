@@ -231,6 +231,29 @@ for (const sql of migrations) {
   }
 }
 
+// Migrate: lift 樓梯/電梯 out of amenities JSON array into dedicated flags
+{
+  const migrated = db.prepare("SELECT value FROM site_settings WHERE key = 'migration.accessFlags'").get();
+  if (!migrated) {
+    const rows = db.prepare('SELECT id, amenities, hasStairs, hasElevator FROM properties').all();
+    const upd = db.prepare('UPDATE properties SET amenities = ?, hasStairs = ?, hasElevator = ? WHERE id = ?');
+    let changed = 0;
+    for (const r of rows) {
+      let arr;
+      try { arr = JSON.parse(r.amenities || '[]'); } catch { continue; }
+      if (!Array.isArray(arr)) continue;
+      const hadStairs = arr.includes('樓梯');
+      const hadElevator = arr.includes('電梯');
+      if (!hadStairs && !hadElevator) continue;
+      const filtered = arr.filter(x => x !== '樓梯' && x !== '電梯');
+      upd.run(JSON.stringify(filtered), r.hasStairs || (hadStairs ? 1 : 0), r.hasElevator || (hadElevator ? 1 : 0), r.id);
+      changed++;
+    }
+    if (changed > 0) console.log(`[migration] Lifted access flags on ${changed} properties`);
+    db.prepare("INSERT OR REPLACE INTO site_settings (key, value, updatedAt) VALUES ('migration.accessFlags', '\"done\"', datetime('now','localtime'))").run();
+  }
+}
+
 // Create indexes for frequently queried foreign keys
 db.exec(`
   CREATE INDEX IF NOT EXISTS idx_properties_regionId ON properties(regionId);
