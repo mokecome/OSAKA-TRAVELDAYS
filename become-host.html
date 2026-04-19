@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>大阪民宿一站式服務 | Traveldays</title>
+  <style>
+    :root{
+      --bg:#f6f3ed;
+      --ink:#1d1d1f;
+      --muted:#5c5c63;
+      --accent:#b57a3d;
+      --accent2:#25364a;
+      --card:#ffffff;
+      --line:rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+    .wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+    .hero{padding:72px 0 48px;background:linear-gradient(135deg, #f7f2e8 0%, #f2f0ea 45%, #eef3f6 100%)}
+    .nav{display:flex;justify-content:space-between;align-items:center;padding:22px 0}
+    .nav a.brand-link{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+    .nav .brand-logo{width:44px;height:44px;object-fit:contain;flex-shrink:0}
+    .brand{font-weight:800;letter-spacing:.04em}
+    .brand small{display:block;font-weight:500;color:var(--muted);letter-spacing:.12em;font-size:12px}
+    .hero-grid{display:grid;grid-template-columns:1.2fr .9fr;gap:34px;align-items:center}
+    h1{font-size:56px;line-height:1.05;margin:12px 0 18px;font-weight:900;letter-spacing:-.03em}
+    .lead{font-size:20px;color:#333;max-width:680px}
+    .chips{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0}
+    .chip{padding:10px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:14px;color:#333}
+    .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}
+    .btn{display:inline-block;padding:15px 22px;border-radius:14px;text-decoration:none;font-weight:700}
+    .btn.primary{background:var(--ink);color:#fff}
+    .btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}
+    .panel{background:rgba(255,255,255,.74);backdrop-filter: blur(10px);border:1px solid rgba(255,255,255,.7);box-shadow:0 18px 50px rgba(0,0,0,.09);border-radius:26px;padding:28px}
+    .panel h3{margin:0 0 12px;font-size:24px}
+    .panel ul{padding-left:18px;margin:0}
+    .panel li{margin:12px 0;color:#38404c}
+    section{padding:38px 0}
+    .section-title{font-size:34px;line-height:1.1;margin:0 0 8px;font-weight:900}
+    .section-sub{margin:0 0 28px;color:var(--muted);font-size:17px}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 10px 24px rgba(0,0,0,.04)}
+    .num{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:#f1eadf;color:var(--accent2);font-weight:900;margin-bottom:16px}
+    .card h4{margin:0 0 8px;font-size:22px}
+    .card p{margin:0;color:var(--muted)}
+    .band{background:#1f2833;color:#fff;border-radius:30px;padding:34px}
+    .band-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+    .list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+    .mini{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);padding:16px 18px;border-radius:18px}
+    .mini b{display:block;font-size:18px;margin-bottom:4px}
+    .footer-cta{background:#fff;border:1px solid var(--line);padding:34px;border-radius:28px;display:flex;justify-content:space-between;gap:20px;align-items:center}
+    .footer-cta h3{margin:0 0 8px;font-size:30px}
+    .footer-cta p{margin:0;color:var(--muted)}
+    footer{padding:24px 0 48px;color:var(--muted);font-size:14px}
+    .accent{color:var(--accent)}
+    @media (max-width: 980px){
+      .hero-grid,.band-grid,.footer-cta,.cards,.list{grid-template-columns:1fr;display:grid}
+      h1{font-size:42px}
+      .lead{font-size:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="wrap">
+      <div class="nav">
+        <a href="/" class="brand-link">
+          <img src="/logo.png" alt="Traveldays" class="brand-logo">
+          <div class="brand">TRAVELDAYS<small>OSAKA MINPAKU PARTNER</small></div>
+        </a>
+      </div>
+      <div class="hero-grid">
+        <div>
+          <div class="chip" style="display:inline-block;background:#fef9f2;border-color:#e9d7bb;color:#8b5d2b">大阪民宿一站式服務</div>
+          <h1>歡迎加入我們的行列<br>從找房到營運，<span class="accent">一條龍交給我們。</span></h1>
+          <p class="lead">由我們協助你在大阪尋找合適房源，透過不動產業務推薦物件，完成買入、消防設備裝設、民宿牌照申請、民宿代管營業，以及自家清潔團隊維運。未來若想出售物業，也能交由我們協助處理。</p>
+          <div class="chips">
+            <span class="chip">找大阪房源</span>
+            <span class="chip">不動產推薦</span>
+            <span class="chip">消防設備</span>
+            <span class="chip">民宿牌照申請</span>
+            <span class="chip">民宿代管</span>
+            <span class="chip">自家清潔團隊</span>
+            <span class="chip">出售物業</span>
+          </div>
+          <div class="cta">
+            <a class="btn primary" href="#contact">立即洽詢合作</a>
+            <a class="btn secondary" href="#service">查看服務內容</a>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>一個窗口，完成整個民宿生意鏈</h3>
+          <ul>
+            <li>根據預算、地段、用途，推薦更適合民宿營運的物件。</li>
+            <li>協助買入後的消防設備規劃與施工銜接，降低溝通成本。</li>
+            <li>支援民宿牌照申請與實際開業準備，縮短進場時間。</li>
+            <li>代管營業、房務安排、客服對應、收益優化，由我們執行。</li>
+            <li>配有自家清潔團隊，採用飯店白床單，品質更穩定。</li>
+            <li>未來想脫手物業，也可由我們協助出售與轉手。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="service">
+    <div class="wrap">
+      <h2 class="section-title">我們提供的服務</h2>
+      <p class="section-sub">不是單純代管，而是協助你完成從買入、開業到退出的完整流程。</p>
+      <div class="cards">
+        <div class="card"><div class="num">01</div><h4>找大阪房源</h4><p>依照地段、預算與民宿可行性，協助篩選更適合營運的大阪物件。</p></div>
+        <div class="card"><div class="num">02</div><h4>不動產推薦</h4><p>由我們的不動產業務協助推薦物件，提升買入效率與判斷精準度。</p></div>
+        <div class="card"><div class="num">03</div><h4>買入與規劃</h4><p>從買入後的定位、裝修方向，到營運模式設計，提前整合。</p></div>
+        <div class="card"><div class="num">04</div><h4>消防設備裝設</h4><p>協調必要消防設備與相關流程，讓物件朝合法營運方向完整準備。</p></div>
+        <div class="card"><div class="num">05</div><h4>民宿牌照申請</h4><p>協助民宿牌照申請與開業流程，讓新手也能更順利進入市場。</p></div>
+        <div class="card"><div class="num">06</div><h4>代管營業與清潔</h4><p>民宿上架、定價、客服、入住對應、清潔整備，由我們一站式處理。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="band">
+        <div class="band-grid">
+          <div>
+            <h2 class="section-title" style="color:#fff;margin-bottom:12px">我們不只代管，<br>也協助你把物件變成可以持續營業的產品。</h2>
+            <p class="section-sub" style="color:rgba(255,255,255,.78);margin:0">對第一次進場的買家、已持有物件的房東、想擴張的投資人，甚至未來想退出市場的人，我們都能提供對應方案。</p>
+          </div>
+          <div class="list">
+            <div class="mini"><b>自家清潔團隊</b><span>不外包，更容易維持清潔品質與速度。</span></div>
+            <div class="mini"><b>飯店白床單</b><span>提升入住感受與照片質感，減少廉價印象。</span></div>
+            <div class="mini"><b>在地營運對應</b><span>入住、退房、房務、客服，由大阪團隊處理。</span></div>
+            <div class="mini"><b>可協助出售</b><span>想脫手物業時，也可交由我們處理出售流程。</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="footer-cta" id="contact">
+        <div>
+          <h3>歡迎加入我們的行列</h3>
+          <p>不論你是想開始做大阪民宿，還是想把現有物業交給更專業的團隊經營，都歡迎與我們聯繫。</p>
+        </div>
+        <div>
+          <a class="btn primary" href="#">立即諮詢</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">Traveldays / Osaka Minpaku Partner</div>
+  </footer>
+</body>
+</html>

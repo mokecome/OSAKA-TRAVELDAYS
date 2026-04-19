@@ -496,9 +496,10 @@ function ssrRenderRegion(region, properties, isOdd, lang) {
     const delay = i * 0.1;
     const p = properties[i];
     const catAttr = escHtml((Array.isArray(p.categoryTags) ? p.categoryTags : []).join(','));
-    if (count === 1) cardsHtml += `<div class="property-slot w-full max-w-sm" data-category-tags="${catAttr}">${ssrRenderCard(p, delay, lang)}</div>`;
-    else if (count >= 5) cardsHtml += `<div class="property-slot w-full md:w-[calc(33.333%-1.4rem)]" data-category-tags="${catAttr}">${ssrRenderCard(p, delay, lang)}</div>`;
-    else cardsHtml += `<div class="property-slot contents" data-category-tags="${catAttr}">${ssrRenderCard(p, delay, lang)}</div>`;
+    const pidAttr = escHtml(p.id);
+    if (count === 1) cardsHtml += `<div class="property-slot w-full max-w-sm" data-pid="${pidAttr}" data-category-tags="${catAttr}">${ssrRenderCard(p, delay, lang)}</div>`;
+    else if (count >= 5) cardsHtml += `<div class="property-slot w-full md:w-[calc(33.333%-1.4rem)]" data-pid="${pidAttr}" data-category-tags="${catAttr}">${ssrRenderCard(p, delay, lang)}</div>`;
+    else cardsHtml += `<div class="property-slot contents" data-pid="${pidAttr}" data-category-tags="${catAttr}">${ssrRenderCard(p, delay, lang)}</div>`;
   }
 
   return `<div class="py-16 lg:py-20 ${bgClass}" data-region-id="${escHtml(String(region.id))}">` +
@@ -1075,6 +1076,59 @@ app.get('/api/properties/:id/availability', async (req, res) => {
   }
 });
 
+// Refresh a single property's iCal cache (fire-and-forget safe)
+async function refreshIcalForProperty(id, icalUrl) {
+  if (!icalUrl) return;
+  try {
+    const response = await fetch(icalUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(10000) });
+    if (!response.ok) return;
+    const text = await response.text();
+    const blockedDates = parseIcal(text);
+    db.prepare('INSERT OR REPLACE INTO ical_cache (property_id, blocked_dates, fetched_at) VALUES (?,?,?)').run(id, JSON.stringify(blockedDates), Date.now());
+  } catch (e) { /* swallow */ }
+}
+
+// Batch refresh all properties' iCal caches
+async function refreshAllIcals() {
+  const rows = db.prepare("SELECT id, ical_url FROM properties WHERE ical_url != ''").all();
+  await Promise.all(rows.map(r => refreshIcalForProperty(r.id, r.ical_url)));
+  console.log('[iCal] Refreshed', rows.length, 'property caches');
+}
+
+// Cross-property availability search
+app.get('/api/availability/search', (req, res) => {
+  const { checkin, checkout } = req.query;
+  const dateRe = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateRe.test(checkin || '') || !dateRe.test(checkout || '')) {
+    return res.status(400).json({ error: 'checkin and checkout must be YYYY-MM-DD' });
+  }
+  const start = new Date(checkin), end = new Date(checkout);
+  if (!(start < end)) return res.status(400).json({ error: 'checkout must be after checkin' });
+
+  // Build the date range [checkin, checkout)
+  const range = [];
+  const cur = new Date(start);
+  while (cur < end) { range.push(cur.toISOString().slice(0, 10)); cur.setDate(cur.getDate() + 1); }
+
+  const props = db.prepare("SELECT id, ical_url FROM properties").all();
+  const cacheRows = db.prepare('SELECT property_id, blocked_dates FROM ical_cache').all();
+  const blockedByProp = new Map();
+  for (const r of cacheRows) {
+    try { blockedByProp.set(r.property_id, new Set(JSON.parse(r.blocked_dates))); } catch (_) {}
+  }
+
+  const availableIds = [];
+  for (const p of props) {
+    // No iCal URL → assume always available (manual booking)
+    if (!p.ical_url) { availableIds.push(p.id); continue; }
+    const blocked = blockedByProp.get(p.id);
+    if (!blocked) { availableIds.push(p.id); continue; } // no cache yet → optimistic
+    const hasBlocked = range.some(d => blocked.has(d));
+    if (!hasBlocked) availableIds.push(p.id);
+  }
+  res.json({ availableIds, total: props.length });
+});
+
 // Normalize Google Maps URL to embed format
 async function normalizeMapUrl(url) {
   if (!url) return '';
@@ -1393,4 +1447,10 @@ app.listen(PORT, '127.0.0.1', () => {
   console.log('  ║   SSR: Room pages pre-rendered ✓     ║');
   console.log('  ╚══════════════════════════════════════╝');
   console.log('');
+
+  // Warm up iCal caches for cross-property search; refresh every 30 min
+  refreshAllIcals().catch(e => console.error('[iCal] Initial refresh failed:', e.message));
+  setInterval(() => {
+    refreshAllIcals().catch(e => console.error('[iCal] Periodic refresh failed:', e.message));
+  }, 30 * 60 * 1000);
 });
