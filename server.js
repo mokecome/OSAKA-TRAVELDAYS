@@ -1129,6 +1129,43 @@ app.get('/api/availability/search', (req, res) => {
   res.json({ availableIds, total: props.length });
 });
 
+// Per-date availability count aggregated across all properties
+const availCalendarCache = new Map(); // days → { data, expiresAt }
+const AVAIL_CACHE_TTL_MS = 5 * 60 * 1000;
+
+function localYmd(d) {
+  // Use local time (server TZ) to match blocked_dates which are parsed from iCal DTSTART (date-only, TZ-naive)
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+app.get('/api/availability/calendar', (req, res) => {
+  const days = Math.min(180, Math.max(1, parseInt(req.query.days || '90', 10)));
+  const cached = availCalendarCache.get(days);
+  if (cached && Date.now() < cached.expiresAt) {
+    res.set('Cache-Control', 'public, max-age=300');
+    return res.json(cached.data);
+  }
+  const totalRow = db.prepare("SELECT COUNT(*) AS c FROM properties WHERE ical_url != ''").get();
+  const total = totalRow ? totalRow.c : 0;
+  const rows = db.prepare('SELECT property_id, blocked_dates FROM ical_cache').all();
+  const blockedCount = {};
+  for (const r of rows) {
+    const dates = safeParseJSON(r.blocked_dates, []);
+    for (const d of dates) blockedCount[d] = (blockedCount[d] || 0) + 1;
+  }
+  const result = {};
+  const base = new Date(); base.setHours(0, 0, 0, 0);
+  for (let i = 0; i < days; i++) {
+    const d = new Date(base); d.setDate(d.getDate() + i);
+    const key = localYmd(d);
+    const blocked = blockedCount[key] || 0;
+    result[key] = { available: Math.max(0, total - blocked), total };
+  }
+  availCalendarCache.set(days, { data: result, expiresAt: Date.now() + AVAIL_CACHE_TTL_MS });
+  res.set('Cache-Control', 'public, max-age=300');
+  res.json(result);
+});
+
 // Normalize Google Maps URL to embed format
 async function normalizeMapUrl(url) {
   if (!url) return '';
