@@ -949,31 +949,75 @@
     }
     .search-field {
       flex: 1;
-      display: flex; flex-direction: column; justify-content: center;
-      padding: 10px 22px;
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      grid-template-rows: auto auto;
+      column-gap: 14px;
+      align-items: center;
+      padding: 12px 22px;
       border-radius: 9999px;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background 0.18s, box-shadow 0.18s;
       min-width: 0;
+      position: relative;
+    }
+    /* Brand tokens + icon SVGs (single source; colored via mask-image) */
+    :root {
+      --brand-green-500: #10B981;
+      --brand-green-600: #059669;
+      --brand-green-rgb: 16,185,129;
+      --icon-date: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='black' stroke-width='2' viewBox='0 0 24 24'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath stroke-linecap='round' d='M3 9h18M8 3v4M16 3v4'/%3E%3C/svg%3E");
+      --icon-guests: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='black' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' d='M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2'/%3E%3Ccircle cx='10' cy='7' r='4'/%3E%3C/svg%3E");
+    }
+    .search-field::before {
+      content: '';
+      grid-row: 1 / 3; grid-column: 1; align-self: center;
+      width: 40px; height: 40px; border-radius: 12px;
+      background-color: #fef3c7;
+      position: relative;
+      transition: background-color 0.18s, transform 0.18s;
+    }
+    .search-field::after {
+      content: '';
+      grid-row: 1 / 3; grid-column: 1; align-self: center; justify-self: center;
+      width: 20px; height: 20px;
+      background-color: #b45309;
+      -webkit-mask: center/contain no-repeat;
+      mask: center/contain no-repeat;
+      transition: background-color 0.18s;
+    }
+    .search-field[data-search-field="date"]::after {
+      -webkit-mask-image: var(--icon-date);
+      mask-image: var(--icon-date);
+    }
+    .search-field[data-search-field="guests"]::after {
+      -webkit-mask-image: var(--icon-guests);
+      mask-image: var(--icon-guests);
     }
     .search-field:hover { background: #fef3c7; }
-    .search-field.active { background: #fff7ed; box-shadow: inset 0 0 0 1px #fde68a; }
-    .search-label { font-size: 0.72rem; font-weight: 700; color: #78350f; letter-spacing: 0.04em; margin-bottom: 2px; }
-    .search-value { font-size: 0.9rem; color: #a16207; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .search-field:hover::before { background-color: #fde68a; transform: scale(1.05); }
+    .search-field.active {
+      background: #fff7ed;
+      box-shadow: inset 0 0 0 2px #f59e0b, 0 4px 14px rgba(245,158,11,0.2);
+    }
+    .search-field.active::before { background-color: #f59e0b; }
+    .search-field.active::after { background-color: #fff; }
+    .search-label { grid-row: 1; grid-column: 2; font-size: 0.72rem; font-weight: 700; color: #78350f; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 2px; }
+    .search-value { grid-row: 2; grid-column: 2; font-size: 0.95rem; color: #a16207; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .search-value.selected { color: #1f2937; font-weight: 500; }
-    .search-divider { width: 1px; background: rgba(0,0,0,0.08); margin: 8px 0; flex-shrink: 0; }
+    .search-divider { width: 1px; background: rgba(0,0,0,0.08); margin: 10px 0; flex-shrink: 0; align-self: stretch; }
     .search-submit {
       flex-shrink: 0; align-self: center;
       width: 52px; height: 52px; border-radius: 50%;
       display: inline-flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #FF385C 0%, #E31C5F 100%);
+      background: linear-gradient(135deg, var(--brand-green-500) 0%, var(--brand-green-600) 100%);
       color: #fff; border: none; cursor: pointer;
-      box-shadow: 0 2px 8px rgba(255,56,92,0.35);
+      box-shadow: 0 2px 8px rgba(var(--brand-green-rgb), 0.35);
       transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
       margin-left: 8px; margin-right: 4px;
     }
     .search-submit svg { width: 22px; height: 22px; }
-    .search-submit:hover { transform: scale(1.05); box-shadow: 0 6px 18px rgba(255,56,92,0.5); filter: brightness(1.05); }
+    .search-submit:hover { transform: scale(1.05); box-shadow: 0 6px 18px rgba(var(--brand-green-rgb), 0.5); filter: brightness(1.05); }
     .search-submit:active { transform: scale(0.98); }
     .search-dropdown {
       position: absolute;
@@ -1123,25 +1167,76 @@
     .search-avail-hint.loading { color: #9ca3af; background: #f3f4f6; }
     .search-avail-hint svg { flex-shrink: 0; }
 
-    /* Mobile: stack vertical */
+    /* Mobile: compact, tap-friendly, clear visual hierarchy */
     @media (max-width: 767px) {
       .search-bar {
         flex-direction: column;
-        border-radius: 20px;
-        padding: 10px;
+        border-radius: 18px;
+        padding: 8px;
+        gap: 2px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
       }
-      .search-divider { width: auto; height: 1px; margin: 4px 14px; }
-      .search-field { border-radius: 12px; padding: 8px 16px; }
-      .search-field:hover { background: #fef3c7; }
+      .search-divider { display: none; }
+      .search-field {
+        border-radius: 12px;
+        padding: 12px 16px;
+        min-height: 56px;
+        display: grid;
+        grid-template-columns: 36px 1fr;
+        grid-template-rows: auto auto;
+        column-gap: 12px;
+        align-items: center;
+        background: #fffbeb;
+        transition: background 0.15s;
+      }
+      .search-field:hover, .search-field.active { background: #fef3c7; }
+      .search-field::before {
+        width: 36px; height: 36px; border-radius: 10px;
+        background-color: #fde68a;
+      }
+      .search-field::after { width: 18px; height: 18px; }
+      .search-field > .search-label {
+        grid-row: 1; grid-column: 2;
+        font-size: 0.7rem; font-weight: 700; color: #78350f; letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin: 0 0 2px 0;
+      }
+      .search-field > .search-value {
+        grid-row: 2; grid-column: 2;
+        font-size: 0.95rem; color: #a16207;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .search-field > .search-value.selected { color: #1f2937; font-weight: 500; }
       .search-submit {
-        width: 100%; border-radius: 12px; height: 48px;
-        margin: 8px 0 0 0;
+        width: 100%; border-radius: 12px; height: 52px;
+        margin: 6px 0 0 0;
         gap: 8px;
-        font-weight: 600; font-size: 0.95rem;
+        font-weight: 700; font-size: 1rem; letter-spacing: 0.04em;
       }
       .search-submit svg { width: 20px; height: 20px; margin: 0; }
       .search-submit::after { content: attr(aria-label); }
-      .search-dropdown { left: 6px; right: 6px; }
+      .search-dropdown {
+        left: 8px; right: 8px;
+        max-height: 82vh;
+        border-radius: 18px;
+        padding: 14px;
+      }
+      /* Tabs (房源/體驗/服務) on mobile: horizontal scroll if overflow */
+      .search-tabs {
+        flex-direction: column; gap: 10px;
+        margin-bottom: 12px;
+      }
+      .search-tabs-left {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .search-tabs-left::-webkit-scrollbar { display: none; }
+      .search-tab { flex-shrink: 0; }
+      .search-become-host { text-align: center; }
     }
     /* Mobile nav dropdown */
     #mobileNav { position: fixed; left: 0; right: 0; z-index: 45; background: white; border-bottom: 1px solid #fef3c7; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
@@ -1310,7 +1405,7 @@
   <main id="mainContent">
 
   <!-- Hero Section -->
-  <section class="relative min-h-screen flex items-center justify-center">
+  <section class="relative min-h-screen flex items-start justify-center" style="padding-top: 12rem; padding-bottom: 4rem;">
     <div class="absolute inset-0">
       <img id="heroImg" src="images/hero.jpg"
            alt="大阪旅行日民宿 - 精選大阪各區優質民宿住宿"
@@ -1383,11 +1478,6 @@
 
       <!-- Category Filter (inside hero, below CTA; not sticky) -->
       <div id="categoryFilterBar" class="hidden mt-12 md:mt-16">
-        <div class="flex items-center justify-center gap-3 mb-6 animate-fadeInUp" style="animation-delay: 0.55s;">
-          <span class="h-px w-12 bg-white/30"></span>
-          <span class="text-amber-300/90 text-sm">✦</span>
-          <span class="h-px w-12 bg-white/30"></span>
-        </div>
         <div id="categoryFilterTabs" class="flex flex-wrap justify-center max-w-3xl mx-auto"></div>
       </div>
     </div>
@@ -2916,7 +3006,7 @@
         'faq.q6': '退房後可以寄放行李嗎？',
         'faq.a6': '只能放到下午一點。',
         'location.eyebrow': 'Our Location',
-        'location.title': '我們的位置',
+        'location.title': '旅行日實體店鋪位置',
         'location.address': '大阪市港区磯路1-8-3',
         'footer.tagline': '精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。無論是家庭旅遊、朋友出遊或商務出差，都能找到最適合的住宿選擇。',
         'footer.contact': '聯絡資訊',
@@ -2935,9 +3025,6 @@
         'filter.label.region': '地區',
         'filter.label.category': '類型',
         'filter.empty': '尚無符合的房源',
-        // Deprecated: location search field removed; region selection via chip bar below
-        'search.location': '地點',
-        'search.locationPlaceholder': '搜尋目的地',
         'search.date': '時間',
         'search.datePlaceholder': '選擇日期',
         'search.guests': '客人',
@@ -3007,7 +3094,7 @@
         'faq.q6': 'チェックアウト後、荷物を預けられますか？',
         'faq.a6': '午後1時まで荷物をお預かりできます。',
         'location.eyebrow': 'Our Location',
-        'location.title': '拠点所在地',
+        'location.title': '旅行日実店舗',
         'location.address': '大阪市港区磯路1-8-3',
         'footer.tagline': '大阪各エリアの厳選民泊で、忘れられない日本旅行をお届けします。家族旅行・友人旅行・出張など、あらゆるシーンに最適な宿泊先をご用意。',
         'footer.contact': 'お問い合わせ',
@@ -3026,9 +3113,6 @@
         'filter.label.region': 'エリア',
         'filter.label.category': 'タイプ',
         'filter.empty': '該当する物件がありません',
-        // Deprecated
-        'search.location': 'エリア',
-        'search.locationPlaceholder': 'エリアを選択',
         'search.date': '日付',
         'search.datePlaceholder': '日付を選択',
         'search.guests': '人数',
@@ -3098,7 +3182,7 @@
         'faq.q6': 'Can I store luggage after check-out?',
         'faq.a6': 'Luggage can only be stored until 1 PM.',
         'location.eyebrow': 'Our Location',
-        'location.title': 'Our Location',
+        'location.title': 'Travel Days Store',
         'location.address': '1-8-3 Isoji, Minato-ku, Osaka',
         'footer.tagline': 'Curated Osaka guesthouses for an unforgettable Japan experience. Whether for family travel, friends\' trips, or business — find the perfect stay.',
         'footer.contact': 'Contact',
@@ -3117,9 +3201,6 @@
         'filter.label.region': 'Region',
         'filter.label.category': 'Type',
         'filter.empty': 'No matching properties',
-        // Deprecated
-        'search.location': 'Location',
-        'search.locationPlaceholder': 'Select area',
         'search.date': 'Dates',
         'search.datePlaceholder': 'Select dates',
         'search.guests': 'Guests',
