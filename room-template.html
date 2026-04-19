@@ -325,6 +325,132 @@
       .mobile-booking-bar { display: none; }
       body.has-booking-bar { padding-bottom: 0; }
     }
+
+    /* ========== Share buttons ========== */
+    .share-section {
+      margin-top: 2.5rem;
+      padding-top: 1.75rem;
+      border-top: 1px solid #fde68a;
+    }
+    .share-section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .share-section-head h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #78350f;
+      font-family: 'Noto Serif TC', serif;
+      margin: 0;
+    }
+    .share-section-hint {
+      font-size: 0.8rem;
+      color: #a87c52;
+    }
+    .share-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .share-btn {
+      --brand: #78350f;
+      --brand-tint: rgba(139, 69, 19, 0.12);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      padding: 8px 18px 8px 8px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #fde68a;
+      color: #78350f;
+      font-size: 0.9rem;
+      font-weight: 600;
+      line-height: 1;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .share-btn .share-ico {
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--brand);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+    .share-btn .share-ico svg { width: 16px; height: 16px; fill: #fff; }
+    .share-btn.line-btn .share-ico svg { width: 22px; height: 22px; }
+    .share-btn.fb-btn .share-ico svg { width: 20px; height: 20px; }
+    .share-btn.copy-btn .share-ico svg { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .share-btn:hover {
+      border-color: var(--brand);
+      background: #fff;
+      box-shadow: 0 6px 16px var(--brand-tint);
+      transform: translateY(-2px);
+    }
+    .share-btn:hover .share-ico { transform: scale(1.08); }
+    .share-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px var(--brand-tint);
+    }
+    .share-btn:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 3px;
+    }
+    .share-btn.line-btn  { --brand: #06C755; --brand-tint: rgba(6, 199, 85, 0.22); }
+    .share-btn.fb-btn    { --brand: #1877F2; --brand-tint: rgba(24, 119, 242, 0.22); }
+    .share-btn.x-btn     { --brand: #0f172a; --brand-tint: rgba(15, 23, 42, 0.22); }
+    .share-btn.copy-btn  { --brand: #b45309; --brand-tint: rgba(180, 83, 9, 0.22); }
+    .share-btn.copy-btn.copied .share-ico { background: #10b981; }
+    .share-btn.copy-btn.copied { border-color: #10b981; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .share-btn, .share-btn .share-ico { transition: none; }
+      .share-btn:hover { transform: none; }
+      .share-btn:hover .share-ico { transform: none; }
+    }
+
+    .share-toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: #111827;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .share-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .share-toast svg { width: 16px; height: 16px; fill: none; stroke: #10b981; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    @media (min-width: 1024px) {
+      .share-toast { bottom: 40px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .share-toast { transition: opacity 0.15s ease; transform: translateX(-50%); }
+      .share-toast.show { transform: translateX(-50%); }
+    }
   </style>
 </head>
 <body>
@@ -439,7 +565,10 @@
         toothbrushNote: '請自備牙刷牙膏',
         bookingAirbnbTitle: '線上預約',
         bookingLineTitle: 'LINE專人客服訂房',
-        bookingWaTitle: '電話·WhatsApp預約'
+        bookingWaTitle: '電話·WhatsApp預約',
+        shareThis: '分享這間房',
+        shareCopy: '複製連結',
+        shareCopied: '已複製連結'
       },
       'ja': {
         intro: '物件紹介',
@@ -471,7 +600,10 @@
         toothbrushNote: '歯ブラシ・歯磨き粉はご持参ください',
         bookingAirbnbTitle: 'オンライン予約',
         bookingLineTitle: 'LINE カスタマー予約',
-        bookingWaTitle: '電話・WhatsApp予約'
+        bookingWaTitle: '電話・WhatsApp予約',
+        shareThis: 'この部屋をシェア',
+        shareCopy: 'リンクをコピー',
+        shareCopied: 'コピーしました'
       },
       'en': {
         intro: 'Property Description',
@@ -503,7 +635,10 @@
         toothbrushNote: 'Please bring your own toothbrush and toothpaste',
         bookingAirbnbTitle: 'Book Online',
         bookingLineTitle: 'LINE Concierge',
-        bookingWaTitle: 'Phone · WhatsApp'
+        bookingWaTitle: 'Phone · WhatsApp',
+        shareThis: 'Share this room',
+        shareCopy: 'Copy link',
+        shareCopied: 'Link copied'
       }
     };
 
@@ -776,6 +911,29 @@
         html += '</div></section>';
       }
 
+      // ========== Share ==========
+      var shareHint = lang === 'ja' ? '友達にシェア' : (lang === 'en' ? 'Tell a friend' : '分享給朋友');
+      html += '<section class="pt-2 pb-10 lg:pt-4 lg:pb-12"><div class="container mx-auto px-4 lg:px-8">' +
+        '<div class="share-section">' +
+        '<div class="share-section-head">' +
+        '<h3>' + ROOM_T[lang].shareThis + '</h3>' +
+        '<span class="share-section-hint">' + shareHint + '</span>' +
+        '</div>' +
+        '<div class="share-btns">' +
+        '<button type="button" class="share-btn line-btn" onclick="shareVia(\'line\', this)" aria-label="LINE">' +
+        '<span class="share-ico"><svg viewBox="0 0 24 24"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg></span>' +
+        '<span>LINE</span></button>' +
+        '<button type="button" class="share-btn fb-btn" onclick="shareVia(\'facebook\', this)" aria-label="Facebook">' +
+        '<span class="share-ico"><svg viewBox="0 0 24 24"><path d="M15.12 5.32H17V2.14A26.11 26.11 0 0 0 14.26 2c-2.72 0-4.58 1.66-4.58 4.7v2.62H6.61v3.56h3.07V22h3.68v-9.12h3.06l.46-3.56h-3.52V7.05c0-1.05.28-1.73 1.76-1.73z"/></svg></span>' +
+        '<span>Facebook</span></button>' +
+        '<button type="button" class="share-btn x-btn" onclick="shareVia(\'x\', this)" aria-label="X">' +
+        '<span class="share-ico"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>' +
+        '<span>X</span></button>' +
+        '<button type="button" class="share-btn copy-btn" onclick="shareVia(\'copy\', this)" aria-label="' + ROOM_T[lang].shareCopy + '">' +
+        '<span class="share-ico"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span>' +
+        '<span class="share-label">' + ROOM_T[lang].shareCopy + '</span></button>' +
+        '</div></div></div></section>';
+
       // ========== Space Introduction ==========
       if (siHtml) {
         html += '<section class="py-12 lg:py-16 bg-amber-50/50"><div class="container mx-auto px-4 lg:px-8">' +
@@ -970,6 +1128,77 @@
       if (e.key === 'ArrowLeft') navigateLightbox(-1);
       if (e.key === 'ArrowRight') navigateLightbox(1);
     });
+
+    // ========== Share ==========
+    var SHARE_CHECK_SVG = '<svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>';
+    function showShareToast(msg) {
+      var t = document.getElementById('shareToast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'shareToast';
+        t.className = 'share-toast';
+        t.setAttribute('role', 'status');
+        t.setAttribute('aria-live', 'polite');
+        document.body.appendChild(t);
+      }
+      t.innerHTML = SHARE_CHECK_SVG + '<span></span>';
+      t.lastChild.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._hideTimer);
+      t._hideTimer = setTimeout(function() { t.classList.remove('show'); }, 1800);
+    }
+    function flashCopyButton(btn) {
+      if (!btn) return;
+      var icoEl = btn.querySelector('.share-ico');
+      if (!icoEl) return;
+      var originalIco = icoEl.innerHTML;
+      icoEl.innerHTML = SHARE_CHECK_SVG;
+      btn.classList.add('copied');
+      clearTimeout(btn._copyTimer);
+      btn._copyTimer = setTimeout(function() {
+        icoEl.innerHTML = originalIco;
+        btn.classList.remove('copied');
+      }, 1800);
+    }
+    function shareVia(target, btn) {
+      var url = window.location.href;
+      var title = document.title || '';
+      var lang = document.documentElement.lang || 'zh-TW';
+      var T = (typeof ROOM_T !== 'undefined' && ROOM_T[lang]) ? ROOM_T[lang] : { shareCopied: 'Copied' };
+      var shareUrls = {
+        line: 'https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(url),
+        facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url),
+        x: 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(title)
+      };
+      if (target === 'copy') {
+        var done = function() {
+          flashCopyButton(btn);
+          showShareToast(T.shareCopied);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done).catch(function() {
+            fallbackCopy(url); done();
+          });
+        } else {
+          fallbackCopy(url); done();
+        }
+        return;
+      }
+      if (shareUrls[target]) {
+        window.open(shareUrls[target], '_blank', 'noopener,width=600,height=600');
+      }
+    }
+    function fallbackCopy(text) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+    }
 
     // ========== Availability Calendar Functions ==========
     var calBlockedDates = [];
