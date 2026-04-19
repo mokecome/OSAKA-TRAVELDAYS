@@ -863,32 +863,34 @@
     .region-tab:hover { background: #fef3c7; }
     .region-tab.active { background: #f59e0b; color: white; }
     #regionFilterBar { position: sticky; z-index: 40; background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid #fef3c7; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-    /* Category chips inside hero — refined ghost style */
-    #categoryFilterBar .region-tab {
+    /* Category chips inside hero — light green idle, solid green active */
+    #categoryFilterBar .region-tab,
+    #categoryFilterBar .category-tab {
       padding: 0.45rem 1rem;
       margin: 0.35rem 0.45rem;
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.35);
-      color: rgba(255,255,255,0.9);
+      background: #d1fae5 !important;
+      border: 1.5px solid #6ee7b7 !important;
+      color: #065f46 !important;
       letter-spacing: 0.05em;
-      font-weight: 400;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      font-weight: 500;
       transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
     }
     @media (min-width: 768px) {
-      #categoryFilterBar .region-tab { padding: 0.5rem 1.25rem; margin: 0.5rem 0.65rem; }
+      #categoryFilterBar .region-tab,
+      #categoryFilterBar .category-tab { padding: 0.5rem 1.25rem; margin: 0.5rem 0.65rem; }
     }
     @media (hover: hover) {
-      #categoryFilterBar .region-tab:hover {
-        background: rgba(255,255,255,0.18);
-        border-color: rgba(255,255,255,0.9);
+      #categoryFilterBar .region-tab:hover,
+      #categoryFilterBar .category-tab:hover {
+        background: #a7f3d0 !important;
+        border-color: #34d399 !important;
       }
     }
-    #categoryFilterBar .region-tab.active {
-      background: #f59e0b;
-      color: white;
-      border-color: #f59e0b;
+    #categoryFilterBar .region-tab.active,
+    #categoryFilterBar .category-tab.active {
+      background: #10b981 !important;
+      color: #ffffff !important;
+      border-color: #059669 !important;
     }
 
     /* Search Tabs — above search bar */

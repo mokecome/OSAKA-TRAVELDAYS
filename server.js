@@ -94,7 +94,7 @@ app.use((req, res, next) => {
 // Rate limiting
 app.use('/api/', rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 500,
   message: { error: '請求過於頻繁，請稍後再試' }
 }));
 
