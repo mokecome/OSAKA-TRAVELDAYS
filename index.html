@@ -1041,6 +1041,27 @@
     /* Ensure hero search bar sits above following sections */
     #searchBar { position: relative; z-index: 55; }
     #searchBar.dd-open { z-index: 60; }
+    .search-reset-btn {
+      align-self: center;
+      padding: 8px 14px;
+      border-radius: 999px;
+      margin-right: 6px;
+      background: rgba(0,0,0,0.04);
+      border: 1px solid transparent;
+      color: #374151;
+      font-size: 0.875rem;
+      font-weight: 500;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      transition: background .15s, color .15s, transform .1s;
+    }
+    .search-reset-btn:hover {
+      background: rgba(0,0,0,0.08);
+      color: #111827;
+    }
+    .search-reset-btn:active { transform: scale(0.96); }
     @keyframes searchDdFade {
       from { opacity: 0; transform: translateY(-6px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -1178,6 +1199,16 @@
         padding: 8px;
         gap: 2px;
         box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+      }
+      .search-reset-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 4px 10px;
+        font-size: 0.8rem;
+        margin: 0;
+        background: rgba(0,0,0,0.06);
+        z-index: 2;
       }
       .search-divider { display: none; }
       .search-field {
@@ -1454,6 +1485,9 @@
           <span class="search-label" data-i18n="search.guests">客人</span>
           <span class="search-value" id="searchGuestsText" data-i18n="search.guestsPlaceholder">新增人數</span>
         </div>
+        <button id="searchResetBtn" type="button" class="search-reset-btn" style="display:none" aria-label="重新搜尋">
+          <span data-i18n="search.reset">重新搜尋</span>
+        </button>
         <button class="search-submit" id="searchSubmitBtn" aria-label="搜尋" type="button">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
         </button>
@@ -2527,6 +2561,18 @@
         if (emptyEl) emptyEl.classList.toggle('hidden', totalVisible > 0);
       }
 
+      function hasActiveFilters() {
+        return activeRegion !== 'all'
+            || activeCategory !== 'all'
+            || activeCapacity !== 'all'
+            || !!searchDates.checkin
+            || activeAvailableIds !== null;
+      }
+      function refreshResetBtn() {
+        var btn = document.getElementById('searchResetBtn');
+        if (btn) btn.style.display = hasActiveFilters() ? '' : 'none';
+      }
+
       function filterByRegion(rid) {
         activeRegion = rid;
         document.querySelectorAll('.region-tab').forEach(function(btn) {
@@ -2535,6 +2581,7 @@
           btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
         applyFilters();
+        refreshResetBtn();
       }
 
       function filterByCategory(cat) {
@@ -2545,6 +2592,7 @@
           btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
         applyFilters();
+        refreshResetBtn();
       }
 
       function renderFilterBar(regions) {
@@ -2665,6 +2713,7 @@
               document.getElementById('searchGuestsText').textContent = b.textContent;
               document.getElementById('searchGuestsText').classList.add('selected');
               closeSearchDropdown();
+              refreshResetBtn();
             });
           });
         } else if (field === 'date') {
@@ -2684,6 +2733,7 @@
           .then(function(data) {
             if (!data || !Array.isArray(data.availableIds)) return;
             activeAvailableIds = data.availableIds;
+            refreshResetBtn();
             if (!hint) return;
             hint.classList.remove('loading');
             var lang = localStorage.getItem('lang') || 'zh-TW';
@@ -2735,6 +2785,7 @@
           renderCalendar(lang, t);
           var hint = document.getElementById('searchAvailHint');
           if (hint) hint.style.display = 'none';
+          refreshResetBtn();
         };
         document.getElementById('calConfirm').onclick = function() {
           if (searchDates.checkin && searchDates.checkout) {
@@ -2874,6 +2925,7 @@
           var ci = parseYmd(searchDates.checkin);
           var co = parseYmd(searchDates.checkout);
           if (dt) { dt.textContent = (ci.getMonth() + 1) + '/' + ci.getDate() + ' – ' + (co.getMonth() + 1) + '/' + co.getDate(); dt.classList.add('selected'); }
+          refreshResetBtn();
           fetchAvailability(searchDates.checkin, searchDates.checkout);
           // Auto-close after brief delay so user sees the confirmed range highlight
           if (justCompleted) setTimeout(function() { closeSearchDropdown(); }, 260);
@@ -2931,6 +2983,36 @@
         });
         var btn = document.getElementById('searchSubmitBtn');
         if (btn) btn.addEventListener('click', applySearch);
+        var resetBtn = document.getElementById('searchResetBtn');
+        if (resetBtn) resetBtn.addEventListener('click', function() {
+          var lang = localStorage.getItem('lang') || 'zh-TW';
+          var t = (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS[lang]) || {};
+          searchDates.checkin = '';
+          searchDates.checkout = '';
+          activeCapacity = 'all';
+          activeAvailableIds = null;
+          activeRegion = 'all';
+          activeCategory = 'all';
+          var dt = document.getElementById('searchDateText');
+          if (dt) { dt.textContent = t['search.datePlaceholder'] || '選擇日期'; dt.classList.remove('selected'); }
+          var gt = document.getElementById('searchGuestsText');
+          if (gt) { gt.textContent = t['search.guestsPlaceholder'] || '新增人數'; gt.classList.remove('selected'); }
+          var hint = document.getElementById('searchAvailHint');
+          if (hint) hint.style.display = 'none';
+          document.querySelectorAll('.region-tab').forEach(function(b) {
+            var on = b.dataset.rid === 'all';
+            b.classList.toggle('active', on);
+            b.setAttribute('aria-pressed', on ? 'true' : 'false');
+          });
+          document.querySelectorAll('.category-tab').forEach(function(b) {
+            var on = b.dataset.cat === 'all';
+            b.classList.toggle('active', on);
+            b.setAttribute('aria-pressed', on ? 'true' : 'false');
+          });
+          closeSearchDropdown();
+          applySearch();
+          refreshResetBtn();
+        });
         document.addEventListener('click', function(e) {
           // Skip if the clicked element was already removed from DOM
           // (e.g. inner content just re-rendered by a handler)
@@ -3038,6 +3120,7 @@
         'search.guests': '客人',
         'search.guestsPlaceholder': '新增人數',
         'search.availableCount': '{n} 間可訂 / 共 {total} 間',
+        'search.reset': '重新搜尋',
         'search.checkin': '入住日期',
         'search.checkout': '退房日期',
         'search.submit': '搜尋',
@@ -3126,6 +3209,7 @@
         'search.guests': '人数',
         'search.guestsPlaceholder': '人数を選択',
         'search.availableCount': '{n} 件空室あり / 全 {total} 件',
+        'search.reset': '検索をリセット',
         'search.checkin': 'チェックイン',
         'search.checkout': 'チェックアウト',
         'search.submit': '検索',
@@ -3214,6 +3298,7 @@
         'search.guests': 'Guests',
         'search.guestsPlaceholder': 'Add guests',
         'search.availableCount': '{n} available / {total} total',
+        'search.reset': 'Reset search',
         'search.checkin': 'Check-in',
         'search.checkout': 'Check-out',
         'search.submit': 'Search',
