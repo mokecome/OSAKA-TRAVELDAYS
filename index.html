@@ -1284,6 +1284,121 @@
     @media (max-width: 767px) {
       .footer-section-mobile { margin-top: 2.5rem; }
     }
+
+    /* ======================================
+       Long-text / i18n responsive hardening
+       Applied equally to zh-TW / ja / en so
+       the three languages stay visually
+       consistent — no lang-scoped overrides.
+       ====================================== */
+
+    /* Hard guard against page-level horizontal scroll from rogue overflow
+       (long EN strings, wide iframes, etc.). `clip` is preferred over
+       `hidden` because it does NOT break `position: sticky` descendants
+       like #regionFilterBar. */
+    html { overflow-x: clip; }
+    body { overflow-x: clip; max-width: 100vw; }
+    img, iframe, video { max-width: 100%; }
+
+    /* Allow long English phrases to wrap inside chat bubbles + quick replies. */
+    .quick-reply-btn,
+    .category-btn,
+    .message-bubble {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .quick-reply-btn { text-align: left; }
+    /* Let category buttons share space but still shrink with long text. */
+    .category-btn { flex: 1 1 0; min-width: 0; }
+
+    /* Property card: address and transport info can be long strings;
+       let them wrap inside the card instead of pushing it wide. */
+    .info-item { min-width: 0; }
+    .info-item span { overflow-wrap: anywhere; word-break: break-word; min-width: 0; }
+
+    /* Category badge pill on the card image shouldn't force the image
+       box wider than it is — let it wrap its own label. */
+    .badge { overflow-wrap: anywhere; max-width: 85%; }
+
+    /* "Become a Host" link sits under the tabs; let long EN wrap. */
+    .search-become-host { overflow-wrap: anywhere; }
+
+    /* Chat header title: ellipsize so long EN title can't push the close button off-screen. */
+    .chat-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chat-subtitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chat-header-left { min-width: 0; flex: 1 1 auto; }
+    .chat-header-left > div:not(.chat-avatar) { min-width: 0; flex: 1 1 auto; }
+    .chat-header-actions { flex-shrink: 0; }
+
+    /* FAQ cards: long EN answers must wrap inside the card. */
+    #faqList h3, #faqList p,
+    [data-i18n^="faq.q"], [data-i18n^="faq.a"] {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    /* Region + category filter bars on mobile. Strategy:
+       - Region bar: flex-wrap (short, few chips).
+       - Category bar: CSS grid with equal-width cells so chips line up
+         cleanly across languages (CJK looks tidy naturally, but EN/JA have
+         mixed chip widths that look ragged with plain flex-wrap). */
+    @media (max-width: 767px) {
+      #regionFilterTabs {
+        flex-wrap: wrap !important;
+        justify-content: center;
+        gap: 6px;
+      }
+      #regionFilterTabs .region-tab {
+        padding: 0.35rem 0.85rem !important;
+        font-size: 0.78rem !important;
+        margin: 0 !important;
+      }
+
+      /* Category chips: grid, equal-width per row, auto-fill to pick
+         2–3 columns depending on viewport. */
+      #categoryFilterTabs {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 6px;
+        max-width: 420px;
+        margin: 0 auto;
+      }
+      #categoryFilterTabs .region-tab,
+      #categoryFilterTabs .category-tab {
+        padding: 0.4rem 0.6rem !important;
+        font-size: 0.78rem !important;
+        margin: 0 !important;
+        text-align: center;
+        justify-content: center;
+      }
+    }
+
+    /* Nav container: let the lang pill wrap under the links if the row is tight. */
+    @media (max-width: 767px) {
+      header .flex.items-center.gap-6 { flex-wrap: wrap; gap: 0.75rem; justify-content: flex-end; }
+    }
+
+    /* Hero CTA row: allow wrap on narrow screens so two buttons don't overflow. */
+    @media (max-width: 640px) {
+      section > div > div.flex.flex-col.sm\:flex-row { flex-wrap: wrap; }
+    }
+
+    /* Hero content div is a flex item of a `justify-center` section, so its
+       width is content-driven. In CJK the text is short → div narrow → visible
+       side gap. In EN the text is longer → div hits viewport → no gap.
+       Force an explicit width < viewport on mobile so all languages get the
+       same consistent side breathing room (no "fill" effect, just a cap). */
+    @media (max-width: 767px) {
+      section > div.relative.z-10.text-center.max-w-4xl.mx-auto {
+        width: calc(100% - 2rem);
+        max-width: calc(100% - 2rem);
+      }
+    }
+
+    /* Footer company name & address stay in Japanese regardless of UI lang;
+       let them wrap naturally so they can never push the column wider
+       than the viewport on narrow mobiles. */
+    #footerCompanyName, #footerAddress { overflow-wrap: anywhere; }
   </style>
 
   <!-- Structured Data: Organization + LodgingBusiness -->
@@ -2424,7 +2539,7 @@
               '</div>' +
             '</div>' +
             '<a href="rooms/' + escHtml(property.id) + '.html" class="btn-primary w-full mt-auto">' +
-              '<span>查看詳情</span>' +
+              '<span>' + (lang === 'en' ? 'View details' : (lang === 'ja' ? '詳細を見る' : '查看詳情')) + '</span>' +
               '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
                 '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>' +
               '</svg>' +
@@ -3245,38 +3360,38 @@
         'nav.contact': 'Contact',
         'hero.title': '大阪旅行日民宿',
         'hero.subtitle': 'OSAKA TRAVELDAYS',
-        'hero.desc': 'Curated Osaka guesthouses, entire-home rentals & serviced apartments\nExperience authentic Japanese living',
-        'hero.cta': 'Browse Properties',
-        'hero.cta2': 'Contact Us',
-        'stats.properties': 'Curated Properties',
-        'stats.areas': 'Popular Areas',
-        'stats.support': 'Customer Support',
-        'stats.guarantee': 'Satisfaction Guaranteed',
-        'region.taisho.name': 'Taisho Ward',
+        'hero.desc': 'Curated Osaka stays — guesthouses, whole homes & apartments\nAuthentic Japanese living, thoughtfully hosted',
+        'hero.cta': 'Browse stays',
+        'hero.cta2': 'Contact us',
+        'stats.properties': 'Curated stays',
+        'stats.areas': 'Popular areas',
+        'stats.support': 'Customer support',
+        'stats.guarantee': '100% guarantee',
+        'region.taisho.name': 'Taisho',
         'region.taisho.desc': 'Osaka\'s little Okinawa, rich in unique culture and shitamachi charm',
-        'region.shinsaibashi.name': 'Shinsaibashi / Nipponbashi / Namba',
+        'region.shinsaibashi.name': 'Shinsaibashi / Namba',
         'region.shinsaibashi.desc': 'Osaka\'s most vibrant commercial hub, shopping and dining galore',
-        'region.suminoe.name': 'Suminoe Ward',
+        'region.suminoe.name': 'Suminoe',
         'region.suminoe.desc': 'Quiet residential area — feel the local everyday life',
-        'region.nishikujo.name': 'Nishikujo / Kujo / Fukushima',
+        'region.nishikujo.name': 'Nishikujo / Fukushima',
         'region.nishikujo.desc': 'Transport hub with easy access to all major attractions',
         'faq.heading': 'Frequently Asked Questions',
         'faq.subheading': 'Common questions about Osaka Travel Days Minshuku',
         'faq.q1': 'How do I book?',
-        'faq.a1': 'Book via Airbnb, or contact us via LINE (@fgk8695x) / Email (service.traveldays@gmail.com) for direct booking. Minimum 2 nights. Accepts credit card, PayPal, Apple Pay / Google Pay.',
-        'faq.q2': 'What are the check-in and check-out times?',
-        'faq.a2': 'Check-in from 15:00, check-out by 10:00. We use self check-in with a code lock — your access code will be sent before arrival.',
-        'faq.q3': 'What amenities and services are included?',
-        'faq.a3': 'All properties include free WiFi, kitchen, washer, AC, hair dryer, towels and toiletries. Some properties also offer parking, bathtub, and private garden. See each listing for details.',
-        'faq.q4': 'Which areas do you have properties in?',
+        'faq.a1': 'Book via Airbnb, or contact us on LINE (@fgk8695x) or email (service.traveldays@gmail.com). Minimum 2 nights. We accept credit card, PayPal, Apple Pay and Google Pay.',
+        'faq.q2': 'What are the check-in & check-out times?',
+        'faq.a2': 'Check-in from 15:00, check-out by 10:00. Self check-in with a code lock — your access code is sent before arrival.',
+        'faq.q3': 'What amenities are included?',
+        'faq.a3': 'Every stay has WiFi, kitchen, washer, AC, hair dryer, towels and toiletries. Some add parking, bathtub or a private garden — see each listing.',
+        'faq.q4': 'Which areas do you cover?',
         'faq.q5': 'Can I cancel or reschedule?',
-        'faq.a5': 'Free cancellation up to 14 days before check-in. Fees apply after that based on how close to the check-in date. Contact us via LINE or Email for rescheduling. See the Airbnb listing for the full cancellation policy.',
+        'faq.a5': 'Free cancellation up to 14 days before check-in; fees apply after that. For rescheduling, contact us on LINE or email. See the Airbnb listing for the full cancellation policy.',
         'faq.q6': 'Can I store luggage after check-out?',
         'faq.a6': 'Luggage can only be stored until 1 PM.',
         'location.eyebrow': 'Our Location',
         'location.title': 'Travel Days Store',
         'location.address': '1-8-3 Isoji, Minato-ku, Osaka',
-        'footer.tagline': 'Curated Osaka guesthouses for an unforgettable Japan experience. Whether for family travel, friends\' trips, or business — find the perfect stay.',
+        'footer.tagline': 'Curated Osaka guesthouses for an unforgettable Japan trip — family getaways, friends, or business, we have the right stay.',
         'footer.contact': 'Contact',
         'footer.company': 'Company Info',
         'footer.registration': 'Business Registration',
@@ -3305,8 +3420,8 @@
         'search.tab.rooms': 'Stays',
         'search.tab.experiences': 'Experiences',
         'search.tab.services': 'Services',
-        'search.tab.newBadge': 'Coming Soon',
-        'search.becomeHost': 'Become a Host',
+        'search.tab.newBadge': 'Soon',
+        'search.becomeHost': 'Host with us',
         'search.clear': 'Clear',
         'search.confirm': 'Confirm',
         'category.highValue': 'Best Value',
@@ -3317,16 +3432,16 @@
         'features.eyebrow': 'Why Choose Us',
         'features.heading': 'Why Choose Us',
         'features.subtitle': 'Professional · Quality Guaranteed · Feel at Home',
-        'features.q1.title': 'Quality Guarantee',
-        'features.q1.desc': 'All properties pass strict vetting to ensure the highest standards of cleanliness and furnishings',
-        'features.q2.title': 'Convenient Transport',
-        'features.q2.desc': 'Curated properties near train stations, so you can easily reach Osaka\'s top sights and shopping areas',
-        'features.q3.title': 'Attentive Service',
-        'features.q3.desc': 'Chinese-language support available around the clock — from booking to check-out, we\'re here for you',
-        'cta.title': 'Ready to Start Your Osaka Journey?',
-        'cta.desc': 'Book now and experience authentic Osaka guesthouse living, creating unforgettable travel memories',
-        'cta.btn1': 'View All Properties',
-        'cta.btn2': 'Contact Us'
+        'features.q1.title': 'Quality guarantee',
+        'features.q1.desc': 'Every property is vetted for cleanliness and furnishings — nothing less than our best.',
+        'features.q2.title': 'Convenient transport',
+        'features.q2.desc': 'Hand-picked stays near train stations — Osaka\'s top sights and shops within easy reach.',
+        'features.q3.title': 'Attentive service',
+        'features.q3.desc': 'Multilingual support from booking to check-out — we\'re here whenever you need us.',
+        'cta.title': 'Ready to start your Osaka journey?',
+        'cta.desc': 'Book now — live like a local, make memories that stay with you.',
+        'cta.btn1': 'Browse all stays',
+        'cta.btn2': 'Contact us'
       }
     };
 
@@ -3335,13 +3450,27 @@
       localStorage.setItem('lang', lang);
       document.documentElement.lang = lang;
 
+      // Keep the browser tab title in sync with the chosen language.
+      var PAGE_TITLES = {
+        'zh-TW': '大阪旅行日民宿 | 精選大阪包棟民宿・公寓式住宿 | OSAKA TRAVELDAYS',
+        'ja':    '大阪旅行日民宿 | 厳選大阪の貸切民泊・アパートメント | OSAKA TRAVELDAYS',
+        'en':    'TravelDays BNB | Curated Osaka Stays'
+      };
+      if (PAGE_TITLES[lang]) document.title = PAGE_TITLES[lang];
+
       document.querySelectorAll('[data-i18n]').forEach(function(el) {
         var key = el.dataset.i18n;
         var text = TRANSLATIONS[lang][key];
         if (text !== undefined) {
           // Use innerHTML for keys that contain line breaks rendered as <br>
           if (key === 'hero.desc') {
-            el.innerHTML = text.replace(/\n/g, '<br class="hidden sm:block">');
+            // Always respect explicit line breaks (including on mobile), so
+            // the two-line tagline wraps cleanly in every language.
+            el.innerHTML = escHtml(text).replace(/\n/g, '<br>');
+          } else if (key === 'hero.title') {
+            // Allow explicit line breaks (e.g. "TravelDays\nBNB"). Escape
+            // the user-supplied text so admin-set values can't inject HTML.
+            el.innerHTML = escHtml(text).replace(/\n/g, '<br>');
           } else if (/^faq\.a\d+$/.test(key)) {
             el.innerHTML = text;
           } else {
@@ -3356,6 +3485,18 @@
         btn.classList.toggle('active', isActive);
         btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
       });
+
+      // Mobile search submit button shows its aria-label as visible text
+      // via `.search-submit::after { content: attr(aria-label) }`.
+      // Keep both aria-label and the reset button in sync with the UI language.
+      var submitBtn = document.getElementById('searchSubmitBtn');
+      if (submitBtn && TRANSLATIONS[lang]['search.submit']) {
+        submitBtn.setAttribute('aria-label', TRANSLATIONS[lang]['search.submit']);
+      }
+      var resetBtn = document.getElementById('searchResetBtn');
+      if (resetBtn && TRANSLATIONS[lang]['search.reset']) {
+        resetBtn.setAttribute('aria-label', TRANSLATIONS[lang]['search.reset']);
+      }
 
       // Sync chatbot language
       if (typeof FAQChatbot !== 'undefined' && FAQChatbot.elements && FAQChatbot.elements.chatTitle) {
