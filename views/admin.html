@@ -768,7 +768,7 @@
           </div>
         </div>
 
-        <!-- 出入方式 (樓梯 / 電梯) -->
+        <!-- 出入方式 (樓梯 / 電梯 / 車庫) -->
         <div class="card mb-4">
           <div class="card-header">
             <h2 class="font-semibold text-sm">出入方式</h2>
@@ -785,6 +785,11 @@
                 <input type="checkbox" id="f-hasElevator" class="form-checkbox">
                 <img src="/images/icons/elevator.png" alt="電梯" class="w-6 h-6 object-contain">
                 <span class="text-sm">電梯</span>
+              </label>
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" id="f-hasGarage" class="form-checkbox">
+                <img src="/images/icons/garage.png" alt="車庫" class="w-6 h-6 object-contain">
+                <span class="text-sm">車庫</span>
               </label>
             </div>
           </div>
@@ -1219,7 +1224,7 @@
 <script>
 // ==================== CONFIG ====================
 const API_BASE = '/api';
-const DEFAULT_AMENITIES = ['Wi-Fi','電視','廚房','洗衣機','空調設備','吹風機','冰箱','自助入住','停車場','浴缸','微波爐'];
+const DEFAULT_AMENITIES = ['Wi-Fi','電視','廚房','洗衣機','空調設備','吹風機','冰箱','自助入住','浴缸','微波爐'];
 const CATEGORY_TAGS = [
   { key: 'highValue',       label: '高性價比' },
   { key: 'businessTravel',  label: '出差推薦' },
@@ -1661,6 +1666,7 @@ function clearForm() {
   document.getElementById('f-regionId').value = '';
   document.getElementById('f-hasStairs').checked = false;
   document.getElementById('f-hasElevator').checked = false;
+  document.getElementById('f-hasGarage').checked = false;
   currentCoverImage = null;
   currentAmenities = [];
   currentCategoryTags = [];
@@ -1692,6 +1698,7 @@ function loadPropertyToForm(prop) {
   document.getElementById('f-videoUrl').value = prop.videoUrl || '';
   document.getElementById('f-hasStairs').checked = !!prop.hasStairs;
   document.getElementById('f-hasElevator').checked = !!prop.hasElevator;
+  document.getElementById('f-hasGarage').checked = !!prop.hasGarage;
 
   ['zh-TW', 'ja', 'en'].forEach(function(lang) {
     var sfx = '-' + lang;
@@ -1812,6 +1819,7 @@ async function saveProperty() {
     videoUrl: document.getElementById('f-videoUrl').value.trim(),
     hasStairs: document.getElementById('f-hasStairs').checked ? 1 : 0,
     hasElevator: document.getElementById('f-hasElevator').checked ? 1 : 0,
+    hasGarage: document.getElementById('f-hasGarage').checked ? 1 : 0,
     categoryTags: currentCategoryTags,
     amenities: currentAmenities,
     spaceIntro: [1,2,3,4].map(function(n) {

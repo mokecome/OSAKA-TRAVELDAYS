@@ -562,6 +562,7 @@
         navContact: '聯絡我們',
         accessStairs: '樓梯',
         accessElevator: '電梯',
+        accessGarage: '車庫',
         toothbrushNote: '請自備牙刷牙膏',
         bookingAirbnbTitle: '線上預約',
         bookingLineTitle: 'LINE專人客服訂房',
@@ -597,6 +598,7 @@
         navContact: 'お問い合わせ',
         accessStairs: '階段',
         accessElevator: 'エレベーター',
+        accessGarage: 'ガレージ',
         toothbrushNote: '歯ブラシ・歯磨き粉はご持参ください',
         bookingAirbnbTitle: 'オンライン予約',
         bookingLineTitle: 'LINE カスタマー予約',
@@ -632,6 +634,7 @@
         navContact: 'Contact',
         accessStairs: 'Stairs',
         accessElevator: 'Elevator',
+        accessGarage: 'Garage',
         toothbrushNote: 'Please bring your own toothbrush and toothpaste',
         bookingAirbnbTitle: 'Book Online',
         bookingLineTitle: 'LINE Concierge',
@@ -869,6 +872,11 @@
         accessHtml += '<span class="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-amber-300 rounded-full text-sm font-medium text-amber-900 shadow-sm">' +
           '<img src="/images/icons/elevator.png" alt="" class="w-6 h-6 object-contain">' +
           '<span>' + esc(ROOM_T[lang].accessElevator) + '</span></span>';
+      }
+      if (p.hasGarage) {
+        accessHtml += '<span class="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-amber-300 rounded-full text-sm font-medium text-amber-900 shadow-sm">' +
+          '<img src="/images/icons/garage.png" alt="" class="w-6 h-6 object-contain">' +
+          '<span>' + esc(ROOM_T[lang].accessGarage) + '</span></span>';
       }
       accessHtml += '<span class="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-100 border border-amber-400 rounded-full text-sm font-medium text-amber-900 shadow-sm">' +
         '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +

@@ -2453,9 +2453,9 @@
       }
 
       const CARD_ACCESS_LABELS = {
-        'zh-TW': { stairs: '樓梯', elevator: '電梯' },
-        'ja':    { stairs: '階段', elevator: 'エレベーター' },
-        'en':    { stairs: 'Stairs', elevator: 'Elevator' }
+        'zh-TW': { stairs: '樓梯', elevator: '電梯', garage: '車庫' },
+        'ja':    { stairs: '階段', elevator: 'エレベーター', garage: 'ガレージ' },
+        'en':    { stairs: 'Stairs', elevator: 'Elevator', garage: 'Garage' }
       };
 
       const CATEGORY_TAG_KEYS = ['highValue','businessTravel','themed','familyFriendly','brandExperience'];
@@ -2493,6 +2493,11 @@
           accessIconsHtml += '<span title="' + escHtml(CARD_ACCESS_LABELS[lang].elevator) + '" class="inline-flex items-center gap-1 text-xs text-amber-700">' +
             '<img src="/images/icons/elevator.png" alt="" class="w-4 h-4 object-contain">' +
             '<span>' + escHtml(CARD_ACCESS_LABELS[lang].elevator) + '</span></span>';
+        }
+        if (property.hasGarage) {
+          accessIconsHtml += '<span title="' + escHtml(CARD_ACCESS_LABELS[lang].garage) + '" class="inline-flex items-center gap-1 text-xs text-amber-700">' +
+            '<img src="/images/icons/garage.png" alt="" class="w-4 h-4 object-contain">' +
+            '<span>' + escHtml(CARD_ACCESS_LABELS[lang].garage) + '</span></span>';
         }
 
         return '<div class="property-card animate-fadeInUp"' + delayAttr + '>' +

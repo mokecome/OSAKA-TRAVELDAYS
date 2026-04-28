@@ -202,6 +202,7 @@ const migrations = [
   "ALTER TABLE properties ADD COLUMN parkingInfo TEXT DEFAULT ''",
   "ALTER TABLE properties ADD COLUMN hasStairs INTEGER DEFAULT 0",
   "ALTER TABLE properties ADD COLUMN hasElevator INTEGER DEFAULT 0",
+  "ALTER TABLE properties ADD COLUMN hasGarage INTEGER DEFAULT 0",
   "ALTER TABLE properties ADD COLUMN categoryTags TEXT DEFAULT '[]'",
   "ALTER TABLE property_images ADD COLUMN isCover INTEGER DEFAULT 0"
 ];
@@ -252,6 +253,49 @@ for (const sql of migrations) {
     }
     if (changed > 0) console.log(`[migration] Lifted access flags on ${changed} properties`);
     db.prepare("INSERT OR REPLACE INTO site_settings (key, value, updatedAt) VALUES ('migration.accessFlags', '\"done\"', datetime('now','localtime'))").run();
+  }
+}
+
+// Migrate: lift 車庫/停車場 etc. out of amenities JSON array into hasGarage flag
+{
+  const migrated = db.prepare("SELECT value FROM site_settings WHERE key = 'migration.garageFlag'").get();
+  if (!migrated) {
+    const KW_LC = ['車庫', '停車場', '駐車場', 'ガレージ', 'garage', 'parking'];
+    const rows = db.prepare('SELECT id, amenities, hasGarage FROM properties').all();
+    const upd = db.prepare('UPDATE properties SET amenities = ?, hasGarage = ? WHERE id = ?');
+    let changed = 0;
+    for (const r of rows) {
+      let arr;
+      try { arr = JSON.parse(r.amenities || '[]'); } catch { continue; }
+      if (!Array.isArray(arr)) continue;
+      const matches = (x) => typeof x === 'string' && KW_LC.includes(x.toLowerCase());
+      if (!arr.some(matches)) continue;
+      const filtered = arr.filter(x => !matches(x));
+      upd.run(JSON.stringify(filtered), r.hasGarage || 1, r.id);
+      changed++;
+    }
+    if (changed > 0) console.log(`[migration] Lifted hasGarage flag on ${changed} properties`);
+    db.prepare("INSERT OR REPLACE INTO site_settings (key, value, updatedAt) VALUES ('migration.garageFlag', '\"done\"', datetime('now','localtime'))").run();
+  }
+}
+
+// Cleanup: drop redundant '停車位和設施' from amenities (covered by hasGarage when applicable)
+{
+  const migrated = db.prepare("SELECT value FROM site_settings WHERE key = 'migration.dropAmbiguousParking'").get();
+  if (!migrated) {
+    const TARGET = '停車位和設施';
+    const rows = db.prepare('SELECT id, amenities FROM properties').all();
+    const upd = db.prepare('UPDATE properties SET amenities = ? WHERE id = ?');
+    let changed = 0;
+    for (const r of rows) {
+      let arr;
+      try { arr = JSON.parse(r.amenities || '[]'); } catch { continue; }
+      if (!Array.isArray(arr) || !arr.includes(TARGET)) continue;
+      upd.run(JSON.stringify(arr.filter(x => x !== TARGET)), r.id);
+      changed++;
+    }
+    if (changed > 0) console.log(`[migration] Dropped '${TARGET}' from amenities on ${changed} properties`);
+    db.prepare("INSERT OR REPLACE INTO site_settings (key, value, updatedAt) VALUES ('migration.dropAmbiguousParking', '\"done\"', datetime('now','localtime'))").run();
   }
 }
 
@@ -471,6 +515,13 @@ function ssrRenderCard(property, delay, lang) {
         const labels = CATEGORY_TAG_LABELS[lang] || CATEGORY_TAG_LABELS['zh-TW'];
         const pills = tags.map(k => `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">${escHtml(labels[k] || k)}</span>`).join('');
         return `<div class="flex flex-wrap gap-1.5 mb-3">${pills}</div>`;
+      })() +
+      (function(){
+        let parts = '';
+        if (property.hasStairs)   parts += `<span title="樓梯" class="inline-flex items-center gap-1 text-xs text-amber-700"><img src="/images/icons/stairs.png" alt="" class="w-4 h-4 object-contain"><span>樓梯</span></span>`;
+        if (property.hasElevator) parts += `<span title="電梯" class="inline-flex items-center gap-1 text-xs text-amber-700"><img src="/images/icons/elevator.png" alt="" class="w-4 h-4 object-contain"><span>電梯</span></span>`;
+        if (property.hasGarage)   parts += `<span title="車庫" class="inline-flex items-center gap-1 text-xs text-amber-700"><img src="/images/icons/garage.png" alt="" class="w-4 h-4 object-contain"><span>車庫</span></span>`;
+        return parts ? `<div class="flex flex-wrap gap-3 mb-3">${parts}</div>` : '';
       })() +
       `<div class="space-y-1 mb-5">` +
         `<div class="info-item"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>${escHtml(address)}</span></div>` +
@@ -906,7 +957,10 @@ app.get('/', (req, res) => {
     }
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Surrogate-Control', 'no-store');
+    res.setHeader('X-Accel-Expires', '0');
     res.send(ssrCache);
   } catch (err) {
     console.error('SSR error:', err.message);
@@ -1239,7 +1293,7 @@ app.post('/api/properties', requireAuth, async (req, res) => {
     quickInfo: JSON.stringify(p.quickInfo || []), amenities: JSON.stringify(p.amenities || []),
     spaceIntro: JSON.stringify(p.spaceIntro || []), nearestStation: ml(p.nearestStation),
     nearbyAttractions: ml(p.nearbyAttractions), parkingInfo: ml(p.parkingInfo),
-    hasStairs: p.hasStairs ? 1 : 0, hasElevator: p.hasElevator ? 1 : 0,
+    hasStairs: p.hasStairs ? 1 : 0, hasElevator: p.hasElevator ? 1 : 0, hasGarage: p.hasGarage ? 1 : 0,
     categoryTags: JSON.stringify(Array.isArray(p.categoryTags) ? p.categoryTags : []),
     ical_url: p.icalUrl || ''
   };
