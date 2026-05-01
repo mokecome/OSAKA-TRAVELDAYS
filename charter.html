@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/images/logo.png?v=2">
+  <link rel="shortcut icon" href="/images/logo.png?v=2">
+  <title>包車服務 | 大阪旅行日民宿 OSAKA TRAVELDAYS</title>
+  <meta name="description" content="大阪旅行日民宿包車服務 — 一日遊、機場接送、客製化行程，舒適便捷暢遊大阪及關西景點。">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://stay.traveldays.com.tw/charter">
+
+  <link rel="stylesheet" href="/css/tailwind.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #8B4513;
+      --color-secondary: #A0522D;
+      --color-accent: #D4A574;
+      --color-bg: #FFFBF7;
+      --color-text: #2D1810;
+    }
+    * { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+    }
+    .font-serif { font-family: 'Noto Serif TC', serif; }
+
+    /* Header blur */
+    .header-blur { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+    /* Language Switcher (Nav) */
+    .lang-switcher-nav {
+      display: flex; align-items: center; gap: 4px;
+      background: #fef3c7; border: 1px solid #fcd34d;
+      border-radius: 24px; padding: 3px 5px;
+    }
+    .lang-btn-nav {
+      padding: 3px 9px; border-radius: 20px;
+      font-size: 12px; font-weight: 700; color: #78350f;
+      background: transparent; border: none; cursor: pointer;
+      transition: all 0.2s; line-height: 1.5;
+      white-space: nowrap; letter-spacing: 0.01em;
+    }
+    .lang-btn-nav:hover { background: #fde68a; }
+    .lang-btn-nav.active { background: #92400e; color: white; border-radius: 20px; }
+
+    /* Footer Layout */
+    .footer-top-row { flex-direction: column; }
+    @media (min-width: 1024px) {
+      .footer-top-row { flex-direction: row; justify-content: space-between; }
+      .footer-logo-col { max-width: 24rem; }
+    }
+    @media (max-width: 767px) {
+      .footer-section-mobile { margin-top: 2.5rem; }
+    }
+
+    /* Mobile Nav Dropdown */
+    #mobileNav {
+      position: fixed; left: 0; right: 0; z-index: 45;
+      background: white; border-bottom: 1px solid #fef3c7;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.25s ease;
+    }
+    #mobileNav.open { max-height: 280px; }
+    #mobileNav a {
+      display: block; padding: 0.875rem 1.5rem; color: #92400e;
+      font-size: 1rem; font-weight: 500;
+      border-bottom: 1px solid #fef9ee; text-decoration: none;
+    }
+    #mobileNav a:last-child { border-bottom: none; }
+    #mobileNav a:active { background: #fef3c7; }
+    @media (min-width: 768px) { #mobileNav { display: none; } }
+
+    /* Hero (mirrors index.html) — full screen, image covers, gradient overlay */
+
+    /* Charter content area */
+    #charter-body {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 16px 64px;
+    }
+    #charter-body img { max-width: 100%; height: auto; }
+    #charter-body table { max-width: 100%; }
+
+    .charter-empty {
+      text-align: center; padding: 80px 20px; color: #92400e;
+      font-size: 1.05rem;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- Header (mirrors index.html) -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/90 header-blur border-b border-amber-100">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="flex items-center justify-between h-18 py-4">
+        <a href="/" class="flex items-center gap-3 group">
+          <img src="/images/logo.png" alt="大阪旅行日民宿 OSAKA TRAVELDAYS" class="w-10 h-10 object-contain">
+          <div>
+            <span class="hidden sm:inline text-xl font-serif font-bold text-amber-900 group-hover:text-amber-700 transition-colors">大阪旅行日民宿</span>
+            <span class="hidden sm:inline text-xs text-amber-600 ml-2 tracking-widest">OSAKA TRAVELDAYS</span>
+          </div>
+        </a>
+        <div class="flex items-center gap-6">
+          <div class="lang-switcher-nav">
+            <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-nav active" aria-pressed="true">中文</button>
+            <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-nav" aria-pressed="false">日本語</button>
+            <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-nav" aria-pressed="false">EN</button>
+          </div>
+          <nav class="hidden md:flex items-center space-x-8">
+            <a href="/become-host.html" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.becomeHost">成為房東/達人</a>
+            <a href="/charter" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.charter">包車服務</a>
+            <a href="/#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.rooms">房源一覽</a>
+            <a href="/#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.about">關於我們</a>
+            <a href="/#contact" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.contact">聯絡我們</a>
+          </nav>
+        </div>
+        <button class="md:hidden p-2 text-amber-800" aria-label="開啟選單" id="mobileMenuBtn">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Nav Dropdown -->
+  <nav id="mobileNav" style="top: 72px;">
+    <a href="/become-host.html" data-i18n="nav.becomeHost">成為房東/達人</a>
+    <a href="/charter" data-i18n="nav.charter">包車服務</a>
+    <a href="/#properties" data-i18n="nav.rooms">房源一覽</a>
+    <a href="/#about" data-i18n="nav.about">關於我們</a>
+    <a href="/#contact" data-i18n="nav.contact">聯絡我們</a>
+  </nav>
+
+  <main>
+    <!-- Charter Hero (mirrors index.html style, image managed in admin) -->
+    <section class="relative min-h-screen flex items-start justify-center" style="padding-top: 12rem; padding-bottom: 4rem;">
+      <div class="absolute inset-0">
+        <img id="charterHeroImg" src="/images/hero.jpg" alt="包車服務"
+             class="w-full h-full object-cover object-center">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-amber-50/80"></div>
+      </div>
+      <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+        <p class="text-amber-200 text-sm tracking-[0.3em] uppercase mb-6" data-i18n="charter.eyebrow">CHARTER SERVICE</p>
+        <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-white mb-6" style="text-shadow: 0 4px 20px rgba(0,0,0,0.5);" data-i18n="nav.charter">包車服務</h1>
+        <p class="text-xl sm:text-2xl md:text-3xl text-white/90 font-light" style="text-shadow: 0 2px 10px rgba(0,0,0,0.4);" data-i18n="charter.tagline">舒適便捷暢遊大阪・客製化包車行程</p>
+      </div>
+    </section>
+
+    <div id="charter-body">
+      <div class="charter-empty" data-i18n="charter.loading">載入中…</div>
+    </div>
+  </main>
+
+  <!-- Footer (mirrors index.html) -->
+  <footer class="bg-gradient-to-b from-amber-900 to-amber-950 text-amber-100 py-20 px-4">
+    <div class="container mx-auto max-w-6xl">
+      <div class="flex footer-top-row gap-12 mb-16">
+        <div class="footer-logo-col">
+          <div class="flex items-center gap-3 mb-5">
+            <img src="/images/logo.png" alt="Logo" class="w-12 h-12 object-contain">
+            <div>
+              <h3 class="text-xl font-serif text-white">大阪旅行日民宿</h3>
+              <p class="text-amber-400 text-xs tracking-widest">OSAKA TRAVELDAYS</p>
+            </div>
+          </div>
+          <p class="text-white leading-relaxed text-sm" data-i18n="footer.tagline">精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div class="min-w-0">
+            <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <span class="w-8 h-0.5 bg-amber-500"></span>
+              <span data-i18n="footer.contact">聯絡資訊</span>
+            </h4>
+            <div class="space-y-3">
+              <a id="footerEmailLink" href="mailto:service.traveldays@gmail.com" class="group flex items-center gap-3 cursor-pointer">
+                <span class="w-9 h-9 rounded-full bg-amber-700/30 border border-amber-500/50 flex items-center justify-center shrink-0 text-amber-400/80 group-hover:bg-amber-600/40 group-hover:text-amber-200 transition-all duration-200">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                </span>
+                <span id="footerEmail" class="text-sm break-all text-white font-medium group-hover:text-amber-200">service.traveldays@gmail.com</span>
+              </a>
+              <a id="footerLineLink" href="https://lin.ee/pGrA7Ej" target="_blank" class="group flex items-center gap-3 cursor-pointer">
+                <span class="w-9 h-9 rounded-full bg-[#06C755]/15 border border-[#06C755]/35 flex items-center justify-center shrink-0 text-[#06C755]/70 group-hover:text-[#06C755]">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zM24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+                </span>
+                <span id="footerLine" class="text-white font-medium group-hover:text-amber-200">LINE: @fgk8695x</span>
+              </a>
+            </div>
+          </div>
+          <div class="footer-section-mobile">
+            <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <span class="w-8 h-0.5 bg-amber-500"></span>
+              <span data-i18n="footer.registration">営業登記</span>
+            </h4>
+            <div class="text-white text-sm space-y-2 font-medium">
+              <p>大阪戦略特区民泊</p>
+              <p>旅館業法 簡易宿所</p>
+              <p>住宅宿泊管理業者</p>
+              <p class="text-amber-200 mt-3 font-semibold" data-i18n="footer.legal.note">旅行日民宿均為合法經營・安心入住</p>
+            </div>
+          </div>
+          <div class="footer-section-mobile">
+            <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <span class="w-8 h-0.5 bg-amber-500"></span>
+              <span data-i18n="footer.company">公司資訊</span>
+            </h4>
+            <div class="text-white text-sm space-y-2 font-medium">
+              <p id="footerCompanyName" class="text-white font-bold" data-i18n="footer.company.name">DAIDODO合同会社</p>
+              <p id="footerAddress" data-i18n="footer.address">大阪市中央区上本町西3−3−２</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-amber-800/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-white text-sm font-medium">© 2026 大阪旅行日民宿 OSAKA TRAVELDAYS. All rights reserved.</p>
+        <div class="flex items-center gap-6">
+          <a href="/privacy.html" class="text-white hover:text-amber-200 transition-colors text-sm font-medium" data-i18n="footer.privacy">隱私政策</a>
+          <a href="/terms.html" class="text-white hover:text-amber-200 transition-colors text-sm font-medium" data-i18n="footer.terms">使用條款</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Slim translations covering only nav + footer + charter keys this page uses
+    const TRANSLATIONS = {
+      'zh-TW': {
+        'nav.becomeHost': '成為房東/達人',
+        'nav.charter': '包車服務',
+        'nav.rooms': '房源一覽',
+        'nav.about': '關於我們',
+        'nav.contact': '聯絡我們',
+        'footer.tagline': '精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。',
+        'footer.contact': '聯絡資訊',
+        'footer.registration': '営業登記',
+        'footer.legal.note': '旅行日民宿均為合法經營・安心入住',
+        'footer.company': '公司資訊',
+        'footer.company.name': 'DAIDODO合同会社',
+        'footer.address': '大阪市中央区上本町西3−3−２',
+        'footer.privacy': '隱私政策',
+        'footer.terms': '使用條款',
+        'charter.eyebrow': 'CHARTER SERVICE',
+        'charter.tagline': '舒適便捷暢遊大阪・客製化包車行程',
+        'charter.loading': '載入中…',
+        'charter.empty': '此語言尚未提供包車服務內容，請切換其他語言查看。'
+      },
+      'ja': {
+        'nav.becomeHost': 'ホストになる',
+        'nav.charter': 'チャーター便',
+        'nav.rooms': '物件一覧',
+        'nav.about': '私たちについて',
+        'nav.contact': 'お問い合わせ',
+        'footer.tagline': '大阪各エリアの厳選民泊で、忘れられない日本旅行体験を。',
+        'footer.contact': 'お問い合わせ',
+        'footer.registration': '営業登記',
+        'footer.legal.note': 'すべて合法運営・安心宿泊',
+        'footer.company': '会社情報',
+        'footer.company.name': 'DAIDODO合同会社',
+        'footer.address': '大阪市中央区上本町西3−3−２',
+        'footer.privacy': 'プライバシーポリシー',
+        'footer.terms': '利用規約',
+        'charter.eyebrow': 'CHARTER SERVICE',
+        'charter.tagline': '快適にめぐる大阪・カスタマイズ可能なチャーター便',
+        'charter.loading': '読み込み中…',
+        'charter.empty': 'この言語のチャーター便ページはまだ準備中です。他の言語をお試しください。'
+      },
+      'en': {
+        'nav.becomeHost': 'Become a Host',
+        'nav.charter': 'Charter Service',
+        'nav.rooms': 'Properties',
+        'nav.about': 'About Us',
+        'nav.contact': 'Contact',
+        'footer.tagline': 'Curated Osaka guesthouses for unforgettable Japan stays.',
+        'footer.contact': 'Contact',
+        'footer.registration': 'Licenses',
+        'footer.legal.note': 'All properties licensed and legal',
+        'footer.company': 'Company',
+        'footer.company.name': 'DAIDODO LLC',
+        'footer.address': '3-3-2 Uehommachi Nishi, Chuo-ku, Osaka',
+        'footer.privacy': 'Privacy',
+        'footer.terms': 'Terms',
+        'charter.eyebrow': 'CHARTER SERVICE',
+        'charter.tagline': 'Comfortable Osaka tours · Customizable charter routes',
+        'charter.loading': 'Loading…',
+        'charter.empty': 'No charter service content yet for this language. Try another language.'
+      }
+    };
+
+    let SETTINGS = {};
+
+    function applyTranslations(lang) {
+      if (!TRANSLATIONS[lang]) return;
+      document.documentElement.lang = lang;
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        const key = el.dataset.i18n;
+        const text = TRANSLATIONS[lang][key];
+        if (text !== undefined) el.textContent = text;
+      });
+      document.querySelectorAll('.lang-btn-nav').forEach(function(btn) {
+        const isActive = btn.dataset.lang === lang;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+    }
+
+    function renderCharterBody(lang) {
+      const el = document.getElementById('charter-body');
+      const html = SETTINGS['charter.body.' + lang];
+      if (typeof html === 'string' && html.trim() !== '') {
+        el.innerHTML = html;
+      } else {
+        const msg = (TRANSLATIONS[lang] && TRANSLATIONS[lang]['charter.empty']) || '';
+        el.innerHTML = '<div class="charter-empty">' + msg + '</div>';
+      }
+    }
+
+    function applyFooterOverrides(lang) {
+      // Email
+      const emailVal = SETTINGS['footer.email'];
+      if (typeof emailVal === 'string' && emailVal) {
+        const emailEl = document.getElementById('footerEmail');
+        const emailLink = document.getElementById('footerEmailLink');
+        if (emailEl) emailEl.textContent = emailVal;
+        if (emailLink) emailLink.href = 'mailto:' + emailVal;
+      }
+      // LINE
+      const lineVal = SETTINGS['footer.line'];
+      if (typeof lineVal === 'string' && lineVal) {
+        const lineEl = document.getElementById('footerLine');
+        if (lineEl) lineEl.textContent = 'LINE: ' + lineVal;
+      }
+      // Company name
+      const companyVal = SETTINGS['footer.company'];
+      if (companyVal && typeof companyVal === 'object' && companyVal[lang]) {
+        const cEl = document.getElementById('footerCompanyName');
+        if (cEl) cEl.textContent = companyVal[lang];
+      }
+      // Address
+      const addrVal = SETTINGS['footer.address'];
+      if (addrVal && typeof addrVal === 'object' && addrVal[lang]) {
+        const aEl = document.getElementById('footerAddress');
+        if (aEl) aEl.textContent = addrVal[lang];
+      }
+    }
+
+    function applyHeroImage() {
+      const hero = SETTINGS['charter.hero.image'];
+      const url = (hero && typeof hero === 'object' && hero.url) ? hero.url : null;
+      if (url) {
+        const img = document.getElementById('charterHeroImg');
+        if (img) img.src = url;
+      }
+    }
+
+    function setLanguage(lang) {
+      if (!TRANSLATIONS[lang]) return;
+      localStorage.setItem('lang', lang);
+      applyTranslations(lang);
+      applyFooterOverrides(lang);
+      renderCharterBody(lang);
+    }
+
+    async function init() {
+      try {
+        const res = await fetch('/api/settings');
+        if (res.ok) SETTINGS = await res.json();
+      } catch (e) { /* keep defaults */ }
+      applyHeroImage();
+      const saved = localStorage.getItem('lang');
+      const lang = TRANSLATIONS[saved] ? saved : 'zh-TW';
+      setLanguage(lang);
+    }
+
+    // Mobile menu toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById('mobileMenuBtn');
+      const nav = document.getElementById('mobileNav');
+      if (btn && nav) {
+        btn.addEventListener('click', function() { nav.classList.toggle('open'); });
+        nav.querySelectorAll('a').forEach(function(a) {
+          a.addEventListener('click', function() { nav.classList.remove('open'); });
+        });
+      }
+      init();
+    });
+  </script>
+</body>
+</html>

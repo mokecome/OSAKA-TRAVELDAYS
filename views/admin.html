@@ -194,6 +194,13 @@
         </svg>
         首頁管理
       </button>
+      <button onclick="navigate('charter')" data-nav="charter"
+        class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/90 text-sm transition-colors">
+        <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm11 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM3 13l1-5h13l3 5M3 13v3h18v-3M3 13h18"/>
+        </svg>
+        包車服務
+      </button>
       <button onclick="navigate('regions')" data-nav="regions"
         class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/90 text-sm transition-colors">
         <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1180,6 +1187,96 @@
 
       </div>
 
+      <!-- View: Charter Service -->
+      <div id="view-charter" class="hidden">
+        <h1 class="text-xl font-semibold mb-6">包車服務</h1>
+
+        <!-- Charter Hero Image (independent from homepage) -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">主視覺底圖</h2>
+            <span class="text-xs text-text-disabled">/charter 頁面頂部的大圖（與首頁主視覺獨立）</span>
+          </div>
+          <div class="card-body space-y-4">
+            <div>
+              <img id="charter-hero-preview" src="" alt="包車主圖預覽" class="w-full max-h-60 object-cover rounded-lg bg-surface hidden">
+              <div id="charter-hero-preview-empty" class="w-full h-40 bg-surface rounded-lg flex items-center justify-center text-text-disabled text-sm">
+                尚未設定包車主圖
+              </div>
+            </div>
+            <div class="flex gap-2 flex-wrap items-center">
+              <label class="btn btn-default cursor-pointer">
+                選擇圖片
+                <input type="file" id="charter-hero-input" accept="image/*" class="hidden" onchange="uploadCharterHero(this.files[0])">
+              </label>
+              <span class="text-xs text-text-disabled">選擇後自動上傳並儲存</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image Upload Helper -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">內文圖片上傳</h2>
+            <span class="text-xs text-text-disabled">上傳後複製網址，貼到下方 HTML 編輯區</span>
+          </div>
+          <div class="card-body space-y-3">
+            <div class="flex gap-2 flex-wrap items-center">
+              <label class="btn btn-default cursor-pointer">
+                選擇圖片
+                <input type="file" id="charter-image-input" accept="image/*" class="hidden" onchange="uploadCharterImage(this.files[0])">
+              </label>
+              <span class="text-xs text-text-disabled">圖片會壓縮並儲存到 /images/uploads/</span>
+            </div>
+            <div id="charter-uploaded-list" class="space-y-2"></div>
+          </div>
+        </div>
+
+        <!-- HTML Editor (3 langs) -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">HTML 內容</h2>
+            <span class="text-xs text-text-disabled">直接撰寫 HTML，會顯示在 /charter 頁面（保留主站 header & footer）</span>
+          </div>
+          <div class="card-body">
+            <!-- Language Tabs -->
+            <div class="flex gap-1 mb-5 border-b border-border-subdued">
+              <button onclick="switchCharterTab('zh-TW')" id="charter-tab-zh-TW"
+                class="px-4 py-2 text-sm font-medium border-b-2 border-primary text-primary -mb-px transition-colors">繁中</button>
+              <button onclick="switchCharterTab('ja')" id="charter-tab-ja"
+                class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">日文</button>
+              <button onclick="switchCharterTab('en')" id="charter-tab-en"
+                class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">英文</button>
+            </div>
+
+            <div id="charter-fields-zh-TW" class="space-y-4">
+              <textarea id="charter-body-zh-TW" rows="20" class="form-input font-mono text-xs" placeholder="在此貼上或撰寫 HTML... 例如：&#10;&lt;h2&gt;一日包車服務&lt;/h2&gt;&#10;&lt;p&gt;說明文字&lt;/p&gt;&#10;&lt;img src=&quot;/images/uploads/xxx.jpg&quot;&gt;"></textarea>
+            </div>
+            <div id="charter-fields-ja" class="space-y-4 hidden">
+              <textarea id="charter-body-ja" rows="20" class="form-input font-mono text-xs" placeholder="日本語の HTML をここに..."></textarea>
+            </div>
+            <div id="charter-fields-en" class="space-y-4 hidden">
+              <textarea id="charter-body-en" rows="20" class="form-input font-mono text-xs" placeholder="English HTML here..."></textarea>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-border-subdued flex gap-2 flex-wrap">
+              <button onclick="saveCharter()" class="btn btn-primary">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                儲存包車內容
+              </button>
+              <a href="/charter" target="_blank" class="btn btn-default">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+                預覽 /charter
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 </div>
@@ -1414,7 +1511,8 @@ function updateBreadcrumb(view) {
     properties: '房源管理',
     'property-form': isNewProperty ? '新增房源' : '編輯房源',
     regions: '區域管理',
-    homepage: '首頁管理'
+    homepage: '首頁管理',
+    charter: '包車服務'
   };
 
   if (view === 'property-form') {
@@ -1434,6 +1532,7 @@ function renderCurrentView() {
     case 'property-form': break; // Form is rendered when opening
     case 'regions': renderRegionList(); break;
     case 'homepage': loadHomepageSettings(); break;
+    case 'charter': loadCharterSettings(); break;
   }
 }
 
@@ -2285,6 +2384,112 @@ function switchLangTabs(prefix, lang) {
   });
 }
 function switchMenuProductTab(lang) { switchLangTabs('menu-product', lang); }
+
+// --- Charter service: tab + load + image upload + save ---
+function switchCharterTab(lang) { switchLangTabs('charter', lang); }
+
+async function loadCharterSettings() {
+  try {
+    const settings = await apiGet('/settings');
+    ['zh-TW', 'ja', 'en'].forEach(lang => {
+      const el = document.getElementById('charter-body-' + lang);
+      if (el) el.value = settings['charter.body.' + lang] || '';
+    });
+    // Hero image
+    const hero = settings['charter.hero.image'];
+    const heroUrl = hero && hero.url ? hero.url : '';
+    const preview = document.getElementById('charter-hero-preview');
+    const previewEmpty = document.getElementById('charter-hero-preview-empty');
+    if (heroUrl) {
+      preview.src = heroUrl;
+      preview.classList.remove('hidden');
+      previewEmpty.classList.add('hidden');
+    } else {
+      preview.src = '';
+      preview.classList.add('hidden');
+      previewEmpty.classList.remove('hidden');
+    }
+    // Reset upload list when re-entering view
+    const list = document.getElementById('charter-uploaded-list');
+    if (list) list.innerHTML = '';
+  } catch (err) {
+    showToast('載入包車設定失敗：' + err.message, 'error');
+  }
+}
+
+async function uploadCharterHero(file) {
+  if (!file) return;
+  try {
+    showToast('上傳中...', 'info');
+    const uploaded = await apiUpload([file]);
+    if (!uploaded || !uploaded.length) throw new Error('Upload failed');
+    const url = '/' + uploaded[0].url;
+    await apiPost('/settings', { key: 'charter.hero.image', value: { url } });
+    const preview = document.getElementById('charter-hero-preview');
+    const previewEmpty = document.getElementById('charter-hero-preview-empty');
+    preview.src = url;
+    preview.classList.remove('hidden');
+    previewEmpty.classList.add('hidden');
+    showToast('包車主圖已更新', 'success');
+  } catch (err) {
+    showToast('上傳失敗：' + err.message, 'error');
+  }
+  document.getElementById('charter-hero-input').value = '';
+}
+
+async function uploadCharterImage(file) {
+  if (!file) return;
+  try {
+    showToast('上傳中...', 'info');
+    const uploaded = await apiUpload([file]);
+    if (!uploaded || !uploaded.length) throw new Error('上傳失敗');
+    const url = '/' + uploaded[0].url;
+    const list = document.getElementById('charter-uploaded-list');
+    const item = document.createElement('div');
+    item.className = 'flex items-center gap-2 p-2 bg-surface rounded';
+    item.innerHTML = `
+      <img src="${url}" alt="" class="w-12 h-12 object-cover rounded">
+      <input type="text" readonly value="${url}" class="form-input flex-1 text-xs font-mono" onclick="this.select()">
+      <button class="btn btn-default text-xs" type="button">複製網址</button>
+      <button class="btn btn-default text-xs" type="button">插入 &lt;img&gt;</button>
+    `;
+    const [copyBtn, insertBtn] = item.querySelectorAll('button');
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(url).then(
+        () => showToast('網址已複製', 'success'),
+        () => showToast('複製失敗，請手動選取', 'error')
+      );
+    };
+    insertBtn.onclick = () => {
+      const activeLang = ['zh-TW', 'ja', 'en'].find(l =>
+        !document.getElementById('charter-fields-' + l).classList.contains('hidden')
+      ) || 'zh-TW';
+      const ta = document.getElementById('charter-body-' + activeLang);
+      const tag = `<img src="${url}" style="width:100%;height:auto;display:block" alt="">\n`;
+      const start = ta.selectionStart || ta.value.length;
+      ta.value = ta.value.slice(0, start) + tag + ta.value.slice(start);
+      ta.focus();
+      showToast('已插入到 ' + activeLang, 'success');
+    };
+    list.appendChild(item);
+    showToast('上傳成功', 'success');
+  } catch (err) {
+    showToast('上傳失敗：' + err.message, 'error');
+  }
+  document.getElementById('charter-image-input').value = '';
+}
+
+async function saveCharter() {
+  try {
+    await Promise.all(['zh-TW', 'ja', 'en'].map(lang => {
+      const value = document.getElementById('charter-body-' + lang).value;
+      return apiPost('/settings', { key: 'charter.body.' + lang, value });
+    }));
+    showToast('包車內容已儲存', 'success');
+  } catch (err) {
+    showToast('儲存失敗：' + err.message, 'error');
+  }
+}
 
 async function saveMenuProduct() {
   const url = document.getElementById('menu-product-url').value.trim();

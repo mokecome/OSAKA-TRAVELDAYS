@@ -425,7 +425,20 @@ db.exec(`
       'zh-TW': '大阪市中央区上本町西3−3−２',
       'ja': '大阪市中央区上本町西3−3−２',
       'en': '3-3-2 Uehommachi Nishi, Chuo-ku, Osaka'
-    })]
+    })],
+    ['charter.body.zh-TW', JSON.stringify(
+      '<table style="margin:0 auto;max-width:1000px;width:100%" border="0" cellpadding="0" cellspacing="0">' +
+      '<tr><td><img src="/onepage/images/oneday_description_01.jpg" style="width:100%;height:auto;display:block" alt=""></td></tr>' +
+      '<tr><td><img src="/onepage/images/oneday_description_02.jpg" style="width:100%;height:auto;display:block" alt=""></td></tr>' +
+      '<tr><td><img src="/onepage/images/oneday_description_03.jpg" style="width:100%;height:auto;display:block" alt=""></td></tr>' +
+      '<tr><td><img src="/onepage/images/oneday_description_04.jpg" style="width:100%;height:auto;display:block" alt=""></td></tr>' +
+      '<tr><td><img src="/onepage/images/oneday_description_05.jpg" style="width:100%;height:auto;display:block" alt=""></td></tr>' +
+      '<tr><td><img src="/onepage/images/oneday_description_06.jpg" style="width:100%;height:auto;display:block" alt=""></td></tr>' +
+      '</table>'
+    )],
+    ['charter.body.ja', JSON.stringify('')],
+    ['charter.body.en', JSON.stringify('')],
+    ['charter.hero.image', JSON.stringify({ url: '/images/hero.jpg' })]
   ];
   for (const [key, value] of defaults) {
     insertSetting.run(key, value);
@@ -1027,6 +1040,14 @@ app.use(express.static(__dirname, {
   }
 }));
 
+// Pretty URL for charter service page
+// Use private, no-store so Varnish/CDN bypasses caching (admin-editable content)
+app.get('/charter', (req, res) => {
+  res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.sendFile(path.join(__dirname, 'charter.html'));
+});
+
 // ==================== API ROUTES ====================
 
 // ---- LOGIN ----
@@ -1541,7 +1562,9 @@ app.post('/api/import', requireAuth, async (req, res) => {
 const ALLOWED_SETTINGS_KEYS = new Set([
   'hero.image', 'hero.title', 'hero.subtitle', 'hero.desc', 'hero.cta',
   'faq.items', 'footer.email', 'footer.line', 'footer.company', 'footer.address',
-  'footer.partners', 'menu.product'
+  'footer.partners', 'menu.product',
+  'charter.body.zh-TW', 'charter.body.ja', 'charter.body.en',
+  'charter.hero.image'
 ]);
 
 // Get all settings (public)

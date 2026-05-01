@@ -15,3 +15,7 @@ scrape-results/
 *.xlsx
 *.XLSX
 1.pdf
+
+# OS / editor junk
+.DS_Store
+*.psd

@@ -1275,7 +1275,7 @@
     }
     /* Mobile nav dropdown */
     #mobileNav { position: fixed; left: 0; right: 0; z-index: 45; background: white; border-bottom: 1px solid #fef3c7; box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
-    #mobileNav.open { max-height: 180px; }
+    #mobileNav.open { max-height: 320px; }
     #mobileNav a { display: block; padding: 0.875rem 1.5rem; color: #92400e; font-size: 1rem; font-weight: 500; border-bottom: 1px solid #fef9ee; text-decoration: none; }
     #mobileNav a:last-child { border-bottom: none; }
     #mobileNav a:active { background: #fef3c7; }
@@ -1529,6 +1529,8 @@
             <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-nav" aria-pressed="false">EN</button>
           </div>
           <nav class="hidden md:flex items-center space-x-8">
+            <a href="/become-host.html" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.becomeHost">成為房東/達人</a>
+            <a href="/charter" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.charter">包車服務</a>
             <a href="#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.rooms">房源一覽</a>
             <a href="#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.about">關於我們</a>
             <a href="#contact" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.contact">聯絡我們</a>
@@ -1546,6 +1548,8 @@
 
   <!-- Mobile Nav Dropdown -->
   <nav id="mobileNav">
+    <a href="/become-host.html" data-i18n="nav.becomeHost">成為房東/達人</a>
+    <a href="/charter" data-i18n="nav.charter">包車服務</a>
     <a href="#properties" data-i18n="nav.rooms">房源一覽</a>
     <a href="#about" data-i18n="nav.about">關於我們</a>
     <a href="#contact" data-i18n="nav.contact">聯絡我們</a>
@@ -3184,6 +3188,8 @@
   <script>
     const TRANSLATIONS = {
       'zh-TW': {
+        'nav.becomeHost': '成為房東/達人',
+        'nav.charter': '包車服務',
         'nav.rooms': '房源一覽',
         'nav.about': '關於我們',
         'nav.contact': '聯絡我們',
@@ -3273,6 +3279,8 @@
         'cta.btn2': '聯絡我們'
       },
       'ja': {
+        'nav.becomeHost': 'ホストになる',
+        'nav.charter': 'チャーター便',
         'nav.rooms': '物件一覧',
         'nav.about': '私たちについて',
         'nav.contact': 'お問い合わせ',
@@ -3362,6 +3370,8 @@
         'cta.btn2': 'お問い合わせ'
       },
       'en': {
+        'nav.becomeHost': 'Become a Host',
+        'nav.charter': 'Charter Service',
         'nav.rooms': 'Properties',
         'nav.about': 'About Us',
         'nav.contact': 'Contact',
