@@ -1,0 +1,1203 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>大阪包車一日遊 | Traveldays 包車服務 — 線上預約</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=Noto+Sans+TC:wght@300;400;500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF7F2;
+    --bg-2:#F1ECE3;
+    --paper:#FFFFFF;
+    --ink:#1A1A1A;
+    --ink-2:#4A4A4A;
+    --muted:#8A847C;
+    --line:#E6E0D3;
+    --line-2:#D9D0BC;
+    --accent:#1A3D2E;     /* deep forest */
+    --accent-2:#2E5F43;
+    --gold:#B08B3F;
+    --red:#B03A2E;
+    --cream:#F5EFE0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.7;
+    font-weight:400;
+  }
+  .container{max-width:1240px;margin:0 auto;padding:0 32px}
+  img{max-width:100%;display:block}
+
+  /* ===== Announcement bar ===== */
+  .anno{
+    background:var(--ink);color:#fff;font-size:12px;text-align:center;
+    padding:9px 20px;letter-spacing:.08em;
+  }
+  .anno b{color:#D9C79C;font-weight:600;margin-right:6px}
+
+  /* ===== Top nav ===== */
+  .nav{
+    background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:40;
+  }
+  .nav .inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 32px;max-width:1240px;margin:0 auto;gap:40px;
+  }
+  .brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+  .brand .logo{
+    width:44px;height:44px;border-radius:50%;background:var(--accent);
+    display:grid;place-items:center;color:#D9C79C;
+    font-family:"Cormorant Garamond",serif;font-weight:600;font-size:22px;font-style:italic;
+    border:2px solid var(--accent);
+  }
+  .brand .t{line-height:1.15}
+  .brand .t b{display:block;font-family:"Cormorant Garamond",serif;font-weight:600;font-size:18px;letter-spacing:.08em;color:var(--accent)}
+  .brand .t small{display:block;font-size:11px;color:var(--muted);letter-spacing:.25em;font-weight:500}
+  .nav ul{display:flex;gap:32px;list-style:none;margin:0;padding:0;flex:1;justify-content:center}
+  .nav a{color:var(--ink-2);text-decoration:none;font-size:14px;font-weight:500;position:relative;padding:4px 0}
+  .nav a.active{color:var(--accent);font-weight:600}
+  .nav a.active::after{content:"";position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--gold)}
+  .nav a:hover{color:var(--accent)}
+  .nav .cta{
+    background:var(--accent);color:#fff;padding:11px 22px;border-radius:999px;
+    font-weight:600;font-size:13px;text-decoration:none;letter-spacing:.08em;
+  }
+  .nav .cta:hover{background:var(--ink);color:#fff}
+
+  /* ===== Hero ===== */
+  .hero{
+    background:var(--bg);
+    padding:72px 0 64px;position:relative;
+  }
+  .hero .grid{
+    display:grid;grid-template-columns:1.05fr 1fr;gap:72px;align-items:center;
+  }
+  .hero .kicker{
+    font-family:"Cormorant Garamond",serif;font-style:italic;
+    color:var(--gold);font-size:22px;font-weight:500;margin-bottom:16px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .hero .kicker::before{content:"";width:48px;height:1px;background:var(--gold);display:inline-block}
+  .hero h1{
+    font-family:"Noto Serif TC","Noto Sans TC",serif;
+    font-weight:900;font-size:68px;line-height:1.15;letter-spacing:.02em;margin:0 0 24px;
+    color:var(--ink);
+  }
+  .hero h1 em{
+    font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:500;
+    color:var(--accent);display:block;font-size:54px;margin-top:4px;
+  }
+  .hero .lede{
+    color:var(--ink-2);font-size:16px;max-width:520px;margin:0 0 36px;line-height:1.9;
+  }
+  .hero-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:15px 28px;border-radius:999px;
+    font-weight:600;font-size:14px;text-decoration:none;cursor:pointer;border:none;
+    transition:all .2s ease;letter-spacing:.04em;font-family:inherit;
+  }
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--ink);transform:translateY(-1px)}
+  .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+  .btn-ghost:hover{background:var(--ink);color:#fff}
+  .btn-light{background:#fff;color:var(--accent);border:1px solid var(--line-2)}
+  .btn-light:hover{border-color:var(--accent)}
+
+  /* Hero visual */
+  .hero-visual{
+    position:relative;width:100%;max-width:520px;margin-left:auto;
+  }
+  .hero-card{
+    background:#fff;border-radius:4px;
+    box-shadow:0 24px 60px rgba(26,26,26,.14);overflow:hidden;
+  }
+  .hero-card.main{
+    width:100%;background:#8FBF3F;
+  }
+  .hero-card.main img{width:100%;height:auto;display:block}
+  .hero-card.ticket, .hero-card.stat{position:absolute}
+
+  .hero-card.ticket{
+    bottom:-28px;left:-40px;width:260px;padding:22px;
+    border-radius:6px;
+  }
+  .hero-card.ticket::after{
+    content:"";position:absolute;top:50%;left:-8px;right:-8px;height:16px;transform:translateY(-50%);
+    background:radial-gradient(circle 8px at 0 8px,transparent 98%,transparent) left/16px 16px,
+               radial-gradient(circle 8px at 16px 8px,transparent 98%,transparent) right/16px 16px;
+  }
+  .hero-card.ticket .t-top{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-bottom:14px;border-bottom:1.5px dashed var(--line-2);margin-bottom:14px;
+  }
+  .hero-card.ticket .t-top small{font-family:"Cormorant Garamond",serif;font-style:italic;color:var(--gold);font-size:14px}
+  .hero-card.ticket .t-top b{font-size:11px;color:var(--muted);letter-spacing:.15em}
+  .hero-card.ticket .t-route{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:15px}
+  .hero-card.ticket .t-route .arr{color:var(--accent);font-size:18px}
+  .hero-card.ticket .t-meta{font-size:11px;color:var(--muted);margin-top:10px;display:flex;justify-content:space-between}
+
+  .hero-card.stat{
+    top:40px;right:-32px;padding:20px 24px;width:200px;border-radius:6px;
+    background:var(--accent);color:#fff;
+  }
+  .hero-card.stat .big{
+    font-family:"Cormorant Garamond",serif;font-weight:600;font-size:48px;line-height:1;color:#D9C79C;
+  }
+  .hero-card.stat .big sup{font-size:18px;margin-right:2px;vertical-align:top;top:10px;position:relative}
+  .hero-card.stat .lbl{font-size:12px;opacity:.9;margin-top:4px;letter-spacing:.08em}
+  .hero-card.stat .desc{font-size:11px;opacity:.7;margin-top:6px;line-height:1.5}
+
+  /* ===== Stats bar ===== */
+  .stats{
+    background:var(--accent);color:#fff;padding:44px 0;
+  }
+  .stats .row{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+  .stats .item{
+    text-align:center;padding:0 20px;border-right:1px solid rgba(255,255,255,.15);
+  }
+  .stats .item:last-child{border-right:none}
+  .stats .big{
+    font-family:"Cormorant Garamond",serif;font-weight:600;font-size:56px;line-height:1;color:#D9C79C;
+  }
+  .stats .big sup{font-size:20px;top:10px;position:relative;margin-left:2px}
+  .stats .lbl{font-size:13px;opacity:.85;margin-top:8px;letter-spacing:.15em}
+
+  /* ===== Section heads (Traveldays pattern) ===== */
+  section{padding:100px 0}
+  .sec-head{text-align:center;margin-bottom:64px}
+  .sec-head .en{
+    font-family:"Cormorant Garamond",serif;font-style:italic;color:var(--gold);
+    font-size:24px;font-weight:500;letter-spacing:.04em;margin-bottom:8px;
+  }
+  .sec-head h2{
+    font-family:"Noto Serif TC",serif;
+    font-weight:700;font-size:40px;margin:0 0 16px;line-height:1.3;letter-spacing:.02em;
+  }
+  .sec-head h2 .divider{
+    display:block;margin:20px auto 0;width:40px;height:2px;background:var(--gold);
+  }
+  .sec-head p{color:var(--ink-2);max-width:620px;margin:18px auto 0;font-size:15px}
+
+  /* ===== Why choose us (three columns, Traveldays style) ===== */
+  #why{background:var(--paper)}
+  .why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px}
+  .why-card{text-align:center;padding:20px}
+  .why-card .ico{
+    width:72px;height:72px;border-radius:50%;background:var(--bg);
+    display:grid;place-items:center;margin:0 auto 24px;color:var(--accent);
+    border:1px solid var(--line);
+  }
+  .why-card .ico svg{width:32px;height:32px}
+  .why-card h3{
+    font-family:"Noto Serif TC",serif;font-weight:700;font-size:22px;margin:0 0 14px;
+  }
+  .why-card p{color:var(--ink-2);font-size:14px;line-height:1.8;margin:0}
+
+  /* ===== Pricing ===== */
+  #pricing{background:var(--bg)}
+  .price-wrap{
+    background:#fff;border-radius:8px;padding:48px;
+    border:1px solid var(--line);
+  }
+  .price-tabs{
+    display:flex;gap:8px;margin-bottom:32px;justify-content:center;flex-wrap:wrap;
+  }
+  .price-tabs button{
+    border:1px solid var(--line-2);background:transparent;padding:10px 22px;border-radius:999px;cursor:pointer;
+    font-weight:500;font-size:13px;color:var(--ink-2);font-family:inherit;letter-spacing:.04em;
+    transition:all .2s ease;
+  }
+  .price-tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .price-tabs button:hover:not(.active){border-color:var(--accent)}
+
+  table.price{
+    width:100%;border-collapse:separate;border-spacing:0;font-size:14px;
+  }
+  table.price thead th{
+    text-align:left;font-weight:500;color:var(--muted);padding:16px 18px;
+    border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  }
+  table.price thead th:last-child{text-align:right}
+  table.price tbody td{
+    padding:24px 18px;border-bottom:1px solid var(--line);vertical-align:middle;
+  }
+  table.price tbody tr:last-child td{border-bottom:none}
+  table.price tbody tr:hover{background:var(--bg)}
+  table.price .route-name{
+    font-family:"Noto Serif TC",serif;font-weight:700;font-size:17px;display:flex;align-items:center;gap:10px;
+  }
+  table.price .tag{
+    display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500;letter-spacing:.1em;
+    border:1px solid;
+  }
+  .tag-green{border-color:var(--accent);color:var(--accent)}
+  .tag-gold{border-color:var(--gold);color:var(--gold)}
+  .tag-red{border-color:var(--red);color:var(--red)}
+
+  .price-num{
+    font-family:"Cormorant Garamond",serif;
+    font-weight:600;font-size:30px;color:var(--ink);text-align:right;white-space:nowrap;line-height:1;
+  }
+  .price-num .yen{font-size:16px;color:var(--gold);margin-right:4px}
+  .price-num .sub{display:block;font-size:10px;font-weight:500;color:var(--accent);margin-top:4px;letter-spacing:.15em;font-family:"Noto Sans TC",sans-serif}
+
+  .included-badge{
+    font-size:10px;background:var(--gold);color:#fff;padding:3px 8px;border-radius:3px;
+    margin-left:10px;font-weight:600;letter-spacing:.1em;
+  }
+  .route-note{color:var(--muted);font-size:12px;font-weight:400;margin-top:4px;letter-spacing:.04em}
+
+  .price-footer{
+    display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:36px;
+    padding-top:32px;border-top:1px solid var(--line);
+  }
+  .price-footer .note{
+    padding:18px 0;font-size:13px;color:var(--ink-2);line-height:1.8;
+  }
+  .price-footer .note b{
+    color:var(--accent);display:block;margin-bottom:8px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+    font-family:"Cormorant Garamond",serif;font-style:italic;font-size:14px;letter-spacing:.05em;text-transform:none;
+  }
+
+  /* ===== Estimator ===== */
+  .estimator{
+    margin-top:40px;background:var(--accent);
+    border-radius:8px;padding:48px;color:#fff;
+    display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center;
+  }
+  .estimator .en-k{
+    font-family:"Cormorant Garamond",serif;font-style:italic;color:#D9C79C;font-size:20px;margin-bottom:6px;
+  }
+  .estimator h3{margin:0 0 10px;font-size:26px;font-weight:700;font-family:"Noto Serif TC",serif}
+  .estimator p{opacity:.85;margin:0 0 24px;font-size:14px}
+  .estimator .fields{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .estimator .field label{
+    display:block;font-size:11px;opacity:.7;margin-bottom:8px;letter-spacing:.15em;text-transform:uppercase;
+    font-family:"Cormorant Garamond",serif;font-style:italic;text-transform:none;font-size:13px;opacity:.85;
+  }
+  .estimator select, .estimator input{
+    width:100%;padding:13px 16px;border-radius:4px;border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.08);color:#fff;font-size:14px;font-family:inherit;
+    appearance:none;
+  }
+  .estimator select option{color:var(--ink)}
+  .est-result{
+    border-left:1px solid rgba(255,255,255,.18);padding-left:48px;text-align:left;
+  }
+  .est-result .label{
+    font-family:"Cormorant Garamond",serif;font-style:italic;
+    font-size:16px;opacity:.85;color:#D9C79C;
+  }
+  .est-result .big{
+    font-family:"Cormorant Garamond",serif;
+    font-weight:600;font-size:72px;line-height:1;margin:8px 0;
+  }
+  .est-result .big .yen{font-size:28px;vertical-align:top;margin-right:4px;opacity:.6;position:relative;top:14px}
+  .est-result .per{font-size:13px;opacity:.8;margin-bottom:24px}
+
+  /* ===== Process 01/02/03/04 ===== */
+  #flow{background:var(--paper)}
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line)}
+  .step{
+    padding:40px 32px;border-right:1px solid var(--line);position:relative;
+  }
+  .step:last-child{border-right:none}
+  .step .n{
+    font-family:"Cormorant Garamond",serif;font-weight:500;font-size:56px;color:var(--gold);
+    line-height:1;margin-bottom:24px;
+  }
+  .step .n small{font-size:22px;color:var(--line-2);margin-left:4px}
+  .step h4{
+    font-family:"Noto Serif TC",serif;margin:0 0 12px;font-size:20px;font-weight:700;
+  }
+  .step p{margin:0;color:var(--ink-2);font-size:14px;line-height:1.8}
+
+  /* ===== Info cards ===== */
+  #info{background:var(--bg)}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+  .info-card{
+    background:#fff;border-radius:8px;padding:40px;border:1px solid var(--line);
+  }
+  .info-card h3{
+    margin:0 0 24px;font-size:22px;font-weight:700;
+    font-family:"Noto Serif TC",serif;display:flex;align-items:center;gap:14px;
+    padding-bottom:18px;border-bottom:1px solid var(--line);
+  }
+  .info-card .illus{
+    margin:-40px -40px 24px;aspect-ratio:16/11;overflow:hidden;background:#F1ECE3;
+  }
+  .info-card .illus img{width:100%;height:100%;object-fit:cover;display:block}
+  .info-card h3 .en{
+    font-family:"Cormorant Garamond",serif;font-style:italic;color:var(--gold);
+    font-size:15px;margin-left:auto;font-weight:400;
+  }
+  .info-card ul{margin:0;padding-left:0;list-style:none}
+  .info-card li{
+    padding:14px 0;border-bottom:1px dashed var(--line);font-size:14px;
+    display:flex;align-items:flex-start;gap:14px;color:var(--ink);line-height:1.7;
+  }
+  .info-card li:last-child{border-bottom:none}
+  .info-card li .idx{
+    flex-shrink:0;font-family:"Cormorant Garamond",serif;font-weight:600;
+    color:var(--gold);font-size:20px;line-height:1;width:28px;
+  }
+  .info-card li .check{
+    flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;
+    display:grid;place-items:center;margin-top:2px;
+  }
+  .info-card li .check svg{width:10px;height:10px}
+
+  .time-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 0;border-bottom:1px dashed var(--line);
+  }
+  .time-row:last-child{border:none}
+  .time-row .lbl{color:var(--muted);font-size:13px;letter-spacing:.1em}
+  .time-row b{
+    font-family:"Cormorant Garamond",serif;font-weight:600;font-size:28px;color:var(--accent);line-height:1;
+  }
+
+  /* ===== FAQ ===== */
+  #faq{background:var(--paper)}
+  .faq-list{max-width:820px;margin:0 auto}
+  .faq-item{
+    border-bottom:1px solid var(--line);
+  }
+  .faq-q{
+    width:100%;background:transparent;border:none;padding:24px 0;cursor:pointer;
+    display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;
+    font-family:"Noto Serif TC",serif;font-weight:600;font-size:17px;color:var(--ink);
+  }
+  .faq-q .plus{
+    flex-shrink:0;width:28px;height:28px;border-radius:50%;border:1px solid var(--line-2);
+    display:grid;place-items:center;transition:all .2s ease;color:var(--accent);
+  }
+  .faq-item.open .faq-q .plus{background:var(--accent);color:#fff;border-color:var(--accent);transform:rotate(45deg)}
+  .faq-a{
+    max-height:0;overflow:hidden;transition:max-height .3s ease;
+    color:var(--ink-2);font-size:14px;line-height:1.9;
+  }
+  .faq-item.open .faq-a{max-height:400px;padding:0 0 24px}
+
+  /* ===== CTA band ===== */
+  .cta-band{
+    background:var(--accent);color:#fff;padding:96px 0;text-align:center;position:relative;overflow:hidden;
+  }
+  .cta-band::before{
+    content:"Traveldays";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-family:"Cormorant Garamond",serif;font-style:italic;font-size:280px;
+    color:rgba(255,255,255,.04);font-weight:500;white-space:nowrap;pointer-events:none;
+  }
+  .cta-band .inner{position:relative}
+  .cta-band .en{
+    font-family:"Cormorant Garamond",serif;font-style:italic;color:#D9C79C;font-size:22px;margin-bottom:10px;
+  }
+  .cta-band h2{
+    font-family:"Noto Serif TC",serif;
+    font-size:42px;font-weight:700;margin:0 0 16px;
+  }
+  .cta-band p{opacity:.8;margin:0 0 32px;font-size:15px}
+  .cta-band .btn-primary{background:#D9C79C;color:var(--accent)}
+  .cta-band .btn-primary:hover{background:#fff;color:var(--accent)}
+
+  /* ===== Footer ===== */
+  footer{
+    background:#0F0F0F;color:rgba(255,255,255,.65);padding:72px 0 32px;font-size:13px;
+  }
+  footer .grid{
+    display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:48px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.1);
+  }
+  footer h5{
+    font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:500;font-size:18px;
+    color:#D9C79C;margin:0 0 18px;letter-spacing:.02em;
+  }
+  footer .brand-f{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  footer .brand-f .logo{
+    width:40px;height:40px;border-radius:50%;background:#D9C79C;color:var(--accent);
+    display:grid;place-items:center;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:20px;font-weight:600;
+  }
+  footer .brand-f b{font-family:"Cormorant Garamond",serif;font-size:18px;letter-spacing:.08em;color:#D9C79C}
+  footer p{margin:0 0 10px;line-height:1.8;font-size:13px}
+  footer ul{list-style:none;padding:0;margin:0}
+  footer ul li{margin-bottom:10px}
+  footer a{color:rgba(255,255,255,.65);text-decoration:none}
+  footer a:hover{color:#D9C79C}
+  footer .bottom{padding-top:32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:12px;opacity:.5}
+
+  /* ===== Legal info ===== */
+  .legal{
+    background:var(--bg-2);padding:40px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  }
+  .legal .row{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;font-size:13px;color:var(--ink-2)}
+  .legal h5{
+    font-family:"Cormorant Garamond",serif;font-style:italic;color:var(--accent);
+    font-size:15px;margin:0 0 8px;font-weight:500;
+  }
+  .legal b{font-family:"Noto Serif TC",serif;display:block;color:var(--ink);font-size:14px;margin-bottom:6px}
+
+  /* ===== Modal ===== */
+  .modal{
+    position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;
+    align-items:center;justify-content:center;z-index:100;padding:20px;
+  }
+  .modal.open{display:flex}
+  .modal .box{
+    background:#fff;border-radius:8px;max-width:500px;width:100%;padding:40px;position:relative;
+    animation: pop .2s ease;
+  }
+  @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+  .modal .en{font-family:"Cormorant Garamond",serif;font-style:italic;color:var(--gold);font-size:18px;margin-bottom:4px}
+  .modal h3{margin:0 0 8px;font-size:26px;font-weight:700;font-family:"Noto Serif TC",serif}
+  .modal p{margin:0 0 24px;color:var(--ink-2);font-size:14px}
+  .modal .close{
+    position:absolute;top:20px;right:20px;width:32px;height:32px;border-radius:50%;
+    border:1px solid var(--line);background:#fff;cursor:pointer;font-size:14px;color:var(--ink-2);
+  }
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .modal label{
+    display:block;font-size:11px;color:var(--muted);margin-bottom:6px;
+    letter-spacing:.15em;text-transform:uppercase;
+  }
+  .modal input, .modal select{
+    width:100%;padding:12px 14px;border:1px solid var(--line-2);border-radius:4px;font-size:14px;font-family:inherit;background:var(--bg);
+  }
+  .modal input:focus, .modal select:focus{outline:none;border-color:var(--accent);background:#fff}
+  .modal .btn{width:100%;justify-content:center;margin-top:14px}
+  .modal-success{text-align:center;padding:20px 0}
+  .modal-success .check-big{
+    width:76px;height:76px;border-radius:50%;background:var(--accent);color:#D9C79C;
+    display:grid;place-items:center;margin:0 auto 20px;
+  }
+  .modal-success .check-big svg{width:36px;height:36px}
+
+  /* ===== Responsive ===== */
+  @media (max-width: 960px){
+    .hero{padding:48px 0}
+    .hero .grid{grid-template-columns:1fr;gap:48px}
+    .hero h1{font-size:44px}
+    .hero h1 em{font-size:34px}
+    .hero-visual{margin:0 auto;max-width:100%}
+    .hero-card.ticket, .hero-card.stat{display:none}
+    .stats .row{grid-template-columns:repeat(2,1fr);gap:24px 0}
+    .stats .item{padding:16px 12px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .stats .big{font-size:40px}
+    .sec-head h2{font-size:30px}
+    section{padding:64px 0}
+    .estimator{grid-template-columns:1fr;padding:28px;gap:28px}
+    .est-result{border-left:none;border-top:1px solid rgba(255,255,255,.18);padding:28px 0 0}
+    .est-result .big{font-size:52px}
+    .flow{grid-template-columns:1fr 1fr}
+    .step{border-bottom:1px solid var(--line)}
+    .step:nth-child(even){border-right:none}
+    .why-grid{grid-template-columns:1fr;gap:32px}
+    .info-grid{grid-template-columns:1fr}
+    .nav ul{display:none}
+    .price-footer{grid-template-columns:1fr}
+    .price-wrap{padding:24px}
+    .price-num{font-size:22px}
+    footer .grid{grid-template-columns:1fr 1fr;gap:32px}
+    .legal .row{grid-template-columns:1fr}
+    .cta-band::before{font-size:120px}
+    .cta-band h2{font-size:30px}
+    table.price thead{display:none}
+    table.price, table.price tbody, table.price tr, table.price td{display:block;width:100%}
+    table.price tbody tr{padding:16px 0;border-bottom:1px solid var(--line)}
+    table.price tbody td{padding:4px 0;border:none}
+    table.price .price-num{text-align:left;margin-top:8px}
+  }
+</style>
+</head>
+<body>
+
+<!-- Announcement -->
+<div class="anno"><b>NEW</b>全新上架 · 大阪包車一日遊服務開放線上預約 ✦ 新用戶輸入 <b>TD2026</b> 享首程 5% 折扣</div>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="inner">
+    <a href="#" class="brand">
+      <div class="logo">T</div>
+      <div class="t">
+        <b>TRAVELDAYS</b>
+        <small>大阪旅行日</small>
+      </div>
+    </a>
+    <ul>
+      <li><a href="#">首頁</a></li>
+      <li><a href="#">民宿介紹</a></li>
+      <li><a href="#" class="active">包車服務</a></li>
+      <li><a href="#flow">預約流程</a></li>
+      <li><a href="#faq">常見問題</a></li>
+      <li><a href="#contact">聯絡我們</a></li>
+    </ul>
+    <a href="#book" class="cta" onclick="openModal(event)">立即預約</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="container">
+    <div class="grid">
+      <div>
+        <div class="kicker">Welcome to Kansai</div>
+        <h1>
+          關西包車一日遊<br/>
+          <em>One Day Private Charter</em>
+        </h1>
+        <p class="lede">
+          Traveldays 專屬包車服務，7 人座休旅車配中文司導。從大阪出發，走訪京都、神戶、奈良、琵琶湖與和歌山。
+          行程當天可彈性調整，無需安排交通，舒適一次玩到底。
+        </p>
+        <div class="hero-actions">
+          <a href="#pricing" class="btn btn-primary">
+            查看價格表
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#book" class="btn btn-ghost" onclick="openModal(event)">線上預約</a>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-card main">
+          <img src="assets/feature_van.jpg" alt="關西包車路線圖與 7-9 人座休旅車" />
+        </div>
+        <div class="hero-card stat">
+          <div class="big"><sup>¥</sup>120,000</div>
+          <div class="lbl">12H 全日貸切</div>
+          <div class="desc">一台車最多 7 人 · 含租車費</div>
+        </div>
+        <div class="hero-card ticket">
+          <div class="t-top">
+            <small>Charter Ticket</small>
+            <b>2026-0420</b>
+          </div>
+          <div class="t-route">
+            <span>大阪 OSA</span>
+            <span class="arr">→</span>
+            <span>京都 KYO</span>
+          </div>
+          <div class="t-meta">
+            <span>DEPART · 09:00</span>
+            <span>RETURN · 20:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+
+<!-- Why choose us -->
+<section id="why">
+  <div class="container">
+    <div class="sec-head">
+      <div class="en">Why Choose Us</div>
+      <h2>為什麼選擇 Traveldays 包車<span class="divider"></span></h2>
+      <p>承襲大阪旅行日民宿十一年接待經驗，包車服務一樣為您量身打造。</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18l-2 10H5L3 10zM7 10V6a5 5 0 0 1 10 0v4"/><circle cx="12" cy="15" r="1.5"/></svg>
+        </div>
+        <h3>專業司導 安心同行</h3>
+        <p>所有司導皆持日本正式執業牌照，全程中文溝通。加保每位乘客 ¥5000 萬人身意外險，讓您舒心享受旅程。</p>
+      </div>
+      <div class="why-card">
+        <div class="ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14l3 3 5-5"/></svg>
+        </div>
+        <h3>彈性行程 當天可調整</h3>
+        <p>9 AM 出發、8 PM 前返回，地點順序當天可與司機討論增減。無需煩惱交通、停車、路線，讓旅途更自在。</p>
+      </div>
+      <div class="why-card">
+        <div class="ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12c0 4.97-9 10-9 10s-9-5.03-9-10a9 9 0 0 1 18 0z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <h3>全關西覆蓋 一台搞定</h3>
+        <p>大阪、京都、兵庫、奈良、滋賀、和歌山，六縣景點皆可安排。7 人座休旅車寬敞舒適，親子長輩同行都合適。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing">
+  <div class="container">
+    <div class="sec-head">
+      <div class="en">Price List</div>
+      <h2>透明定價 一次看懂<span class="divider"></span></h2>
+      <p>所有車資以日幣計算，7 人座休旅車，一台車最多七人。部分路線含過路費與租車費。</p>
+    </div>
+
+    <div class="price-wrap">
+      <div class="price-tabs" role="tablist">
+        <button class="active" data-tab="all">全部方案</button>
+        <button data-tab="transfer">機場接送</button>
+        <button data-tab="charter">貸切包車</button>
+      </div>
+
+      <div style="overflow-x:auto">
+      <table class="price" id="priceTable">
+        <thead>
+          <tr>
+            <th style="width:46%">Route · 路線方案</th>
+            <th>Type</th>
+            <th>Duration</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-type="transfer">
+            <td>
+              <div class="route-name">関空 → 大阪市內南部</div>
+              <div class="route-note">Airport Transfer · One Way</div>
+            </td>
+            <td><span class="tag tag-green">接送</span></td>
+            <td>約 1 小時</td>
+            <td class="price-num"><span class="yen">¥</span>23,510</td>
+          </tr>
+          <tr data-type="transfer">
+            <td>
+              <div class="route-name">関空 → 大阪市內北部</div>
+              <div class="route-note">Airport Transfer · One Way</div>
+            </td>
+            <td><span class="tag tag-green">接送</span></td>
+            <td>約 1.5 小時</td>
+            <td class="price-num"><span class="yen">¥</span>26,960</td>
+          </tr>
+          <tr data-type="transfer">
+            <td>
+              <div class="route-name">大阪市內南部 → 関空</div>
+              <div class="route-note">Airport Transfer · One Way</div>
+            </td>
+            <td><span class="tag tag-green">接送</span></td>
+            <td>約 1 小時</td>
+            <td class="price-num"><span class="yen">¥</span>19,440</td>
+          </tr>
+          <tr data-type="transfer">
+            <td>
+              <div class="route-name">大阪市內北部 → 関空</div>
+              <div class="route-note">Airport Transfer · One Way</div>
+            </td>
+            <td><span class="tag tag-green">接送</span></td>
+            <td>約 1.5 小時</td>
+            <td class="price-num"><span class="yen">¥</span>23,140</td>
+          </tr>
+          <tr data-type="charter">
+            <td>
+              <div class="route-name">
+                6 小時貸切
+                <span class="included-badge">含租車費</span>
+              </div>
+              <div class="route-note">Half Day Charter · Custom Route</div>
+            </td>
+            <td><span class="tag tag-gold">包車</span></td>
+            <td>6 小時</td>
+            <td class="price-num"><span class="yen">¥</span>65,000<span class="sub">含租車費</span></td>
+          </tr>
+          <tr data-type="charter">
+            <td>
+              <div class="route-name">
+                12 小時貸切
+                <span class="included-badge">含租車費</span>
+              </div>
+              <div class="route-note">Full Day Charter · Most Popular</div>
+            </td>
+            <td><span class="tag tag-gold">包車</span></td>
+            <td>12 小時</td>
+            <td class="price-num"><span class="yen">¥</span>120,000<span class="sub">含租車費</span></td>
+          </tr>
+          <tr data-type="charter">
+            <td>
+              <div class="route-name">加購 1 小時</div>
+              <div class="route-note">Extra Hour · Extended Charter</div>
+            </td>
+            <td><span class="tag tag-red">加購</span></td>
+            <td>+ 1 小時</td>
+            <td class="price-num"><span class="yen">¥</span>11,000</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="price-footer">
+        <div class="note">
+          <b>Pricing Rules</b>
+          報價以五人同行計算，每加一人 +¥15,000，一台車最多 7 人。<br/>
+          標準行程 9 AM 出發，約 8 PM 前回到民宿 / 飯店。
+        </div>
+        <div class="note">
+          <b>Not Included</b>
+          ① 乘客個人餐費（司導餐費由我方負擔）<br/>
+          ② 景點門票與購買票券費用<br/>
+          ③ 經過收費道路之過路費（司導可代為統一繳付）
+        </div>
+      </div>
+    </div>
+
+    <!-- Estimator -->
+    <div class="estimator" id="book">
+      <div>
+        <div class="en-k">Quick Quote</div>
+        <h3>快速試算您的包車費用</h3>
+        <p>選擇方案、人數與加購小時，立即預估您的總車資與每人均攤金額。</p>
+        <div class="fields">
+          <div class="field">
+            <label>方案 Plan</label>
+            <select id="estPlan">
+              <option value="65000">6 小時貸切 · ¥65,000</option>
+              <option value="120000" selected>12 小時貸切 · ¥120,000</option>
+              <option value="23510">関空 → 大阪南部 · ¥23,510</option>
+              <option value="26960">関空 → 大阪北部 · ¥26,960</option>
+              <option value="19440">大阪南部 → 関空 · ¥19,440</option>
+              <option value="23140">大阪北部 → 関空 · ¥23,140</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>人數 People (Max 7)</label>
+            <input type="number" id="estPeople" min="1" max="7" value="5" />
+          </div>
+          <div class="field">
+            <label>加購小時 Extra Hrs</label>
+            <input type="number" id="estExtra" min="0" max="6" value="0" />
+          </div>
+          <div class="field">
+            <label>出發日期 Date</label>
+            <input type="date" id="estDate" />
+          </div>
+        </div>
+      </div>
+      <div class="est-result">
+        <div class="label">Estimated Total</div>
+        <div class="big"><span class="yen">¥</span><span id="estTotal">120,000</span></div>
+        <div class="per" id="estPer">每人約 ¥24,000 · 5 人均攤</div>
+        <button class="btn btn-light" onclick="openModal(event)" style="width:100%;justify-content:center">
+          立即預約此方案
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="flow">
+  <div class="container">
+    <div class="sec-head">
+      <div class="en">Booking Process</div>
+      <h2>四步完成線上預約<span class="divider"></span></h2>
+      <p>從填寫行程到出發，全程透明 · 中文客服全程協助。</p>
+    </div>
+  </div>
+  <div class="container" style="padding:0 32px">
+    <div class="flow">
+      <div class="step">
+        <div class="n">01<small>.</small></div>
+        <h4>選擇方案</h4>
+        <p>從價格表挑選接送或貸切包車方案，填寫人數、日期與接送地點。</p>
+      </div>
+      <div class="step">
+        <div class="n">02<small>.</small></div>
+        <h4>提交護照</h4>
+        <p>提交完成後，請將每位乘客護照拍照傳給我們，以進行意外險加保。</p>
+      </div>
+      <div class="step">
+        <div class="n">03<small>.</small></div>
+        <h4>確認行程</h4>
+        <p>司導會與您討論當天想去的地點順序，可彈性增減或依偏好推薦。</p>
+      </div>
+      <div class="step">
+        <div class="n">04<small>.</small></div>
+        <h4>出發旅行</h4>
+        <p>9 AM 在飯店 / 民宿接送，約 8 PM 前回到住所，安心享受整日行程。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Info -->
+<section id="info">
+  <div class="container">
+    <div class="sec-head">
+      <div class="en">Before You Go</div>
+      <h2>出發前須知<span class="divider"></span></h2>
+      <p>完成預約後，請留意以下事項，讓您的旅程更加順利。</p>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="illus"><img src="assets/feature_schedule.jpg" alt="9AM 出發 8PM 回住所" /></div>
+        <h3>
+          標準時間
+          <span class="en">Schedule</span>
+        </h3>
+        <div class="time-row">
+          <div class="lbl">DEPART · 出發時間</div>
+          <b>09:00 AM</b>
+        </div>
+        <div class="time-row">
+          <div class="lbl">RETURN · 回程時間</div>
+          <b>~ 08:00 PM</b>
+        </div>
+        <p style="color:var(--ink-2);font-size:13px;margin:18px 0 0;line-height:1.8">
+          按照預訂後討論的行程早上 9 點出發，約晚上 8 點前回到民宿 / 飯店。
+          如需延長，請加購小時方案（每小時 ¥11,000）。
+        </p>
+      </div>
+
+      <div class="info-card">
+        <div class="illus"><img src="assets/feature_flexible.jpg" alt="行程彈性調整 與司導討論" /></div>
+        <h3>
+          行程彈性
+          <span class="en">Flexible</span>
+        </h3>
+        <ul>
+          <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>一日遊地點順序可於當天與司機討論調整</li>
+          <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>地點可增減 · 司導依路線合理性為您安排</li>
+          <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>所有司導皆可中文溝通 · 熟悉關西景點</li>
+        </ul>
+      </div>
+
+      <div class="info-card">
+        <div class="illus"><img src="assets/feature_fees.jpg" alt="需自行負擔的額外費用" /></div>
+        <h3>
+          自費項目
+          <span class="en">Not Included</span>
+        </h3>
+        <ul>
+          <li><span class="idx">01</span>乘客個人餐費（司導餐費由我方負擔）</li>
+          <li><span class="idx">02</span>購買票券費用（景點門票、體驗活動等）</li>
+          <li><span class="idx">03</span>經過收費道路時之過路費</li>
+        </ul>
+        <p style="color:var(--ink-2);font-size:13px;margin:14px 0 0;line-height:1.8">
+          💡 可將現金先收齊交給司導，由司導統一代為繳付，更為省事。
+        </p>
+      </div>
+
+      <div class="info-card">
+        <div class="illus"><img src="assets/feature_insurance.jpg" alt="每位乘客加保 5000 萬意外險" /></div>
+        <h3>
+          保險與護照
+          <span class="en">Insurance</span>
+        </h3>
+        <ul>
+          <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>旅行日將為每位乘客做保險加保</li>
+          <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>請將每位乘客的護照拍照提供給我們</li>
+          <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>每位乘客加保 ¥5000 萬人身安全意外險</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="sec-head">
+      <div class="en">FAQ</div>
+      <h2>常見問題<span class="divider"></span></h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item open">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>一台車最多可以乘坐幾個人？</span>
+          <span class="plus">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+        </button>
+        <div class="faq-a">
+          我們使用日本 7–9 人座休旅車，依法規最多可乘載 7 位乘客。報價以五人同行計算，每加一人加收 ¥15,000，可供小家庭到大家庭聚會使用。
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>行程可以怎麼安排？一定要跑滿嗎？</span>
+          <span class="plus">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+        </button>
+        <div class="faq-a">
+          您可於預約後先告知想去的景點，司導會幫您安排合理路線。當天仍可與司機彈性討論順序增減，不須跑滿。若原景點提早結束可新增其他景點。
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>如果當天超時了怎麼辦？</span>
+          <span class="plus">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+        </button>
+        <div class="faq-a">
+          貸切方案（6H / 12H）可加購小時，每小時 ¥11,000，當天現場與司導確認即可，無需另外預約。
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>取消預約有手續費嗎？</span>
+          <span class="plus">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+        </button>
+        <div class="faq-a">
+          出發前 7 天以上取消免費，3–6 天取消收取 30% 手續費，2 天以內取消收取 50%，當日取消或未到場將收取全額費用。
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>可以從機場或飯店直接接送嗎？</span>
+          <span class="plus">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+        </button>
+        <div class="faq-a">
+          當然可以。關空與大阪市內單程接送為獨立方案；若您已預訂貸切包車，也可指定到飯店 / 民宿門口接送，無需另外加價。
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>有兒童座椅嗎？</span>
+          <span class="plus">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+        </button>
+        <div class="faq-a">
+          預約時請先告知孩童年齡與人數，我們會準備適齡的兒童安全座椅。本服務項目免費提供。
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA band -->
+<section class="cta-band" id="contact">
+  <div class="container inner">
+    <div class="en">Ready to Explore</div>
+    <h2>準備好出發了嗎？</h2>
+    <p>填寫簡單的預約表單，我們將於 24 小時內聯繫確認行程。</p>
+    <a href="#book" class="btn btn-primary" onclick="openModal(event)">
+      立即線上預約
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- Legal -->
+<div class="legal">
+  <div class="container row">
+    <div>
+      <h5>Company</h5>
+      <b>大阪旅行日株式会社</b>
+      Osaka Traveldays Co., Ltd.<br/>
+      法人番号 1234567890123
+    </div>
+    <div>
+      <h5>Registration</h5>
+      <b>住宿設施登録</b>
+      大阪府知事 · 住宿事業登記番号<br/>
+      M001234567 · 運輸事業許可番号 近運第 5678 号
+    </div>
+    <div>
+      <h5>Customer Service</h5>
+      <b>24 小時線上客服</b>
+      LINE @traveldays-tw<br/>
+      Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c8aba0a9babcadba88bcbaa9beada4aca9b1bbe6aba7a5e6bcbf">[email&#160;protected]</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="grid">
+      <div>
+        <div class="brand-f">
+          <div class="logo">T</div>
+          <b>TRAVELDAYS</b>
+        </div>
+        <p>大阪旅行日 · 精選包棟民宿 · 關西包車一日遊 · 提供旅客從住宿到交通的一站式服務體驗。</p>
+      </div>
+      <div>
+        <h5>Service</h5>
+        <ul>
+          <li><a href="#">民宿介紹</a></li>
+          <li><a href="#pricing">包車服務</a></li>
+          <li><a href="#">機場接送</a></li>
+          <li><a href="#">行程客製</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>About</h5>
+        <ul>
+          <li><a href="#">關於我們</a></li>
+          <li><a href="#flow">預約流程</a></li>
+          <li><a href="#faq">常見問題</a></li>
+          <li><a href="#">合作提案</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Contact</h5>
+        <ul>
+          <li>LINE @traveldays-tw</li>
+          <li><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3d5e555c4f49584f7d494f5c4b5851595c444e135e525013494a">[email&#160;protected]</a></li>
+          <li>WeChat: traveldays</li>
+          <li>24h 線上客服</li>
+        </ul>
+      </div>
+    </div>
+    <div class="bottom">
+      <div>© 2026 OSAKA TRAVELDAYS · All Rights Reserved</div>
+      <div>隱私政策 · 服務條款 · 取消政策</div>
+    </div>
+  </div>
+</footer>
+
+<!-- Booking modal -->
+<div class="modal" id="bookModal" onclick="if(event.target===this)closeModal()">
+  <div class="box">
+    <button class="close" onclick="closeModal()">✕</button>
+    <div id="formView">
+      <div class="en">Charter Reservation</div>
+      <h3>線上預約包車</h3>
+      <p>填寫後我們將於 24 小時內透過 LINE / Email 回覆您確認訊息。</p>
+      <form id="bookForm" onsubmit="return submitBook(event)">
+        <div class="field-row">
+          <div>
+            <label>姓名 · Name</label>
+            <input required placeholder="王小明" />
+          </div>
+          <div>
+            <label>LINE / Email</label>
+            <input required placeholder="@yourid" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div>
+            <label>方案 · Plan</label>
+            <select required>
+              <option>12 小時貸切</option>
+              <option>6 小時貸切</option>
+              <option>機場接送</option>
+            </select>
+          </div>
+          <div>
+            <label>人數 · People</label>
+            <input type="number" min="1" max="7" value="5" required />
+          </div>
+        </div>
+        <div class="field-row">
+          <div>
+            <label>出發日期 · Date</label>
+            <input type="date" required />
+          </div>
+          <div>
+            <label>接送地點 · Pickup</label>
+            <input placeholder="飯店 / 民宿名稱" required />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          送出預約
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+    </div>
+    <div id="modalSuccess" class="modal-success" style="display:none">
+      <div class="check-big">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <div class="en">Thank You</div>
+      <h3 style="margin:0 0 10px">預約已送出</h3>
+      <p style="margin:0">我們將在 24 小時內透過 LINE / Email 聯繫您確認行程。</p>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // ===== Pricing tabs =====
+  const tabs = document.querySelectorAll('.price-tabs button');
+  const rows = document.querySelectorAll('#priceTable tbody tr');
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const tab = t.dataset.tab;
+    rows.forEach(r=>{
+      r.style.display = (tab==='all' || r.dataset.type===tab) ? '' : 'none';
+    });
+  }));
+
+  // ===== Estimator =====
+  const fmt = n => n.toLocaleString('en-US');
+  const estPlan = document.getElementById('estPlan');
+  const estPeople = document.getElementById('estPeople');
+  const estExtra = document.getElementById('estExtra');
+  const estTotal = document.getElementById('estTotal');
+  const estPer = document.getElementById('estPer');
+
+  function updateEst(){
+    const base = parseInt(estPlan.value);
+    const people = Math.max(1, Math.min(7, parseInt(estPeople.value)||1));
+    const extra = Math.max(0, parseInt(estExtra.value)||0);
+    const peopleExtra = people > 5 ? (people - 5) * 15000 : 0;
+    const hourExtra = extra * 11000;
+    const total = base + peopleExtra + hourExtra;
+    estTotal.textContent = fmt(total);
+    estPer.textContent = `每人約 ¥${fmt(Math.round(total/people))} · ${people} 人均攤`;
+    estPeople.value = people;
+  }
+  [estPlan,estPeople,estExtra].forEach(el=>el.addEventListener('input',updateEst));
+  updateEst();
+
+  const d = new Date(); d.setDate(d.getDate()+1);
+  document.getElementById('estDate').value = d.toISOString().slice(0,10);
+
+  // ===== Modal =====
+  function openModal(e){
+    if(e) e.preventDefault();
+    document.getElementById('bookModal').classList.add('open');
+    document.getElementById('formView').style.display='';
+    document.getElementById('modalSuccess').style.display='none';
+  }
+  function closeModal(){
+    document.getElementById('bookModal').classList.remove('open');
+  }
+  function submitBook(e){
+    e.preventDefault();
+    document.getElementById('formView').style.display='none';
+    document.getElementById('modalSuccess').style.display='';
+    return false;
+  }
+
+  // ===== FAQ =====
+  function toggleFaq(btn){
+    btn.closest('.faq-item').classList.toggle('open');
+  }
+
+  // ===== smooth scroll =====
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click',e=>{
+      const href = a.getAttribute('href');
+      if(href.length > 1){
+        const el = document.querySelector(href);
+        if(el){
+          e.preventDefault();
+          const y = el.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({top:y,behavior:'smooth'});
+        }
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
