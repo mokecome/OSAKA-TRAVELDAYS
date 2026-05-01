@@ -21,9 +21,16 @@ if (!process.env.ADMIN_TOKEN) {
   console.log('⚠️  Auto-generated ADMIN_TOKEN:', ADMIN_TOKEN);
 }
 
+// Constant-time string compare to defeat timing attacks on credentials
+function safeEqual(a, b) {
+  const ab = Buffer.from(a == null ? '' : String(a));
+  const bb = Buffer.from(b == null ? '' : String(b));
+  if (ab.length !== bb.length) return false;
+  return crypto.timingSafeEqual(ab, bb);
+}
+
 function requireAuth(req, res, next) {
-  const token = req.headers['x-admin-token'];
-  if (!token || token !== ADMIN_TOKEN) {
+  if (!safeEqual(req.headers['x-admin-token'], ADMIN_TOKEN)) {
     return res.status(401).json({ error: '未授權' });
   }
   next();
@@ -110,6 +117,12 @@ app.post('/api/upload', rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
   message: { error: '上傳次數過多' }
+}));
+app.post('/api/login', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  skipSuccessfulRequests: true,
+  message: { error: '登入嘗試次數過多，請 15 分鐘後再試' }
 }));
 
 // Serve admin.html from views/ with no-cache headers
@@ -438,7 +451,7 @@ const upload = multer({
   storage,
   limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const allowed = /\.(jpg|jpeg|png|gif|webp|svg)$/i;
+    const allowed = /\.(jpg|jpeg|png|gif|webp)$/i;
     cb(null, allowed.test(path.extname(file.originalname)));
   }
 });
@@ -1018,8 +1031,7 @@ app.use(express.static(__dirname, {
 
 // ---- LOGIN ----
 app.post('/api/login', (req, res) => {
-  const { password } = req.body;
-  if (password === ADMIN_PASSWORD) {
+  if (safeEqual(req.body && req.body.password, ADMIN_PASSWORD)) {
     res.json({ token: ADMIN_TOKEN });
   } else {
     res.status(401).json({ error: '密碼錯誤' });
@@ -1276,6 +1288,7 @@ async function normalizeMapUrl(url) {
 
 // Create or update property
 app.post('/api/properties', requireAuth, async (req, res) => {
+ try {
   const p = req.body;
   const ml = (v) => v && typeof v === 'object' && !Array.isArray(v) ? JSON.stringify(v) : (v || '');
   if (!p.id || !p.name) return res.status(400).json({ error: 'ID and name are required' });
@@ -1352,6 +1365,10 @@ app.post('/api/properties', requireAuth, async (req, res) => {
   const saved = db.prepare('SELECT * FROM properties WHERE id = ?').get(p.id);
   invalidateSSRCache();
   res.json(getPropertyWithImages(saved));
+ } catch (err) {
+  console.error('[POST /api/properties]', err);
+  res.status(500).json({ error: '儲存失敗：' + (err.message || 'unknown error') });
+ }
 });
 
 // Rename property ID (for when user changes slug)
@@ -1471,6 +1488,7 @@ app.get('/api/export', requireAuth, (req, res) => {
 
 // Import data from JSON
 app.post('/api/import', requireAuth, async (req, res) => {
+ try {
   const data = req.body;
   if (!Array.isArray(data)) return res.status(400).json({ error: 'Array expected' });
 
@@ -1513,6 +1531,10 @@ app.post('/api/import', requireAuth, async (req, res) => {
   invalidateSSRCache();
   icalCache.clear();
   res.json({ success: true, count: data.length });
+ } catch (err) {
+  console.error('[POST /api/import]', err);
+  res.status(500).json({ error: '匯入失敗：' + (err.message || 'unknown error') });
+ }
 });
 
 // ---- SITE SETTINGS ----
