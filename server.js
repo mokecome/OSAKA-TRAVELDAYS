@@ -444,19 +444,48 @@ const upload = multer({
 });
 
 // ==================== iCAL ====================
+function durationToDays(s) {
+  const m = String(s).trim().match(/^P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/i);
+  if (!m) return null;
+  const [, w, d, h, mn, sec] = m;
+  const totalSec = (parseInt(w || 0, 10) * 7 + parseInt(d || 0, 10)) * 86400
+                 +  parseInt(h || 0, 10) * 3600
+                 +  parseInt(mn || 0, 10) * 60
+                 +  parseInt(sec || 0, 10);
+  if (!Number.isFinite(totalSec) || totalSec <= 0) return null;
+  return Math.ceil(totalSec / 86400);
+}
+
 function parseIcal(icsText) {
   const blocked = new Set();
   const events = icsText.split('BEGIN:VEVENT').slice(1);
   for (const ev of events) {
+    if (/\nSTATUS:CANCELLED\b/i.test(ev)) continue;
     const s = ev.match(/DTSTART[^:\n]*:(\d{8})/);
+    if (!s) continue;
     const e = ev.match(/DTEND[^:\n]*:(\d{8})/);
-    if (s && e) {
-      const d = new Date(s[1].replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
-      const end = new Date(e[1].replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
-      while (d < end) {
-        blocked.add(d.toISOString().split('T')[0]);
-        d.setDate(d.getDate() + 1);
+    let endStr = e ? e[1] : null;
+    if (!endStr) {
+      const dur = ev.match(/\nDURATION:([^\r\n]+)/);
+      if (dur) {
+        const days = durationToDays(dur[1]);
+        if (days != null && days > 0) {
+          const dt = new Date(s[1].replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+          dt.setDate(dt.getDate() + days);
+          endStr = dt.toISOString().slice(0, 10).replace(/-/g, '');
+        }
       }
+    }
+    if (!endStr) {
+      const uid = (ev.match(/\nUID:([^\r\n]+)/) || [])[1] || '?';
+      console.warn('[iCal] Skipped VEVENT with no DTEND/DURATION (uid=' + uid.trim() + ')');
+      continue;
+    }
+    const d = new Date(s[1].replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+    const end = new Date(endStr.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+    while (d < end) {
+      blocked.add(d.toISOString().split('T')[0]);
+      d.setDate(d.getDate() + 1);
     }
   }
   return Array.from(blocked);
@@ -1109,8 +1138,9 @@ app.get('/api/properties/:id/availability', async (req, res) => {
     if (!prop) return res.status(404).json({ error: 'Not found' });
     if (!prop.ical_url) return res.json({ blockedDates: [] });
 
+    const forceFresh = req.query.fresh === '1';
     const cached = db.prepare('SELECT blocked_dates, fetched_at FROM ical_cache WHERE property_id = ?').get(req.params.id);
-    if (cached && Date.now() - cached.fetched_at < ICAL_TTL_MS) {
+    if (!forceFresh && cached && Date.now() - cached.fetched_at < ICAL_TTL_MS) {
       return res.json({ blockedDates: JSON.parse(cached.blocked_dates) });
     }
 

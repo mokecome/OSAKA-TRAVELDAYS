@@ -1069,7 +1069,7 @@
       // ========== Load Availability Calendar ==========
       if (p.ical_url) {
         clearInterval(calPollInterval);
-        loadAvailability(propertyId);
+        loadAvailability(propertyId, { fresh: true });
         calPollInterval = setInterval(function() { loadAvailability(propertyId); }, 10000);
       }
 
@@ -1213,8 +1213,9 @@
     var calYear, calMonth;
     var calPollInterval = null;
 
-    function loadAvailability(id) {
-      fetch('/api/properties/' + encodeURIComponent(id) + '/availability')
+    function loadAvailability(id, opts) {
+      var fresh = !!(opts && opts.fresh);
+      fetch('/api/properties/' + encodeURIComponent(id) + '/availability' + (fresh ? '?fresh=1' : ''))
         .then(function(r) { return r.json(); })
         .then(function(data) {
           var el = document.getElementById('availabilityCalendar');
