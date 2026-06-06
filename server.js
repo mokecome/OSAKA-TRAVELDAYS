@@ -13,7 +13,6 @@ const sanitizeHtml = require('sanitize-html');
 const app = express();
 const PORT = 3000;
 const SITE_URL = process.env.SITE_URL || 'https://stay.traveldays.com.tw';
-const icalCache = new Map();
 
 // ==================== AUTH ====================
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'CHANGE_ME_NOW';
@@ -792,6 +791,14 @@ function stripHtmlForMeta(str) {
   return str.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+// Serialize an object for embedding inside an HTML <script> block. Escaping <,
+// >, & to \uXXXX prevents any value (e.g. a property name containing
+// "</script>") from breaking out of the script element or being parsed as HTML.
+// The result is still valid JSON and parses back to the identical value.
+function htmlSafeJson(obj) {
+  return JSON.stringify(obj).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
+}
+
 // ==================== SSR: ROOM PAGES ====================
 const roomTemplate = fs.readFileSync(path.join(__dirname, 'room-template.html'), 'utf-8');
 
@@ -944,8 +951,8 @@ app.get('/rooms/:id.html', (req, res) => {
   ${fullCoverUrl ? `<meta name="twitter:image" content="${escHtml(fullCoverUrl)}">` : ''}
 
   <!-- Structured Data -->
-  <script type="application/ld+json">${JSON.stringify(jsonLd).replace(/<\/script>/gi, '<\\/script>')}</script>
-  <script type="application/ld+json">${JSON.stringify(breadcrumbLd).replace(/<\/script>/gi, '<\\/script>')}</script>`;
+  <script type="application/ld+json">${htmlSafeJson(jsonLd)}</script>
+  <script type="application/ld+json">${htmlSafeJson(breadcrumbLd)}</script>`;
 
   // Replace in template
   let html = roomTemplate;
@@ -974,7 +981,7 @@ app.get('/rooms/:id.html', (req, res) => {
     html = html.replace('<!-- MOBILE_BOOKING_BAR_PLACEHOLDER -->', mobileBarHtml);
   }
   // Inject full multilingual property data for client-side language switching
-  const propDataScript = `<script>window.__PROPERTY_DATA = ${JSON.stringify(p).replace(/<\/script>/gi, '<\\/script>')};</script>`;
+  const propDataScript = `<script>window.__PROPERTY_DATA = ${htmlSafeJson(p)};</script>`;
   html = html.replace('</body>', propDataScript + '\n</body>');
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -1043,6 +1050,8 @@ app.get('/sitemap.xml', (req, res) => {
   xml += emitUrl(`${siteUrl}/charter`,             today, 'monthly','0.8', langAlternates('/charter'));
   xml += emitUrl(`${siteUrl}/become-host.html`,    today, 'monthly','0.6', langAlternates('/become-host.html'));
   xml += emitUrl(`${siteUrl}/blog`,                today, 'daily',  '0.9', langAlternates('/blog'));
+  xml += emitUrl(`${siteUrl}/privacy.html`,        today, 'yearly', '0.2', langAlternates('/privacy.html'));
+  xml += emitUrl(`${siteUrl}/terms.html`,          today, 'yearly', '0.2', langAlternates('/terms.html'));
 
   // Blog posts (only languages where the post has a title)
   for (const p of posts) {
@@ -1121,7 +1130,12 @@ app.get('/', (req, res) => {
     res.send(ssrCache);
   } catch (err) {
     console.error('SSR error:', err.message);
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'), (sendErr) => {
+      if (sendErr && !res.headersSent) {
+        console.error('SSR fallback sendFile failed:', sendErr.message);
+        res.status(500).type('text/plain').send('Internal Server Error');
+      }
+    });
   }
 });
 
@@ -1498,7 +1512,6 @@ app.post('/api/properties', requireAuth, async (req, res) => {
     if (existing) {
       db.prepare(`UPDATE properties SET ${colNames.map(c => c + '=?').join(', ')}, updatedAt=datetime('now','localtime') WHERE id=?`)
         .run(...colValues, p.id);
-      icalCache.delete(p.id);
     } else {
       db.prepare(`INSERT INTO properties (id, ${colNames.join(', ')}) VALUES (${Array(colNames.length + 1).fill('?').join(',')})`)
         .run(p.id, ...colValues);
@@ -1555,7 +1568,6 @@ app.delete('/api/properties/:id', requireAuth, (req, res) => {
   const transaction = db.transaction(() => {
     db.prepare('DELETE FROM property_images WHERE propertyId = ?').run(req.params.id);
     db.prepare('DELETE FROM properties WHERE id = ?').run(req.params.id);
-    icalCache.delete(req.params.id);
   });
 
   transaction();
@@ -1680,7 +1692,6 @@ app.post('/api/import', requireAuth, async (req, res) => {
 
   importAll(data);
   invalidateSSRCache();
-  icalCache.clear();
   res.json({ success: true, count: data.length });
  } catch (err) {
   console.error('[POST /api/import]', err);
