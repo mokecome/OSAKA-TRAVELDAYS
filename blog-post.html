@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JPPCC617C9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-JPPCC617C9');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/images/logo.png?v=2">
+  <link rel="shortcut icon" href="/images/logo.png?v=2">
+  <title id="pageTitle">大阪旅行日民宿 部落格</title>
+  <meta id="metaDescription" name="description" content="大阪旅行日民宿部落格文章">
+  <meta name="robots" content="index, follow">
+  <link id="canonicalLink" rel="canonical" href="">
+  <link id="hreflangZh" rel="alternate" hreflang="zh-TW" href="">
+  <link id="hreflangJa" rel="alternate" hreflang="ja" href="">
+  <link id="hreflangEn" rel="alternate" hreflang="en" href="">
+  <link id="hreflangDef" rel="alternate" hreflang="x-default" href="">
+
+  <meta id="ogType" property="og:type" content="article">
+  <meta id="ogTitle" property="og:title" content="">
+  <meta id="ogDescription" property="og:description" content="">
+  <meta id="ogUrl" property="og:url" content="">
+  <meta id="ogImage" property="og:image" content="https://stay.traveldays.com.tw/images/hero.jpg">
+  <meta property="og:site_name" content="大阪旅行日民宿 OSAKA TRAVELDAYS">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta id="twTitle" name="twitter:title" content="">
+  <meta id="twDescription" name="twitter:description" content="">
+  <meta id="twImage" name="twitter:image" content="https://stay.traveldays.com.tw/images/hero.jpg">
+
+  <link rel="stylesheet" href="/css/tailwind.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --color-bg: #FFFBF7; --color-text: #2D1810; }
+    * { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--color-bg); color: var(--color-text);
+      line-height: 1.7; -webkit-font-smoothing: antialiased; margin: 0;
+    }
+    .font-serif { font-family: 'Noto Serif TC', serif; }
+    .header-blur { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+    .lang-switcher-nav { display:flex; align-items:center; gap:4px; background:#fef3c7; border:1px solid #fcd34d; border-radius:24px; padding:3px 5px; }
+    .lang-btn-nav { padding:3px 9px; border-radius:20px; font-size:12px; font-weight:700; color:#78350f; background:transparent; border:none; cursor:pointer; transition:all 0.2s; line-height:1.5; }
+    .lang-btn-nav:hover { background:#fde68a; }
+    .lang-btn-nav.active { background:#92400e; color:white; }
+
+    .footer-top-row { flex-direction: column; }
+    @media (min-width: 1024px) { .footer-top-row { flex-direction: row; justify-content: space-between; } .footer-logo-col { max-width: 24rem; } }
+    @media (max-width: 767px) { .footer-section-mobile { margin-top: 2.5rem; } }
+
+    #mobileNav { position:fixed; left:0; right:0; z-index:45; background:white; border-bottom:1px solid #fef3c7; box-shadow:0 4px 12px rgba(0,0,0,0.08); max-height:0; overflow:hidden; transition:max-height 0.25s ease; }
+    #mobileNav.open { max-height: 360px; }
+    #mobileNav a { display:block; padding:0.875rem 1.5rem; color:#92400e; font-size:1rem; font-weight:500; border-bottom:1px solid #fef9ee; text-decoration:none; }
+    #mobileNav a:last-child { border-bottom: none; }
+    @media (min-width: 768px) { #mobileNav { display: none; } }
+
+    /* Article hero */
+    .article-hero {
+      padding: 8rem 1rem 2rem;
+      max-width: 900px; margin: 0 auto; text-align: center;
+    }
+    .article-hero .cat {
+      font-size: 11px; font-weight: 700; color:#92400e;
+      letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .article-hero h1 {
+      font-family:'Noto Serif TC', serif; font-weight:700;
+      font-size: clamp(1.7rem, 4vw, 2.8rem);
+      color:#2D1810; line-height: 1.3; margin: 0 0 1rem;
+    }
+    .article-meta { font-size: 0.85rem; color:#92400e; }
+    .article-cover {
+      width: 100%; max-width: 1100px; margin: 1.5rem auto 0;
+      aspect-ratio: 16/9; object-fit: cover; border-radius: 14px;
+      box-shadow: 0 8px 30px rgba(139,69,19,0.15);
+    }
+    .article-banner {
+      max-width: 800px; margin: 1rem auto 0; padding: 0.75rem 1rem;
+      background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px;
+      color:#78350f; font-size: 0.9rem; text-align: center;
+    }
+
+    /* Body */
+    .article-body {
+      max-width: 760px; margin: 2.5rem auto 4rem; padding: 0 1rem;
+      font-size: 1.05rem; color:#3a2517;
+    }
+    .article-body h2 { font-family:'Noto Serif TC',serif; font-size:1.6rem; font-weight:600; margin:2.2em 0 0.8em; color:#5C2C0E; border-left:4px solid #D4A574; padding-left:14px; line-height:1.3; }
+    .article-body h3 { font-family:'Noto Serif TC',serif; font-size:1.3rem; font-weight:600; margin:1.8em 0 0.6em; color:#6B4423; }
+    .article-body p { margin: 1em 0; }
+    .article-body img { max-width: 100%; height: auto; display:block; margin: 1.5em auto; border-radius: 10px; }
+    .article-body ul, .article-body ol { margin: 1em 0; padding-left: 1.5em; }
+    .article-body li { margin: 0.4em 0; }
+    .article-body a { color:#92400e; text-decoration: underline; }
+    .article-body blockquote { border-left:4px solid #D4A574; background:#fef9ee; padding:14px 18px; margin: 1.4em 0; font-style: italic; color:#5C2C0E; }
+    .article-body iframe { display:block; margin: 1.5em auto; max-width:100%; aspect-ratio: 16/9; width:100%; height:auto; border-radius: 10px; border: none; }
+    .article-body .ql-video { display:block; margin: 1.5em auto; max-width:100%; aspect-ratio: 16/9; width:100%; height:auto; border-radius: 10px; }
+    .article-body table { width:100%; border-collapse: collapse; margin: 1.4em 0; }
+    .article-body td, .article-body th { padding: 8px 12px; border: 1px solid #e7d4b8; }
+
+    .nav-prev-next { max-width: 800px; margin: 0 auto 4rem; padding: 0 1rem; display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .nav-prev-next a { display:block; padding: 14px 18px; border:1px solid #e7d4b8; border-radius: 10px; background: white; text-decoration:none; color:#2D1810; transition: all 0.2s; }
+    .nav-prev-next a:hover { box-shadow: 0 4px 14px rgba(139,69,19,0.10); }
+    .nav-prev-next .label { font-size:0.78rem; color:#92400e; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+    .nav-prev-next .ttl { font-weight: 600; }
+
+    .article-not-found { max-width: 600px; margin: 8rem auto; text-align: center; padding: 2rem; }
+  </style>
+
+  <script id="ldjson" type="application/ld+json">{}</script>
+</head>
+<body class="min-h-screen">
+
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/90 header-blur border-b border-amber-100">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="flex items-center justify-between h-18 py-4">
+        <a href="/" class="flex items-center gap-3 group">
+          <img src="/images/logo.png" alt="大阪旅行日民宿 OSAKA TRAVELDAYS" class="w-10 h-10 object-contain">
+          <div>
+            <span class="hidden sm:inline text-xl font-serif font-bold text-amber-900 group-hover:text-amber-700 transition-colors">大阪旅行日民宿</span>
+            <span class="hidden sm:inline text-xs text-amber-600 ml-2 tracking-widest">OSAKA TRAVELDAYS</span>
+          </div>
+        </a>
+        <div class="flex items-center gap-6">
+          <div class="lang-switcher-nav">
+            <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-nav active">中文</button>
+            <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-nav">日本語</button>
+            <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-nav">EN</button>
+          </div>
+          <nav class="hidden md:flex items-center space-x-8">
+            <a href="/become-host.html" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.becomeHost">成為房東/達人</a>
+            <a href="/charter" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.charter">包車服務</a>
+            <a href="/blog" class="text-amber-700 font-bold border-b-2 border-amber-600" data-i18n="nav.blog">部落格</a>
+            <a href="/#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.rooms">房源一覽</a>
+            <a href="/#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.about">關於我們</a>
+          </nav>
+        </div>
+        <button class="md:hidden p-2 text-amber-800" aria-label="開啟選單" id="mobileMenuBtn">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <nav id="mobileNav" style="top: 72px;">
+    <a href="/become-host.html" data-i18n="nav.becomeHost">成為房東/達人</a>
+    <a href="/charter" data-i18n="nav.charter">包車服務</a>
+    <a href="/blog" data-i18n="nav.blog">部落格</a>
+    <a href="/#properties" data-i18n="nav.rooms">房源一覽</a>
+    <a href="/#about" data-i18n="nav.about">關於我們</a>
+  </nav>
+
+  <main>
+    <article id="article" class="hidden">
+      <header class="article-hero">
+        <div id="articleCategory" class="cat"></div>
+        <h1 id="articleTitle">載入中…</h1>
+        <div class="article-meta">
+          <span id="articleDate"></span>
+          <span> · </span>
+          <span id="articleAuthor">DAIDODO合同会社</span>
+        </div>
+        <img id="articleCover" class="article-cover hidden" alt="" loading="eager" decoding="async">
+        <div id="articleBanner" class="article-banner hidden"></div>
+      </header>
+      <div id="articleBody" class="article-body"></div>
+      <nav id="articleNav" class="nav-prev-next"></nav>
+    </article>
+    <div id="notFound" class="article-not-found hidden">
+      <h1 class="font-serif text-3xl text-amber-900 mb-3">找不到此篇文章</h1>
+      <p class="text-amber-800/80 mb-6">此網址可能已失效或文章已被移除。</p>
+      <a href="/blog" class="inline-block px-6 py-3 rounded-lg bg-amber-700 text-white">返回部落格</a>
+    </div>
+  </main>
+
+  <footer class="bg-gradient-to-b from-amber-900 to-amber-950 text-amber-100 py-20 px-4">
+    <div class="container mx-auto max-w-6xl">
+      <div class="flex footer-top-row gap-12 mb-16">
+        <div class="footer-logo-col">
+          <div class="flex items-center gap-3 mb-5">
+            <img src="/images/logo.png" alt="Logo" class="w-12 h-12 object-contain">
+            <div>
+              <h3 class="text-xl font-serif text-white">大阪旅行日民宿</h3>
+              <p class="text-amber-400 text-xs tracking-widest">OSAKA TRAVELDAYS</p>
+            </div>
+          </div>
+          <p class="text-white text-sm" data-i18n="footer.tagline">精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div>
+            <h4 class="text-lg font-bold text-white mb-6"><span data-i18n="footer.contact">聯絡資訊</span></h4>
+            <a id="footerEmailLink" href="mailto:service.traveldays@gmail.com" class="block text-sm text-white mb-2"><span id="footerEmail">service.traveldays@gmail.com</span></a>
+            <a id="footerLineLink" href="https://lin.ee/pGrA7Ej" target="_blank" class="block text-sm text-white"><span id="footerLine">LINE: @fgk8695x</span></a>
+          </div>
+          <div class="footer-section-mobile">
+            <h4 class="text-lg font-bold text-white mb-6"><span data-i18n="footer.company">公司資訊</span></h4>
+            <p id="footerCompanyName" class="text-sm font-bold text-white" data-i18n="footer.company.name">DAIDODO合同会社</p>
+            <p id="footerAddress" class="text-sm text-white" data-i18n="footer.address">大阪市中央区上本町西3−3−２</p>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-amber-800/50 pt-8 text-sm text-white">© 2026 大阪旅行日民宿 OSAKA TRAVELDAYS.</div>
+    </div>
+  </footer>
+
+  <script>
+    const SITE = 'https://stay.traveldays.com.tw';
+    const TRANSLATIONS = {
+      'zh-TW': { 'nav.becomeHost':'成為房東/達人','nav.charter':'包車服務','nav.blog':'部落格','nav.rooms':'房源一覽','nav.about':'關於我們',
+        'footer.tagline':'精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。','footer.contact':'聯絡資訊','footer.company':'公司資訊','footer.company.name':'DAIDODO合同会社','footer.address':'大阪市中央区上本町西3−3−２',
+        'banner.fallback':'本篇尚無此語言版本，顯示原始版本：','prev':'上一篇','next':'下一篇' },
+      'ja':    { 'nav.becomeHost':'ホストになる','nav.charter':'チャーター便','nav.blog':'ブログ','nav.rooms':'物件一覧','nav.about':'私たちについて',
+        'footer.tagline':'大阪各エリアの厳選民泊で、忘れられない日本旅行体験を。','footer.contact':'お問い合わせ','footer.company':'会社情報','footer.company.name':'DAIDODO合同会社','footer.address':'大阪市中央区上本町西3−3−２',
+        'banner.fallback':'この言語の翻訳がないため、元の言語で表示しています：','prev':'前の記事','next':'次の記事' },
+      'en':    { 'nav.becomeHost':'Become a Host','nav.charter':'Charter Service','nav.blog':'Blog','nav.rooms':'Properties','nav.about':'About Us',
+        'footer.tagline':'Curated Osaka guesthouses for unforgettable Japan stays.','footer.contact':'Contact','footer.company':'Company','footer.company.name':'DAIDODO LLC','footer.address':'3-3-2 Uehommachi Nishi, Chuo-ku, Osaka',
+        'banner.fallback':'No translation available — showing the original:','prev':'Previous','next':'Next' }
+    };
+    const LANG_KEY = { 'zh-TW':'zh', 'ja':'ja', 'en':'en' };
+    let SETTINGS = {};
+    let POST = null;
+    let PREV = null;
+    let NEXT = null;
+    let SLUG = '';
+
+    function getQueryParam(name) { return new URLSearchParams(window.location.search).get(name) || ''; }
+
+    function pickLang(post, field, lang) {
+      const k = LANG_KEY[lang];
+      const v = post[field + '_' + k];
+      if (v && String(v).trim()) return v;
+      const pk = LANG_KEY[post.primaryLang || 'zh-TW'];
+      return post[field + '_' + pk] || '';
+    }
+
+    function applyTranslations(lang) {
+      document.documentElement.lang = lang;
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        const t = TRANSLATIONS[lang][el.dataset.i18n];
+        if (t !== undefined) el.textContent = t;
+      });
+      document.querySelectorAll('.lang-btn-nav').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.lang === lang);
+      });
+    }
+
+    function applyFooterOverrides(lang) {
+      const ev = SETTINGS['footer.email'];
+      if (typeof ev === 'string' && ev) {
+        const e = document.getElementById('footerEmail'); if (e) e.textContent = ev;
+        const el = document.getElementById('footerEmailLink'); if (el) el.href = 'mailto:' + ev;
+      }
+      const lv = SETTINGS['footer.line'];
+      if (typeof lv === 'string' && lv) { const e = document.getElementById('footerLine'); if (e) e.textContent = 'LINE: ' + lv; }
+      const cv = SETTINGS['footer.company'];
+      if (cv && typeof cv === 'object' && cv[lang]) { const e = document.getElementById('footerCompanyName'); if (e) e.textContent = cv[lang]; }
+      const av = SETTINGS['footer.address'];
+      if (av && typeof av === 'object' && av[lang]) { const e = document.getElementById('footerAddress'); if (e) e.textContent = av[lang]; }
+    }
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function renderPost(lang) {
+      if (!POST) return;
+      const title = pickLang(POST, 'title', lang) || '(無標題)';
+      const body  = pickLang(POST, 'body', lang) || '';
+      const excerpt = pickLang(POST, 'excerpt', lang) || '';
+      const metaDesc = (POST['metaDesc_' + LANG_KEY[lang]] && POST['metaDesc_' + LANG_KEY[lang]].trim())
+                      || excerpt
+                      || POST['metaDesc_' + LANG_KEY[POST.primaryLang || 'zh-TW']]
+                      || '';
+      const catName = (lang === 'ja' && POST.categoryName_ja) ? POST.categoryName_ja
+                   : (lang === 'en' && POST.categoryName_en) ? POST.categoryName_en
+                   : (POST.categoryName_zh || '');
+      const date = POST.publishedAt ? POST.publishedAt.split(' ')[0] : '';
+
+      // Title + meta
+      document.getElementById('pageTitle').textContent = title + ' | 大阪旅行日民宿';
+      document.title = title + ' | 大阪旅行日民宿';
+      document.getElementById('metaDescription').setAttribute('content', metaDesc);
+
+      const url = SITE + '/blog/' + encodeURIComponent(POST.slug);
+      document.getElementById('canonicalLink').setAttribute('href', url);
+      document.getElementById('hreflangZh').setAttribute('href', POST.title_zh ? url + '?lang=zh-TW' : url);
+      document.getElementById('hreflangJa').setAttribute('href', POST.title_ja ? url + '?lang=ja'    : url);
+      document.getElementById('hreflangEn').setAttribute('href', POST.title_en ? url + '?lang=en'    : url);
+      document.getElementById('hreflangDef').setAttribute('href', url);
+
+      const cover = POST.coverImage || '';
+      const ogImage = cover && cover.startsWith('/') ? SITE + cover : (cover || (SITE + '/images/hero.jpg'));
+      document.getElementById('ogTitle').setAttribute('content', title);
+      document.getElementById('ogDescription').setAttribute('content', metaDesc);
+      document.getElementById('ogUrl').setAttribute('content', url);
+      document.getElementById('ogImage').setAttribute('content', ogImage);
+      document.getElementById('twTitle').setAttribute('content', title);
+      document.getElementById('twDescription').setAttribute('content', metaDesc);
+      document.getElementById('twImage').setAttribute('content', ogImage);
+
+      // BlogPosting JSON-LD
+      const ld = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: title,
+        description: metaDesc,
+        image: [ogImage],
+        author: { '@type': 'Organization', name: 'DAIDODO合同会社' },
+        publisher: {
+          '@type': 'Organization',
+          name: '大阪旅行日民宿 OSAKA TRAVELDAYS',
+          logo: { '@type': 'ImageObject', url: SITE + '/images/logo.png' }
+        },
+        datePublished: POST.publishedAt ? POST.publishedAt.replace(' ', 'T') : '',
+        dateModified:  POST.updatedAt    ? POST.updatedAt.replace(' ', 'T')   : '',
+        mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+        articleSection: catName || undefined,
+        inLanguage: lang
+      };
+      document.getElementById('ldjson').textContent = JSON.stringify(ld);
+
+      // Body
+      document.getElementById('articleCategory').textContent = catName;
+      document.getElementById('articleTitle').textContent = title;
+      document.getElementById('articleDate').textContent = date;
+      const coverEl = document.getElementById('articleCover');
+      if (cover) { coverEl.src = cover; coverEl.alt = title; coverEl.classList.remove('hidden'); }
+      else coverEl.classList.add('hidden');
+
+      // Translation banner
+      const haveLangBody = !!(POST['body_' + LANG_KEY[lang]] && POST['body_' + LANG_KEY[lang]].trim());
+      const banner = document.getElementById('articleBanner');
+      if (!haveLangBody && POST.primaryLang !== lang) {
+        const primary = POST.primaryLang || 'zh-TW';
+        const primaryLabel = primary === 'zh-TW' ? '中文' : (primary === 'ja' ? '日本語' : 'English');
+        banner.textContent = TRANSLATIONS[lang]['banner.fallback'] + ' ' + primaryLabel;
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+
+      // Body HTML — server already sanitized via sanitize-html
+      document.getElementById('articleBody').innerHTML = body;
+
+      // Prev / Next
+      const navWrap = document.getElementById('articleNav');
+      const linkFor = function(p, kind) {
+        if (!p) return '<div></div>';
+        const t = pickLang(p, 'title', lang) || '(無標題)';
+        const arrow = kind === 'prev' ? '←' : '→';
+        return '<a href="/blog/' + encodeURIComponent(p.slug) + '">'
+             + '<div class="label">' + arrow + ' ' + escapeHtml(TRANSLATIONS[lang][kind]) + '</div>'
+             + '<div class="ttl">' + escapeHtml(t) + '</div></a>';
+      };
+      navWrap.innerHTML = linkFor(PREV, 'prev') + linkFor(NEXT, 'next');
+    }
+
+    async function setLanguage(lang) {
+      if (!TRANSLATIONS[lang]) return;
+      localStorage.setItem('lang', lang);
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', lang);
+      window.history.replaceState({}, '', url.toString());
+      applyTranslations(lang);
+      applyFooterOverrides(lang);
+      renderPost(lang);
+    }
+
+    async function init() {
+      // Slug from path: /blog/<slug>
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      SLUG = decodeURIComponent(parts[1] || '');
+      if (!SLUG) {
+        document.getElementById('article').classList.add('hidden');
+        document.getElementById('notFound').classList.remove('hidden');
+        return;
+      }
+      try {
+        const [s, postRes] = await Promise.all([
+          fetch('/api/settings').then(r => r.ok ? r.json() : {}),
+          fetch('/api/blog/posts/' + encodeURIComponent(SLUG))
+        ]);
+        SETTINGS = s;
+        if (!postRes.ok) {
+          document.getElementById('article').classList.add('hidden');
+          document.getElementById('notFound').classList.remove('hidden');
+          return;
+        }
+        const data = await postRes.json();
+        POST = data.post; PREV = data.prev; NEXT = data.next;
+        document.getElementById('article').classList.remove('hidden');
+      } catch (e) {
+        document.getElementById('article').classList.add('hidden');
+        document.getElementById('notFound').classList.remove('hidden');
+        return;
+      }
+      const urlLang = getQueryParam('lang');
+      const saved = urlLang || localStorage.getItem('lang');
+      const lang = TRANSLATIONS[saved] ? saved : 'zh-TW';
+      setLanguage(lang);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById('mobileMenuBtn');
+      const nav = document.getElementById('mobileNav');
+      if (btn && nav) btn.addEventListener('click', function() { nav.classList.toggle('open'); });
+      init();
+    });
+  </script>
+</body>
+</html>

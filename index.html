@@ -1,6 +1,15 @@
 ﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JPPCC617C9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-JPPCC617C9');
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="/images/logo.png?v=2">
@@ -14,6 +23,10 @@
   <meta name="author" content="大阪旅行日民宿 OSAKA TRAVELDAYS">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://stay.traveldays.com.tw/">
+  <link rel="alternate" hreflang="zh-TW" href="https://stay.traveldays.com.tw/?lang=zh-TW">
+  <link rel="alternate" hreflang="ja" href="https://stay.traveldays.com.tw/?lang=ja">
+  <link rel="alternate" hreflang="en" href="https://stay.traveldays.com.tw/?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://stay.traveldays.com.tw/">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -1531,6 +1544,7 @@
           <nav class="hidden md:flex items-center space-x-8">
             <a href="/become-host.html" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.becomeHost">成為房東/達人</a>
             <a href="/charter" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.charter">包車服務</a>
+            <a href="/blog" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.blog">部落格</a>
             <a href="#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.rooms">房源一覽</a>
             <a href="#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.about">關於我們</a>
             <a href="#contact" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.contact">聯絡我們</a>
@@ -1550,6 +1564,7 @@
   <nav id="mobileNav">
     <a href="/become-host.html" data-i18n="nav.becomeHost">成為房東/達人</a>
     <a href="/charter" data-i18n="nav.charter">包車服務</a>
+    <a href="/blog" data-i18n="nav.blog">部落格</a>
     <a href="#properties" data-i18n="nav.rooms">房源一覽</a>
     <a href="#about" data-i18n="nav.about">關於我們</a>
     <a href="#contact" data-i18n="nav.contact">聯絡我們</a>
@@ -2492,17 +2507,17 @@
         var accessIconsHtml = '';
         if (property.hasStairs) {
           accessIconsHtml += '<span title="' + escHtml(CARD_ACCESS_LABELS[lang].stairs) + '" class="inline-flex items-center gap-1 text-xs text-amber-700">' +
-            '<img src="/images/icons/stairs.png" alt="" class="w-4 h-4 object-contain">' +
+            '<img src="/images/icons/stairs.png" alt="" aria-hidden="true" class="w-4 h-4 object-contain">' +
             '<span>' + escHtml(CARD_ACCESS_LABELS[lang].stairs) + '</span></span>';
         }
         if (property.hasElevator) {
           accessIconsHtml += '<span title="' + escHtml(CARD_ACCESS_LABELS[lang].elevator) + '" class="inline-flex items-center gap-1 text-xs text-amber-700">' +
-            '<img src="/images/icons/elevator.png" alt="" class="w-4 h-4 object-contain">' +
+            '<img src="/images/icons/elevator.png" alt="" aria-hidden="true" class="w-4 h-4 object-contain">' +
             '<span>' + escHtml(CARD_ACCESS_LABELS[lang].elevator) + '</span></span>';
         }
         if (property.hasGarage) {
           accessIconsHtml += '<span title="' + escHtml(CARD_ACCESS_LABELS[lang].garage) + '" class="inline-flex items-center gap-1 text-xs text-amber-700">' +
-            '<img src="/images/icons/garage.png" alt="" class="w-4 h-4 object-contain">' +
+            '<img src="/images/icons/garage.png" alt="" aria-hidden="true" class="w-4 h-4 object-contain">' +
             '<span>' + escHtml(CARD_ACCESS_LABELS[lang].garage) + '</span></span>';
         }
 
@@ -3190,6 +3205,7 @@
       'zh-TW': {
         'nav.becomeHost': '成為房東/達人',
         'nav.charter': '包車服務',
+        'nav.blog': '部落格',
         'nav.rooms': '房源一覽',
         'nav.about': '關於我們',
         'nav.contact': '聯絡我們',
@@ -3281,6 +3297,7 @@
       'ja': {
         'nav.becomeHost': 'ホストになる',
         'nav.charter': 'チャーター便',
+        'nav.blog': 'ブログ',
         'nav.rooms': '物件一覧',
         'nav.about': '私たちについて',
         'nav.contact': 'お問い合わせ',
@@ -3372,6 +3389,7 @@
       'en': {
         'nav.becomeHost': 'Become a Host',
         'nav.charter': 'Charter Service',
+        'nav.blog': 'Blog',
         'nav.rooms': 'Properties',
         'nav.about': 'About Us',
         'nav.contact': 'Contact',

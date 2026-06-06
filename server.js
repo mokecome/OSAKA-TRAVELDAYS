@@ -8,6 +8,7 @@ const crypto = require('crypto');
 
 const sharp = require('sharp');
 const rateLimit = require('express-rate-limit');
+const sanitizeHtml = require('sanitize-html');
 
 const app = express();
 const PORT = 3000;
@@ -75,7 +76,7 @@ app.use((req, res, next) => {
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https:",
     "connect-src 'self'",
-    "frame-src https://www.google.com https://maps.google.com https://www.youtube.com",
+    "frame-src https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
     "object-src 'none'",
     "base-uri 'self'"
   ].join('; '));
@@ -202,7 +203,49 @@ db.exec(`
     fetched_at INTEGER NOT NULL DEFAULT 0
   );
 
+  CREATE TABLE IF NOT EXISTS blog_categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT UNIQUE NOT NULL,
+    name_zh TEXT NOT NULL,
+    name_ja TEXT,
+    name_en TEXT,
+    sortOrder INTEGER DEFAULT 0,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS blog_posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT UNIQUE NOT NULL,
+    categoryId INTEGER REFERENCES blog_categories(id) ON DELETE SET NULL,
+    primaryLang TEXT NOT NULL DEFAULT 'zh-TW' CHECK (primaryLang IN ('zh-TW','ja','en')),
+    title_zh TEXT, body_zh TEXT, excerpt_zh TEXT, metaDesc_zh TEXT,
+    title_ja TEXT, body_ja TEXT, excerpt_ja TEXT, metaDesc_ja TEXT,
+    title_en TEXT, body_en TEXT, excerpt_en TEXT, metaDesc_en TEXT,
+    coverImage TEXT,
+    status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','published')),
+    publishedAt DATETIME,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_blog_posts_status_pub
+    ON blog_posts(status, publishedAt DESC);
+  CREATE INDEX IF NOT EXISTS idx_blog_posts_category
+    ON blog_posts(categoryId);
+
 `);
+
+// Seed default blog categories on first run if empty
+{
+  const count = db.prepare('SELECT COUNT(*) AS c FROM blog_categories').get().c;
+  if (count === 0) {
+    const ins = db.prepare('INSERT INTO blog_categories (slug, name_zh, name_ja, name_en, sortOrder) VALUES (?,?,?,?,?)');
+    ins.run('food',        '美食推薦', 'グルメ',     'Food',        0);
+    ins.run('attractions', '景點推薦', '観光スポット', 'Attractions', 1);
+    ins.run('experiences', '體驗推薦', '体験',       'Experiences', 2);
+    console.log('[seed] Created 3 default blog categories');
+  }
+}
 
 // Migrate existing DB: add new columns if missing
 const migrations = [
@@ -756,6 +799,15 @@ app.get('/rooms/:id.html', (req, res) => {
     res.status(404).send(`<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JPPCC617C9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-JPPCC617C9');
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>找不到此房源 | 大阪旅行日民宿</title>
@@ -947,17 +999,63 @@ Sitemap: ${siteUrl}/sitemap.xml
 app.get('/sitemap.xml', (req, res) => {
   const siteUrl = SITE_URL;
   const properties = db.prepare('SELECT id, updatedAt FROM properties ORDER BY updatedAt DESC').all();
+  const posts = db.prepare(
+    "SELECT slug, title_zh, title_ja, title_en, COALESCE(publishedAt, updatedAt) AS lastmod " +
+    "FROM blog_posts WHERE status = 'published' ORDER BY publishedAt DESC"
+  ).all();
+  const today = new Date().toISOString().split('T')[0];
+
+  // Helper: emit a <url> with hreflang alternates
+  const xhtmlNs = ' xmlns:xhtml="http://www.w3.org/1999/xhtml"';
+  function emitUrl(loc, lastmod, changefreq, priority, alternates) {
+    let s = `  <url>\n    <loc>${loc}</loc>\n`;
+    if (lastmod) s += `    <lastmod>${lastmod}</lastmod>\n`;
+    if (changefreq) s += `    <changefreq>${changefreq}</changefreq>\n`;
+    if (priority) s += `    <priority>${priority}</priority>\n`;
+    if (alternates) {
+      for (const [hreflang, href] of alternates) {
+        s += `    <xhtml:link rel="alternate" hreflang="${hreflang}" href="${href}"/>\n`;
+      }
+    }
+    s += `  </url>\n`;
+    return s;
+  }
+  // Build hreflang alternates for a base URL: /, /charter, /blog, /blog/:slug etc.
+  function langAlternates(pathPart) {
+    const base = siteUrl + pathPart;
+    return [
+      ['zh-TW',     base + (pathPart.includes('?') ? '&' : '?') + 'lang=zh-TW'],
+      ['ja',        base + (pathPart.includes('?') ? '&' : '?') + 'lang=ja'],
+      ['en',        base + (pathPart.includes('?') ? '&' : '?') + 'lang=en'],
+      ['x-default', base]
+    ];
+  }
 
   let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+  xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"${xhtmlNs}>\n`;
 
-  // Homepage
-  xml += `  <url>\n    <loc>${siteUrl}/</loc>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+  // Homepage + main pages
+  xml += emitUrl(`${siteUrl}/`,                    today, 'weekly', '1.0', langAlternates('/'));
+  xml += emitUrl(`${siteUrl}/charter`,             today, 'monthly','0.8', langAlternates('/charter'));
+  xml += emitUrl(`${siteUrl}/become-host.html`,    today, 'monthly','0.6', langAlternates('/become-host.html'));
+  xml += emitUrl(`${siteUrl}/blog`,                today, 'daily',  '0.9', langAlternates('/blog'));
+
+  // Blog posts (only languages where the post has a title)
+  for (const p of posts) {
+    const lastmod = p.lastmod ? String(p.lastmod).split(' ')[0] : today;
+    const loc = `${siteUrl}/blog/${encodeURIComponent(p.slug)}`;
+    const alternates = [];
+    if (p.title_zh) alternates.push(['zh-TW', `${loc}?lang=zh-TW`]);
+    if (p.title_ja) alternates.push(['ja',    `${loc}?lang=ja`]);
+    if (p.title_en) alternates.push(['en',    `${loc}?lang=en`]);
+    alternates.push(['x-default', loc]);
+    xml += emitUrl(loc, lastmod, 'monthly', '0.7', alternates);
+  }
 
   // Property pages
   for (const p of properties) {
-    const lastmod = p.updatedAt ? p.updatedAt.split(' ')[0] : new Date().toISOString().split('T')[0];
-    xml += `  <url>\n    <loc>${siteUrl}/rooms/${encodeURIComponent(p.id)}.html</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+    const lastmod = p.updatedAt ? p.updatedAt.split(' ')[0] : today;
+    xml += emitUrl(`${siteUrl}/rooms/${encodeURIComponent(p.id)}.html`, lastmod, 'weekly', '0.8');
   }
 
   xml += '</urlset>';
@@ -1046,6 +1144,18 @@ app.get('/charter', (req, res) => {
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
   res.setHeader('Pragma', 'no-cache');
   res.sendFile(path.join(__dirname, 'charter.html'));
+});
+
+// Blog list and single-post pages (admin-editable, bypass cache)
+app.get('/blog', (req, res) => {
+  res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.sendFile(path.join(__dirname, 'blog.html'));
+});
+app.get('/blog/:slug', (req, res) => {
+  res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.sendFile(path.join(__dirname, 'blog-post.html'));
 });
 
 // ==================== API ROUTES ====================
@@ -1597,6 +1707,254 @@ app.post('/api/settings', requireAuth, (req, res) => {
     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updatedAt = CURRENT_TIMESTAMP`)
     .run(key.trim(), JSON.stringify(value));
   invalidateSSRCache();
+  res.json({ success: true });
+});
+
+// ==================== BLOG ====================
+
+const SANITIZE_OPTS = {
+  allowedTags: [
+    'h2','h3','h4','h5','h6','p','blockquote','ul','ol','li','strong','em','u','s',
+    'a','img','iframe','figure','figcaption','br','hr','span','div','code','pre','table','thead','tbody','tr','td','th'
+  ],
+  allowedAttributes: {
+    a:      ['href','target','rel','title'],
+    img:    ['src','alt','title','width','height','loading','decoding','class','style'],
+    iframe: ['src','width','height','frameborder','allow','allowfullscreen','title','class','style'],
+    span:   ['style','class'],
+    div:    ['style','class'],
+    p:      ['style','class'],
+    figure: ['class','style'],
+    table:  ['class','style','border','cellpadding','cellspacing'],
+    td:     ['style','colspan','rowspan'],
+    th:     ['style','colspan','rowspan'],
+    '*':    ['data-*']
+  },
+  allowedSchemes: ['http','https','mailto','tel'],
+  allowedSchemesByTag: { img: ['http','https','data'] },
+  allowedIframeHostnames: ['www.youtube.com','youtube.com','www.youtube-nocookie.com','player.vimeo.com'],
+  transformTags: {
+    a: (tagName, attribs) => {
+      const out = { tagName, attribs: { ...attribs } };
+      if (out.attribs.target === '_blank') out.attribs.rel = 'noopener noreferrer';
+      return out;
+    }
+  }
+};
+function cleanBody(html) {
+  if (typeof html !== 'string') return '';
+  return sanitizeHtml(html, SANITIZE_OPTS);
+}
+
+// ---- BLOG: PUBLIC ----
+
+// List categories
+app.get('/api/blog/categories', (req, res) => {
+  res.json(db.prepare('SELECT id, slug, name_zh, name_ja, name_en, sortOrder FROM blog_categories ORDER BY sortOrder ASC, id ASC').all());
+});
+
+// List published posts (paginated)
+app.get('/api/blog/posts', (req, res) => {
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 12));
+  const offset = (page - 1) * limit;
+  const categoryFilter = req.query.category ? String(req.query.category) : '';
+
+  let where = "WHERE p.status = 'published'";
+  const params = [];
+  if (categoryFilter) {
+    where += ' AND c.slug = ?';
+    params.push(categoryFilter);
+  }
+  const totalRow = db.prepare(
+    `SELECT COUNT(*) AS c FROM blog_posts p
+     LEFT JOIN blog_categories c ON p.categoryId = c.id ${where}`
+  ).get(...params);
+
+  const rows = db.prepare(
+    `SELECT p.id, p.slug, p.primaryLang, p.coverImage, p.publishedAt,
+            p.title_zh, p.title_ja, p.title_en,
+            p.excerpt_zh, p.excerpt_ja, p.excerpt_en,
+            c.id AS categoryId, c.slug AS categorySlug,
+            c.name_zh AS categoryName_zh, c.name_ja AS categoryName_ja, c.name_en AS categoryName_en
+       FROM blog_posts p
+       LEFT JOIN blog_categories c ON p.categoryId = c.id
+       ${where}
+       ORDER BY p.publishedAt DESC, p.id DESC
+       LIMIT ? OFFSET ?`
+  ).all(...params, limit, offset);
+
+  res.json({ total: totalRow.c, page, limit, posts: rows });
+});
+
+// Get single published post by slug
+app.get('/api/blog/posts/:slug', (req, res) => {
+  const row = db.prepare(
+    `SELECT p.*, c.slug AS categorySlug,
+            c.name_zh AS categoryName_zh, c.name_ja AS categoryName_ja, c.name_en AS categoryName_en
+       FROM blog_posts p
+       LEFT JOIN blog_categories c ON p.categoryId = c.id
+      WHERE p.slug = ? AND p.status = 'published'`
+  ).get(req.params.slug);
+  if (!row) return res.status(404).json({ error: 'Not found' });
+
+  // Adjacent posts (prev = newer, next = older by publishedAt)
+  const prev = db.prepare(
+    "SELECT slug, title_zh, title_ja, title_en FROM blog_posts WHERE status='published' AND publishedAt > ? ORDER BY publishedAt ASC LIMIT 1"
+  ).get(row.publishedAt);
+  const next = db.prepare(
+    "SELECT slug, title_zh, title_ja, title_en FROM blog_posts WHERE status='published' AND publishedAt < ? ORDER BY publishedAt DESC LIMIT 1"
+  ).get(row.publishedAt);
+
+  res.json({ post: row, prev: prev || null, next: next || null });
+});
+
+// ---- BLOG: ADMIN ----
+
+// List all posts (including drafts) for admin
+app.get('/api/blog/admin/posts', requireAuth, (req, res) => {
+  const rows = db.prepare(
+    `SELECT p.id, p.slug, p.primaryLang, p.status, p.publishedAt, p.updatedAt, p.coverImage,
+            p.title_zh, p.title_ja, p.title_en,
+            c.slug AS categorySlug, c.name_zh AS categoryName_zh
+       FROM blog_posts p
+       LEFT JOIN blog_categories c ON p.categoryId = c.id
+       ORDER BY p.updatedAt DESC`
+  ).all();
+  res.json(rows);
+});
+
+// Get single post (any status) for admin edit
+app.get('/api/blog/admin/posts/:id', requireAuth, (req, res) => {
+  const row = db.prepare('SELECT * FROM blog_posts WHERE id = ?').get(parseInt(req.params.id));
+  if (!row) return res.status(404).json({ error: 'Not found' });
+  res.json(row);
+});
+
+const POST_FIELDS = [
+  'slug','categoryId','primaryLang',
+  'title_zh','body_zh','excerpt_zh','metaDesc_zh',
+  'title_ja','body_ja','excerpt_ja','metaDesc_ja',
+  'title_en','body_en','excerpt_en','metaDesc_en',
+  'coverImage','status'
+];
+function normalizePost(body) {
+  const p = {};
+  for (const k of POST_FIELDS) p[k] = body[k] ?? null;
+  // Sanitize body fields (other text fields are escaped on render in the HTML pages)
+  p.body_zh = cleanBody(p.body_zh || '');
+  p.body_ja = cleanBody(p.body_ja || '');
+  p.body_en = cleanBody(p.body_en || '');
+  if (!p.primaryLang || !['zh-TW','ja','en'].includes(p.primaryLang)) p.primaryLang = 'zh-TW';
+  if (!p.status || !['draft','published'].includes(p.status)) p.status = 'draft';
+  if (p.categoryId) p.categoryId = parseInt(p.categoryId) || null;
+  // Ensure primary-language title exists
+  const primaryTitle = p['title_' + p.primaryLang.replace('zh-TW','zh')];
+  if (!primaryTitle || !primaryTitle.trim()) {
+    return { error: '主語言的標題為必填' };
+  }
+  if (!p.slug || !/^[a-z0-9-]+$/.test(p.slug)) {
+    return { error: 'slug 必須為小寫英數與連字號（a-z 0-9 -）' };
+  }
+  return { post: p };
+}
+
+// Create post
+app.post('/api/blog/posts', requireAuth, (req, res) => {
+  const norm = normalizePost(req.body);
+  if (norm.error) return res.status(400).json({ error: norm.error });
+  const p = norm.post;
+  const dup = db.prepare('SELECT id FROM blog_posts WHERE slug = ?').get(p.slug);
+  if (dup) return res.status(409).json({ error: '此 slug 已存在' });
+
+  const publishedAt = p.status === 'published' ? new Date().toISOString().replace('T',' ').split('.')[0] : null;
+  try {
+    const info = db.prepare(`INSERT INTO blog_posts (
+      slug, categoryId, primaryLang,
+      title_zh, body_zh, excerpt_zh, metaDesc_zh,
+      title_ja, body_ja, excerpt_ja, metaDesc_ja,
+      title_en, body_en, excerpt_en, metaDesc_en,
+      coverImage, status, publishedAt
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
+      p.slug, p.categoryId, p.primaryLang,
+      p.title_zh, p.body_zh, p.excerpt_zh, p.metaDesc_zh,
+      p.title_ja, p.body_ja, p.excerpt_ja, p.metaDesc_ja,
+      p.title_en, p.body_en, p.excerpt_en, p.metaDesc_en,
+      p.coverImage, p.status, publishedAt
+    );
+    res.json({ id: info.lastInsertRowid, slug: p.slug, status: p.status, publishedAt });
+  } catch (e) {
+    res.status(500).json({ error: '建立失敗：' + e.message });
+  }
+});
+
+// Update post
+app.put('/api/blog/posts/:id', requireAuth, (req, res) => {
+  const id = parseInt(req.params.id);
+  const existing = db.prepare('SELECT id, status, publishedAt FROM blog_posts WHERE id = ?').get(id);
+  if (!existing) return res.status(404).json({ error: 'Not found' });
+  const norm = normalizePost(req.body);
+  if (norm.error) return res.status(400).json({ error: norm.error });
+  const p = norm.post;
+  const dup = db.prepare('SELECT id FROM blog_posts WHERE slug = ? AND id != ?').get(p.slug, id);
+  if (dup) return res.status(409).json({ error: '此 slug 已存在' });
+
+  // Set publishedAt on first publish; preserve existing on re-edit
+  let publishedAt = existing.publishedAt;
+  if (p.status === 'published' && !publishedAt) {
+    publishedAt = new Date().toISOString().replace('T',' ').split('.')[0];
+  }
+
+  try {
+    db.prepare(`UPDATE blog_posts SET
+      slug=?, categoryId=?, primaryLang=?,
+      title_zh=?, body_zh=?, excerpt_zh=?, metaDesc_zh=?,
+      title_ja=?, body_ja=?, excerpt_ja=?, metaDesc_ja=?,
+      title_en=?, body_en=?, excerpt_en=?, metaDesc_en=?,
+      coverImage=?, status=?, publishedAt=?, updatedAt=CURRENT_TIMESTAMP
+      WHERE id=?`).run(
+      p.slug, p.categoryId, p.primaryLang,
+      p.title_zh, p.body_zh, p.excerpt_zh, p.metaDesc_zh,
+      p.title_ja, p.body_ja, p.excerpt_ja, p.metaDesc_ja,
+      p.title_en, p.body_en, p.excerpt_en, p.metaDesc_en,
+      p.coverImage, p.status, publishedAt, id
+    );
+    res.json({ id, slug: p.slug, status: p.status, publishedAt });
+  } catch (e) {
+    res.status(500).json({ error: '更新失敗：' + e.message });
+  }
+});
+
+// Delete post
+app.delete('/api/blog/posts/:id', requireAuth, (req, res) => {
+  const id = parseInt(req.params.id);
+  db.prepare('DELETE FROM blog_posts WHERE id = ?').run(id);
+  res.json({ success: true });
+});
+
+// Create / update / delete categories
+app.post('/api/blog/categories', requireAuth, (req, res) => {
+  const { id, slug, name_zh, name_ja, name_en, sortOrder } = req.body;
+  if (!slug || !/^[a-z0-9-]+$/.test(slug)) return res.status(400).json({ error: 'slug 必須為小寫英數與連字號' });
+  if (!name_zh || !name_zh.trim()) return res.status(400).json({ error: '中文分類名稱為必填' });
+  const order = parseInt(sortOrder) || 0;
+  try {
+    if (id) {
+      db.prepare('UPDATE blog_categories SET slug=?, name_zh=?, name_ja=?, name_en=?, sortOrder=? WHERE id=?')
+        .run(slug, name_zh, name_ja || null, name_en || null, order, parseInt(id));
+      res.json({ id: parseInt(id) });
+    } else {
+      const info = db.prepare('INSERT INTO blog_categories (slug, name_zh, name_ja, name_en, sortOrder) VALUES (?,?,?,?,?)')
+        .run(slug, name_zh, name_ja || null, name_en || null, order);
+      res.json({ id: info.lastInsertRowid });
+    }
+  } catch (e) {
+    if (String(e.message).includes('UNIQUE')) return res.status(409).json({ error: '此 slug 已存在' });
+    res.status(500).json({ error: '儲存分類失敗：' + e.message });
+  }
+});
+app.delete('/api/blog/categories/:id', requireAuth, (req, res) => {
+  db.prepare('DELETE FROM blog_categories WHERE id = ?').run(parseInt(req.params.id));
   res.json({ success: true });
 });
 

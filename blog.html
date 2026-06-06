@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JPPCC617C9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-JPPCC617C9');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="/images/logo.png?v=2">
+  <link rel="shortcut icon" href="/images/logo.png?v=2">
+  <title id="pageTitle">部落格 | 大阪旅行日民宿 OSAKA TRAVELDAYS</title>
+  <meta id="metaDescription" name="description" content="大阪旅行日民宿部落格 — 美食推薦、景點推薦、體驗推薦，為您整理最新大阪旅遊資訊。">
+  <meta name="robots" content="index, follow">
+  <link id="canonicalLink" rel="canonical" href="https://stay.traveldays.com.tw/blog">
+  <link rel="alternate" hreflang="zh-TW" href="https://stay.traveldays.com.tw/blog?lang=zh-TW">
+  <link rel="alternate" hreflang="ja" href="https://stay.traveldays.com.tw/blog?lang=ja">
+  <link rel="alternate" hreflang="en" href="https://stay.traveldays.com.tw/blog?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://stay.traveldays.com.tw/blog">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta id="ogTitle" property="og:title" content="部落格 | 大阪旅行日民宿">
+  <meta id="ogDescription" property="og:description" content="美食推薦、景點推薦、體驗推薦 — 大阪旅遊資訊整理。">
+  <meta property="og:url" content="https://stay.traveldays.com.tw/blog">
+  <meta property="og:image" content="https://stay.traveldays.com.tw/images/hero.jpg">
+  <meta property="og:site_name" content="大阪旅行日民宿 OSAKA TRAVELDAYS">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta id="twTitle" name="twitter:title" content="部落格 | 大阪旅行日民宿">
+  <meta id="twDescription" name="twitter:description" content="美食推薦、景點推薦、體驗推薦。">
+  <meta name="twitter:image" content="https://stay.traveldays.com.tw/images/hero.jpg">
+
+  <link rel="stylesheet" href="/css/tailwind.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #8B4513;
+      --color-secondary: #A0522D;
+      --color-accent: #D4A574;
+      --color-bg: #FFFBF7;
+      --color-text: #2D1810;
+    }
+    * { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+    }
+    .font-serif { font-family: 'Noto Serif TC', serif; }
+    .header-blur { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+    .lang-switcher-nav {
+      display: flex; align-items: center; gap: 4px;
+      background: #fef3c7; border: 1px solid #fcd34d;
+      border-radius: 24px; padding: 3px 5px;
+    }
+    .lang-btn-nav {
+      padding: 3px 9px; border-radius: 20px;
+      font-size: 12px; font-weight: 700; color: #78350f;
+      background: transparent; border: none; cursor: pointer;
+      transition: all 0.2s; line-height: 1.5;
+      white-space: nowrap;
+    }
+    .lang-btn-nav:hover { background: #fde68a; }
+    .lang-btn-nav.active { background: #92400e; color: white; }
+
+    .footer-top-row { flex-direction: column; }
+    @media (min-width: 1024px) {
+      .footer-top-row { flex-direction: row; justify-content: space-between; }
+      .footer-logo-col { max-width: 24rem; }
+    }
+    @media (max-width: 767px) {
+      .footer-section-mobile { margin-top: 2.5rem; }
+    }
+
+    #mobileNav {
+      position: fixed; left: 0; right: 0; z-index: 45;
+      background: white; border-bottom: 1px solid #fef3c7;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.25s ease;
+    }
+    #mobileNav.open { max-height: 360px; }
+    #mobileNav a {
+      display: block; padding: 0.875rem 1.5rem; color: #92400e;
+      font-size: 1rem; font-weight: 500;
+      border-bottom: 1px solid #fef9ee; text-decoration: none;
+    }
+    #mobileNav a:last-child { border-bottom: none; }
+    @media (min-width: 768px) { #mobileNav { display: none; } }
+
+    /* Hero */
+    .blog-hero {
+      padding: 9rem 1rem 3rem;
+      text-align: center;
+      background: linear-gradient(180deg, #fef3c7 0%, #FFFBF7 100%);
+    }
+
+    /* Category chips */
+    .cat-chip {
+      display: inline-block; padding: 6px 16px; border-radius: 999px;
+      font-size: 13px; font-weight: 600; color: #78350f;
+      background: white; border: 1px solid #fcd34d; cursor: pointer;
+      transition: all 0.2s; margin: 4px; text-decoration: none;
+    }
+    .cat-chip:hover { background: #fde68a; }
+    .cat-chip.active { background: #92400e; color: white; border-color: #92400e; }
+
+    /* Post card */
+    .post-card {
+      background: white; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.25s;
+      display: flex; flex-direction: column; height: 100%;
+    }
+    .post-card:hover { box-shadow: 0 8px 24px rgba(139,69,19,0.12); transform: translateY(-2px); }
+    .post-card-cover {
+      width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: #fef3c7;
+    }
+    .post-card-body { padding: 1.25rem 1.25rem 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    .post-card-cat {
+      font-size: 11px; font-weight: 700; color: #92400e;
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;
+    }
+    .post-card-title {
+      font-family: 'Noto Serif TC', serif; font-weight: 600; font-size: 1.15rem;
+      color: #2D1810; margin: 0 0 0.5rem; line-height: 1.4;
+    }
+    .post-card-excerpt { font-size: 0.92rem; color: #6B4423; flex: 1; }
+    .post-card-meta { font-size: 0.78rem; color: #92400e; margin-top: 0.75rem; }
+
+    .pagination button { padding: 6px 12px; margin: 0 2px; border-radius: 6px; border: 1px solid #e7d4b8; background: white; cursor: pointer; font-size: 14px; }
+    .pagination button.active { background: #92400e; color: white; border-color: #92400e; }
+    .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+  </style>
+
+  <!-- BreadcrumbList JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"BreadcrumbList",
+    "itemListElement":[
+      {"@type":"ListItem","position":1,"name":"首頁","item":"https://stay.traveldays.com.tw/"},
+      {"@type":"ListItem","position":2,"name":"部落格","item":"https://stay.traveldays.com.tw/blog"}
+    ]
+  }
+  </script>
+</head>
+<body class="min-h-screen">
+
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/90 header-blur border-b border-amber-100">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="flex items-center justify-between h-18 py-4">
+        <a href="/" class="flex items-center gap-3 group">
+          <img src="/images/logo.png" alt="大阪旅行日民宿 OSAKA TRAVELDAYS" class="w-10 h-10 object-contain">
+          <div>
+            <span class="hidden sm:inline text-xl font-serif font-bold text-amber-900 group-hover:text-amber-700 transition-colors">大阪旅行日民宿</span>
+            <span class="hidden sm:inline text-xs text-amber-600 ml-2 tracking-widest">OSAKA TRAVELDAYS</span>
+          </div>
+        </a>
+        <div class="flex items-center gap-6">
+          <div class="lang-switcher-nav">
+            <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-nav active">中文</button>
+            <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-nav">日本語</button>
+            <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-nav">EN</button>
+          </div>
+          <nav class="hidden md:flex items-center space-x-8">
+            <a href="/become-host.html" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.becomeHost">成為房東/達人</a>
+            <a href="/charter" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.charter">包車服務</a>
+            <a href="/blog" class="text-amber-700 font-bold border-b-2 border-amber-600" data-i18n="nav.blog">部落格</a>
+            <a href="/#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.rooms">房源一覽</a>
+            <a href="/#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.about">關於我們</a>
+          </nav>
+        </div>
+        <button class="md:hidden p-2 text-amber-800" aria-label="開啟選單" id="mobileMenuBtn">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <nav id="mobileNav" style="top: 72px;">
+    <a href="/become-host.html" data-i18n="nav.becomeHost">成為房東/達人</a>
+    <a href="/charter" data-i18n="nav.charter">包車服務</a>
+    <a href="/blog" data-i18n="nav.blog">部落格</a>
+    <a href="/#properties" data-i18n="nav.rooms">房源一覽</a>
+    <a href="/#about" data-i18n="nav.about">關於我們</a>
+    <a href="/#contact" data-i18n="nav.contact">聯絡我們</a>
+  </nav>
+
+  <main>
+    <section class="blog-hero">
+      <p class="text-amber-700 text-sm tracking-[0.3em] uppercase mb-4">OSAKA · BLOG</p>
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-serif text-amber-900 mb-3" data-i18n="blog.title">大阪旅遊部落格</h1>
+      <p class="text-base sm:text-lg text-amber-800/80 max-w-2xl mx-auto" data-i18n="blog.subtitle">美食、景點、體驗 — 為您整理最新大阪旅遊資訊</p>
+      <div id="categoryChips" class="mt-7 max-w-3xl mx-auto"></div>
+    </section>
+
+    <section class="container mx-auto max-w-6xl px-4 pb-20">
+      <div id="postGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="col-span-full text-center py-16 text-amber-700/70" data-i18n="blog.loading">載入中…</div>
+      </div>
+      <div id="pagination" class="pagination text-center mt-10"></div>
+    </section>
+  </main>
+
+  <footer class="bg-gradient-to-b from-amber-900 to-amber-950 text-amber-100 py-20 px-4">
+    <div class="container mx-auto max-w-6xl">
+      <div class="flex footer-top-row gap-12 mb-16">
+        <div class="footer-logo-col">
+          <div class="flex items-center gap-3 mb-5">
+            <img src="/images/logo.png" alt="Logo" class="w-12 h-12 object-contain">
+            <div>
+              <h3 class="text-xl font-serif text-white">大阪旅行日民宿</h3>
+              <p class="text-amber-400 text-xs tracking-widest">OSAKA TRAVELDAYS</p>
+            </div>
+          </div>
+          <p class="text-white leading-relaxed text-sm" data-i18n="footer.tagline">精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div class="min-w-0">
+            <h4 class="text-lg font-bold text-white mb-6"><span data-i18n="footer.contact">聯絡資訊</span></h4>
+            <a id="footerEmailLink" href="mailto:service.traveldays@gmail.com" class="block text-sm text-white mb-2"><span id="footerEmail">service.traveldays@gmail.com</span></a>
+            <a id="footerLineLink" href="https://lin.ee/pGrA7Ej" target="_blank" class="block text-sm text-white"><span id="footerLine">LINE: @fgk8695x</span></a>
+          </div>
+          <div class="footer-section-mobile">
+            <h4 class="text-lg font-bold text-white mb-6"><span data-i18n="footer.company">公司資訊</span></h4>
+            <p id="footerCompanyName" class="text-sm font-bold text-white" data-i18n="footer.company.name">DAIDODO合同会社</p>
+            <p id="footerAddress" class="text-sm text-white" data-i18n="footer.address">大阪市中央区上本町西3−3−２</p>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-amber-800/50 pt-8 text-sm text-white">© 2026 大阪旅行日民宿 OSAKA TRAVELDAYS.</div>
+    </div>
+  </footer>
+
+  <script>
+    const TRANSLATIONS = {
+      'zh-TW': {
+        'nav.becomeHost':'成為房東/達人','nav.charter':'包車服務','nav.blog':'部落格',
+        'nav.rooms':'房源一覽','nav.about':'關於我們','nav.contact':'聯絡我們',
+        'footer.tagline':'精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。',
+        'footer.contact':'聯絡資訊','footer.company':'公司資訊','footer.company.name':'DAIDODO合同会社',
+        'footer.address':'大阪市中央区上本町西3−3−２',
+        'blog.title':'大阪旅遊部落格','blog.subtitle':'美食、景點、體驗 — 為您整理最新大阪旅遊資訊',
+        'blog.loading':'載入中…','blog.empty':'尚無文章。','blog.all':'全部',
+        'blog.prev':'上一頁','blog.next':'下一頁',
+        'pageTitle':'部落格 | 大阪旅行日民宿 OSAKA TRAVELDAYS',
+        'metaDescription':'大阪旅行日民宿部落格 — 美食推薦、景點推薦、體驗推薦，為您整理最新大阪旅遊資訊。'
+      },
+      'ja': {
+        'nav.becomeHost':'ホストになる','nav.charter':'チャーター便','nav.blog':'ブログ',
+        'nav.rooms':'物件一覧','nav.about':'私たちについて','nav.contact':'お問い合わせ',
+        'footer.tagline':'大阪各エリアの厳選民泊で、忘れられない日本旅行体験を。',
+        'footer.contact':'お問い合わせ','footer.company':'会社情報','footer.company.name':'DAIDODO合同会社',
+        'footer.address':'大阪市中央区上本町西3−3−２',
+        'blog.title':'大阪トラベルブログ','blog.subtitle':'グルメ・観光・体験 — 大阪旅行の最新情報をお届け',
+        'blog.loading':'読み込み中…','blog.empty':'記事はまだありません。','blog.all':'すべて',
+        'blog.prev':'前へ','blog.next':'次へ',
+        'pageTitle':'ブログ | 大阪トラベルデイズ民宿',
+        'metaDescription':'大阪トラベルデイズ民宿のブログ — グルメ・観光スポット・体験のおすすめを発信。'
+      },
+      'en': {
+        'nav.becomeHost':'Become a Host','nav.charter':'Charter Service','nav.blog':'Blog',
+        'nav.rooms':'Properties','nav.about':'About Us','nav.contact':'Contact',
+        'footer.tagline':'Curated Osaka guesthouses for unforgettable Japan stays.',
+        'footer.contact':'Contact','footer.company':'Company','footer.company.name':'DAIDODO LLC',
+        'footer.address':'3-3-2 Uehommachi Nishi, Chuo-ku, Osaka',
+        'blog.title':'Osaka Travel Blog','blog.subtitle':'Food, attractions, experiences — fresh Osaka travel notes',
+        'blog.loading':'Loading…','blog.empty':'No posts yet.','blog.all':'All',
+        'blog.prev':'Prev','blog.next':'Next',
+        'pageTitle':'Blog | Osaka TravelDays Guesthouse',
+        'metaDescription':'Osaka TravelDays blog — food, attraction and experience picks for your trip.'
+      }
+    };
+    const LANG_KEY = { 'zh-TW':'zh', 'ja':'ja', 'en':'en' };
+    let SETTINGS = {};
+    let CATEGORIES = [];
+    let currentCategory = '';
+    let currentPage = 1;
+    const PAGE_SIZE = 12;
+
+    function getQueryParam(name) {
+      return new URLSearchParams(window.location.search).get(name) || '';
+    }
+
+    function applyTranslations(lang) {
+      if (!TRANSLATIONS[lang]) return;
+      document.documentElement.lang = lang;
+      document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        const t = TRANSLATIONS[lang][el.dataset.i18n];
+        if (t !== undefined) el.textContent = t;
+      });
+      document.querySelectorAll('.lang-btn-nav').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.lang === lang);
+      });
+      document.title = TRANSLATIONS[lang]['pageTitle'];
+      const md = document.getElementById('metaDescription');
+      if (md) md.setAttribute('content', TRANSLATIONS[lang]['metaDescription']);
+    }
+
+    function applyFooterOverrides(lang) {
+      const ev = SETTINGS['footer.email'];
+      if (typeof ev === 'string' && ev) {
+        const e = document.getElementById('footerEmail'); if (e) e.textContent = ev;
+        const el = document.getElementById('footerEmailLink'); if (el) el.href = 'mailto:' + ev;
+      }
+      const lv = SETTINGS['footer.line'];
+      if (typeof lv === 'string' && lv) {
+        const e = document.getElementById('footerLine'); if (e) e.textContent = 'LINE: ' + lv;
+      }
+      const cv = SETTINGS['footer.company'];
+      if (cv && typeof cv === 'object' && cv[lang]) {
+        const e = document.getElementById('footerCompanyName'); if (e) e.textContent = cv[lang];
+      }
+      const av = SETTINGS['footer.address'];
+      if (av && typeof av === 'object' && av[lang]) {
+        const e = document.getElementById('footerAddress'); if (e) e.textContent = av[lang];
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function pickLang(post, field, lang) {
+      const k = LANG_KEY[lang];
+      const v = post[field + '_' + k];
+      if (v && String(v).trim()) return v;
+      const pk = LANG_KEY[post.primaryLang || 'zh-TW'];
+      return post[field + '_' + pk] || '';
+    }
+
+    function renderCategories(lang) {
+      const wrap = document.getElementById('categoryChips');
+      const all = TRANSLATIONS[lang]['blog.all'];
+      let html = '<a href="/blog" class="cat-chip ' + (currentCategory ? '' : 'active') + '">' + escapeHtml(all) + '</a>';
+      for (const c of CATEGORIES) {
+        const name = (lang === 'ja' && c.name_ja) ? c.name_ja
+                  : (lang === 'en' && c.name_en) ? c.name_en
+                  : c.name_zh;
+        const active = currentCategory === c.slug ? 'active' : '';
+        html += '<a href="/blog?category=' + encodeURIComponent(c.slug) + '" class="cat-chip ' + active + '">' + escapeHtml(name) + '</a>';
+      }
+      wrap.innerHTML = html;
+    }
+
+    function renderPosts(lang, data) {
+      const grid = document.getElementById('postGrid');
+      const pag  = document.getElementById('pagination');
+      if (!data.posts || data.posts.length === 0) {
+        grid.innerHTML = '<div class="col-span-full text-center py-16 text-amber-700/70">' + escapeHtml(TRANSLATIONS[lang]['blog.empty']) + '</div>';
+        pag.innerHTML = '';
+        return;
+      }
+      grid.innerHTML = data.posts.map(function(p) {
+        const title   = pickLang(p, 'title',   lang) || '(無標題)';
+        const excerpt = pickLang(p, 'excerpt', lang) || '';
+        const catName = (lang === 'ja' && p.categoryName_ja) ? p.categoryName_ja
+                     : (lang === 'en' && p.categoryName_en) ? p.categoryName_en
+                     : (p.categoryName_zh || '');
+        const date    = p.publishedAt ? p.publishedAt.split(' ')[0] : '';
+        const cover   = p.coverImage || '/images/hero.jpg';
+        const url     = '/blog/' + encodeURIComponent(p.slug);
+        return ''
+          + '<a href="' + url + '" class="post-card">'
+          +   '<img class="post-card-cover" src="' + escapeHtml(cover) + '" alt="' + escapeHtml(title) + '" loading="lazy" decoding="async">'
+          +   '<div class="post-card-body">'
+          +     (catName ? '<div class="post-card-cat">' + escapeHtml(catName) + '</div>' : '')
+          +     '<h2 class="post-card-title">' + escapeHtml(title) + '</h2>'
+          +     '<p class="post-card-excerpt">' + escapeHtml(excerpt) + '</p>'
+          +     '<div class="post-card-meta">' + escapeHtml(date) + '</div>'
+          +   '</div>'
+          + '</a>';
+      }).join('');
+
+      // Pagination
+      const totalPages = Math.max(1, Math.ceil(data.total / data.limit));
+      if (totalPages <= 1) { pag.innerHTML = ''; return; }
+      let html = '';
+      html += '<button onclick="goToPage(' + (currentPage - 1) + ')" ' + (currentPage <= 1 ? 'disabled' : '') + '>' + escapeHtml(TRANSLATIONS[lang]['blog.prev']) + '</button>';
+      for (let i = 1; i <= totalPages; i++) {
+        if (i !== 1 && i !== totalPages && Math.abs(i - currentPage) > 2) {
+          if (i === 2 || i === totalPages - 1) html += '<span style="margin:0 4px;color:#999">…</span>';
+          continue;
+        }
+        html += '<button onclick="goToPage(' + i + ')" class="' + (i === currentPage ? 'active' : '') + '">' + i + '</button>';
+      }
+      html += '<button onclick="goToPage(' + (currentPage + 1) + ')" ' + (currentPage >= totalPages ? 'disabled' : '') + '>' + escapeHtml(TRANSLATIONS[lang]['blog.next']) + '</button>';
+      pag.innerHTML = html;
+    }
+
+    function goToPage(p) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('page', p);
+      window.location.href = url.toString();
+    }
+
+    async function fetchPosts() {
+      const params = new URLSearchParams();
+      params.set('page', currentPage);
+      params.set('limit', PAGE_SIZE);
+      if (currentCategory) params.set('category', currentCategory);
+      const res = await fetch('/api/blog/posts?' + params.toString());
+      if (!res.ok) throw new Error('fetch failed');
+      return res.json();
+    }
+
+    async function setLanguage(lang) {
+      if (!TRANSLATIONS[lang]) return;
+      localStorage.setItem('lang', lang);
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', lang);
+      window.history.replaceState({}, '', url.toString());
+      applyTranslations(lang);
+      applyFooterOverrides(lang);
+      renderCategories(lang);
+      try {
+        const data = await fetchPosts();
+        renderPosts(lang, data);
+      } catch (e) {
+        document.getElementById('postGrid').innerHTML = '<div class="col-span-full text-center py-16 text-red-600">載入失敗：' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    async function init() {
+      currentCategory = getQueryParam('category');
+      currentPage = parseInt(getQueryParam('page')) || 1;
+      try {
+        const [s, c] = await Promise.all([
+          fetch('/api/settings').then(r => r.ok ? r.json() : {}),
+          fetch('/api/blog/categories').then(r => r.ok ? r.json() : [])
+        ]);
+        SETTINGS = s; CATEGORIES = c;
+      } catch (e) { /* keep defaults */ }
+      const urlLang = getQueryParam('lang');
+      const saved = urlLang || localStorage.getItem('lang');
+      const lang = TRANSLATIONS[saved] ? saved : 'zh-TW';
+      setLanguage(lang);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById('mobileMenuBtn');
+      const nav = document.getElementById('mobileNav');
+      if (btn && nav) btn.addEventListener('click', function() { nav.classList.toggle('open'); });
+      init();
+    });
+  </script>
+</body>
+</html>

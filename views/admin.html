@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>後台管理 | 大阪旅行日民宿</title>
   <link rel="stylesheet" href="/css/tailwind.min.css">
+  <link rel="stylesheet" href="/css/quill.snow.min.css">
+  <script src="/js/quill.min.js" defer></script>
+  <style>
+    .ql-toolbar.ql-snow, .ql-container.ql-snow { border-color: var(--c-border); }
+    .ql-editor { min-height: 320px; font-size: 14px; line-height: 1.7; }
+    .ql-editor h2 { font-size: 1.5em; font-weight: 700; margin: 1em 0 .5em; }
+    .ql-editor h3 { font-size: 1.25em; font-weight: 600; margin: 1em 0 .5em; }
+    .ql-editor p { margin: .5em 0; }
+  </style>
   <style>
     /* Design tokens -- single source of truth for Polaris-inspired palette */
     :root {
@@ -200,6 +209,13 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm11 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM3 13l1-5h13l3 5M3 13v3h18v-3M3 13h18"/>
         </svg>
         包車服務
+      </button>
+      <button onclick="navigate('blog')" data-nav="blog"
+        class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/90 text-sm transition-colors">
+        <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+        </svg>
+        部落格
       </button>
       <button onclick="navigate('regions')" data-nav="regions"
         class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/90 text-sm transition-colors">
@@ -1277,6 +1293,191 @@
         </div>
       </div>
 
+      <!-- View: Blog list -->
+      <div id="view-blog" class="hidden">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <h1 class="text-xl font-semibold">部落格</h1>
+          <div class="flex gap-2">
+            <button onclick="navigate('blog-categories')" class="btn btn-default">分類管理</button>
+            <button onclick="newBlogPost()" class="btn btn-primary">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              新增文章
+            </button>
+            <a href="/blog" target="_blank" class="btn btn-default">預覽 /blog</a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body p-0">
+            <div id="blogPostsList" class="divide-y divide-border-subdued">
+              <div class="p-8 text-center text-text-secondary text-sm">載入中...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: Blog edit (form) -->
+      <div id="view-blog-edit" class="hidden">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <h1 id="blogEditTitle" class="text-xl font-semibold">新增文章</h1>
+          <div class="flex gap-2">
+            <button onclick="navigate('blog')" class="btn btn-default">返回列表</button>
+            <button onclick="deleteBlogPost()" id="blogDeleteBtn" class="btn btn-default text-destructive hidden">刪除</button>
+            <button onclick="saveBlogPost('draft')" class="btn btn-default">存為草稿</button>
+            <button onclick="saveBlogPost('published')" class="btn btn-primary">發布</button>
+          </div>
+        </div>
+
+        <input type="hidden" id="blog-id">
+
+        <div class="card mb-6">
+          <div class="card-body grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="form-label">分類 <span class="text-destructive">*</span></label>
+              <select id="blog-categoryId" class="form-input"></select>
+            </div>
+            <div>
+              <label class="form-label">主語言（決定 SEO 標題顯示優先級）</label>
+              <select id="blog-primaryLang" class="form-input">
+                <option value="zh-TW">繁體中文</option>
+                <option value="ja">日本語</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+            <div class="md:col-span-2">
+              <label class="form-label">URL 短代碼 (slug) <span class="text-destructive">*</span></label>
+              <input type="text" id="blog-slug" class="form-input font-mono text-sm" placeholder="自動由標題生成；可手動修改 (a-z 0-9 -)">
+              <p class="text-xs text-text-disabled mt-1">最終網址：/blog/<span id="blog-slug-preview" class="font-mono">your-slug</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-6">
+          <div class="card-header"><h2 class="font-semibold text-sm">封面圖片</h2></div>
+          <div class="card-body space-y-3">
+            <img id="blog-cover-preview" src="" alt="封面預覽" class="w-full max-h-60 object-cover rounded-lg bg-surface hidden">
+            <div id="blog-cover-empty" class="w-full h-32 bg-surface rounded-lg flex items-center justify-center text-text-disabled text-sm">尚未設定封面圖片</div>
+            <div class="flex gap-2 flex-wrap items-center">
+              <label class="btn btn-default cursor-pointer">
+                選擇圖片
+                <input type="file" id="blog-cover-input" accept="image/*" class="hidden" onchange="uploadBlogCover(this.files[0])">
+              </label>
+              <button type="button" onclick="clearBlogCover()" class="btn btn-default text-destructive">移除封面</button>
+              <span class="text-xs text-text-disabled">建議 1200×630（OG 比例）</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-6">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">文章內容</h2>
+            <span class="text-xs text-text-disabled">主語言為必填；其他語言留空 = 顯示主語言版本</span>
+          </div>
+          <div class="card-body">
+            <div class="flex gap-1 mb-5 border-b border-border-subdued">
+              <button onclick="switchBlogTab('zh-TW')" id="blog-tab-zh-TW" class="px-4 py-2 text-sm font-medium border-b-2 border-primary text-primary -mb-px transition-colors">繁中</button>
+              <button onclick="switchBlogTab('ja')" id="blog-tab-ja" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">日文</button>
+              <button onclick="switchBlogTab('en')" id="blog-tab-en" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-text-secondary hover:text-text-primary -mb-px transition-colors">英文</button>
+            </div>
+
+            <div id="blog-fields-zh-TW" class="space-y-4">
+              <div>
+                <label class="form-label">標題 (zh-TW)</label>
+                <input type="text" id="blog-title-zh" class="form-input" placeholder="例：大阪必吃章魚燒清單">
+              </div>
+              <div>
+                <label class="form-label">摘要 / Excerpt (zh-TW) <span class="text-text-disabled text-xs">– 會顯示在列表卡片，最多 160 字</span></label>
+                <textarea id="blog-excerpt-zh" rows="2" class="form-input" maxlength="200"></textarea>
+              </div>
+              <div>
+                <label class="form-label">本文 (zh-TW)</label>
+                <div id="blog-body-zh-editor"></div>
+              </div>
+              <div>
+                <label class="form-label">SEO meta description (zh-TW) <span class="text-text-disabled text-xs">– 留空則用摘要</span></label>
+                <textarea id="blog-metaDesc-zh" rows="2" class="form-input" maxlength="200"></textarea>
+              </div>
+            </div>
+
+            <div id="blog-fields-ja" class="space-y-4 hidden">
+              <div>
+                <label class="form-label">タイトル (ja)</label>
+                <input type="text" id="blog-title-ja" class="form-input" placeholder="例：大阪で必食のたこ焼き">
+              </div>
+              <div>
+                <label class="form-label">抜粋 / Excerpt (ja)</label>
+                <textarea id="blog-excerpt-ja" rows="2" class="form-input" maxlength="200"></textarea>
+              </div>
+              <div>
+                <label class="form-label">本文 (ja)</label>
+                <div id="blog-body-ja-editor"></div>
+              </div>
+              <div>
+                <label class="form-label">SEO meta description (ja)</label>
+                <textarea id="blog-metaDesc-ja" rows="2" class="form-input" maxlength="200"></textarea>
+              </div>
+            </div>
+
+            <div id="blog-fields-en" class="space-y-4 hidden">
+              <div>
+                <label class="form-label">Title (en)</label>
+                <input type="text" id="blog-title-en" class="form-input" placeholder="e.g. Best Takoyaki in Osaka">
+              </div>
+              <div>
+                <label class="form-label">Excerpt (en)</label>
+                <textarea id="blog-excerpt-en" rows="2" class="form-input" maxlength="200"></textarea>
+              </div>
+              <div>
+                <label class="form-label">Body (en)</label>
+                <div id="blog-body-en-editor"></div>
+              </div>
+              <div>
+                <label class="form-label">SEO meta description (en)</label>
+                <textarea id="blog-metaDesc-en" rows="2" class="form-input" maxlength="200"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: Blog category management -->
+      <div id="view-blog-categories" class="hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-xl font-semibold">部落格分類</h1>
+          <button onclick="navigate('blog')" class="btn btn-default">返回文章列表</button>
+        </div>
+        <div class="card mb-6">
+          <div class="card-header"><h2 class="font-semibold text-sm">新增分類</h2></div>
+          <div class="card-body grid md:grid-cols-5 gap-3 items-end">
+            <div>
+              <label class="form-label">短代碼 (slug)</label>
+              <input type="text" id="blogCat-slug" class="form-input font-mono text-sm" placeholder="food">
+            </div>
+            <div>
+              <label class="form-label">中文名稱 *</label>
+              <input type="text" id="blogCat-name-zh" class="form-input" placeholder="美食推薦">
+            </div>
+            <div>
+              <label class="form-label">日本語</label>
+              <input type="text" id="blogCat-name-ja" class="form-input" placeholder="グルメ">
+            </div>
+            <div>
+              <label class="form-label">English</label>
+              <input type="text" id="blogCat-name-en" class="form-input" placeholder="Food">
+            </div>
+            <div>
+              <button onclick="saveBlogCategory()" class="btn btn-primary w-full">新增</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body p-0">
+            <div id="blogCategoriesList" class="divide-y divide-border-subdued">
+              <div class="p-8 text-center text-text-secondary text-sm">載入中...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 </div>
@@ -1491,7 +1692,9 @@ function navigate(view, params) {
 
   // Update sidebar active
   document.querySelectorAll('.sidebar-nav-item').forEach(btn => btn.classList.remove('active'));
-  const navKey = view === 'property-form' ? 'properties' : view;
+  let navKey = view;
+  if (view === 'property-form') navKey = 'properties';
+  else if (view === 'blog-edit' || view === 'blog-categories') navKey = 'blog';
   const activeBtn = document.querySelector(`[data-nav="${navKey}"]`);
   if (activeBtn) activeBtn.classList.add('active');
 
@@ -1512,12 +1715,20 @@ function updateBreadcrumb(view) {
     'property-form': isNewProperty ? '新增房源' : '編輯房源',
     regions: '區域管理',
     homepage: '首頁管理',
-    charter: '包車服務'
+    charter: '包車服務',
+    blog: '部落格',
+    'blog-edit': '撰寫文章',
+    'blog-categories': '部落格分類'
   };
 
   if (view === 'property-form') {
     bc.innerHTML = `
       <button onclick="navigate('properties')" class="text-link hover:underline">房源管理</button>
+      <svg class="w-4 h-4 text-text-disabled" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-text-primary font-medium">${names[view]}</span>`;
+  } else if (view === 'blog-edit' || view === 'blog-categories') {
+    bc.innerHTML = `
+      <button onclick="navigate('blog')" class="text-link hover:underline">部落格</button>
       <svg class="w-4 h-4 text-text-disabled" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
       <span class="text-text-primary font-medium">${names[view]}</span>`;
   } else {
@@ -1533,6 +1744,9 @@ function renderCurrentView() {
     case 'regions': renderRegionList(); break;
     case 'homepage': loadHomepageSettings(); break;
     case 'charter': loadCharterSettings(); break;
+    case 'blog': loadBlogPosts(); break;
+    case 'blog-edit': break; // form is populated when opening
+    case 'blog-categories': loadBlogCategories(); break;
   }
 }
 
@@ -2867,6 +3081,371 @@ function switchPropLangTab(lang) {
     }
     fields.forEach(function(f) { f.classList.toggle('hidden', l !== lang); });
   });
+}
+
+// ==================== BLOG ====================
+let blogState = {
+  categories: [],
+  editing: null,        // currently-loaded post (or null for new)
+  editors: {},          // Quill instances by lang
+  activeTab: 'zh-TW',
+  slugManuallyEdited: false
+};
+
+function slugify(s) {
+  return String(s || '')
+    .toLowerCase()
+    .normalize('NFKD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+    .slice(0, 80);
+}
+
+async function loadBlogPosts() {
+  const list = document.getElementById('blogPostsList');
+  list.innerHTML = '<div class="p-8 text-center text-text-secondary text-sm">載入中...</div>';
+  try {
+    const [posts, cats] = await Promise.all([
+      apiGet('/blog/admin/posts'),
+      apiGet('/blog/categories')
+    ]);
+    blogState.categories = cats;
+    if (!posts || posts.length === 0) {
+      list.innerHTML = '<div class="p-8 text-center text-text-secondary text-sm">尚無文章 — 點右上「新增文章」開始撰寫</div>';
+      return;
+    }
+    list.innerHTML = posts.map(p => {
+      const t = p['title_' + (p.primaryLang === 'zh-TW' ? 'zh' : p.primaryLang)] || p.title_zh || p.title_ja || p.title_en || '(無標題)';
+      const date = p.publishedAt ? p.publishedAt.split(' ')[0] : '—';
+      const statusLabel = p.status === 'published'
+        ? '<span class="text-xs px-2 py-0.5 rounded bg-primary/10 text-primary">已發布</span>'
+        : '<span class="text-xs px-2 py-0.5 rounded bg-surface text-text-secondary">草稿</span>';
+      const cat = p.categoryName_zh ? `<span class="text-xs text-text-secondary">${p.categoryName_zh}</span>` : '';
+      return `
+        <div class="flex items-center gap-4 px-5 py-3 hover:bg-surface-hover cursor-pointer transition-colors" onclick="editBlogPost(${p.id})">
+          ${p.coverImage ? `<img src="${p.coverImage}" class="w-16 h-12 rounded object-cover flex-shrink-0" onerror="this.style.display='none'">` : '<div class="w-16 h-12 rounded bg-surface flex-shrink-0"></div>'}
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-medium text-sm text-text-primary truncate">${escapeHtml(t)}</span>
+              ${statusLabel}
+              ${cat}
+            </div>
+            <div class="text-xs text-text-disabled mt-0.5">${p.primaryLang} · /blog/${escapeHtml(p.slug)} · ${date}</div>
+          </div>
+          <button onclick="event.stopPropagation(); window.open('/blog/' + ${JSON.stringify(p.slug)}, '_blank')" class="btn btn-default text-xs">預覽</button>
+        </div>`;
+    }).join('');
+  } catch (e) {
+    list.innerHTML = `<div class="p-8 text-center text-destructive text-sm">載入失敗：${escapeHtml(e.message)}</div>`;
+  }
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function ensureBlogEditors() {
+  if (!window.Quill) { showToast('Quill 編輯器尚未載入', 'error'); return false; }
+  const langs = ['zh', 'ja', 'en'];
+  const langKeys = { zh: 'zh-TW', ja: 'ja', en: 'en' };
+  const toolbar = [
+    [{ header: [2, 3, 4, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ list: 'ordered' }, { list: 'bullet' }, 'blockquote'],
+    ['link', 'image', 'video'],
+    ['clean']
+  ];
+  for (const l of langs) {
+    if (blogState.editors[l]) continue;
+    const el = document.getElementById('blog-body-' + l + '-editor');
+    if (!el) continue;
+    const q = new Quill(el, {
+      theme: 'snow',
+      placeholder: l === 'zh' ? '在這裡撰寫內容...' : (l === 'ja' ? 'ここに本文を書く...' : 'Write content here...'),
+      modules: { toolbar }
+    });
+    // Custom image handler — uses existing /api/upload
+    q.getModule('toolbar').addHandler('image', async () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = async () => {
+        const f = input.files && input.files[0];
+        if (!f) return;
+        try {
+          const uploaded = await apiUpload([f]);
+          if (!uploaded || !uploaded[0]) return;
+          let url = uploaded[0].url;
+          if (!url.startsWith('/') && !url.startsWith('http')) url = '/' + url;
+          const range = q.getSelection(true);
+          q.insertEmbed(range.index, 'image', url, 'user');
+          q.setSelection(range.index + 1);
+        } catch (e) { showToast('上傳失敗：' + e.message, 'error'); }
+      };
+      input.click();
+    });
+    // Custom video handler — accepts YouTube/Vimeo URL only, normalizes to embed
+    q.getModule('toolbar').addHandler('video', () => {
+      const url = prompt('貼上 YouTube 或 Vimeo 影片網址：');
+      if (!url) return;
+      const embed = toEmbedUrl(url);
+      if (!embed) { showToast('無法識別的影片網址（僅支援 YouTube/Vimeo）', 'error'); return; }
+      const range = q.getSelection(true);
+      q.insertEmbed(range.index, 'video', embed, 'user');
+      q.setSelection(range.index + 1);
+    });
+    blogState.editors[l] = q;
+  }
+  return true;
+}
+
+function toEmbedUrl(raw) {
+  try {
+    const u = new URL(raw.trim());
+    const host = u.hostname.replace(/^www\./, '');
+    if (host === 'youtu.be') return 'https://www.youtube.com/embed/' + u.pathname.slice(1).split('/')[0];
+    if (host.endsWith('youtube.com') || host === 'youtube-nocookie.com') {
+      const v = u.searchParams.get('v');
+      if (v) return 'https://www.youtube.com/embed/' + v;
+      const m = u.pathname.match(/\/embed\/([^/?#]+)/);
+      if (m) return 'https://www.youtube.com/embed/' + m[1];
+    }
+    if (host === 'vimeo.com') return 'https://player.vimeo.com/video/' + u.pathname.split('/').filter(Boolean)[0];
+    if (host === 'player.vimeo.com') return raw.trim();
+  } catch (e) {}
+  return null;
+}
+
+function newBlogPost() {
+  blogState.editing = null;
+  blogState.slugManuallyEdited = false;
+  navigate('blog-edit');
+  ensureBlogEditors();
+  populateBlogForm({
+    id: '', slug: '', categoryId: blogState.categories[0] ? blogState.categories[0].id : '',
+    primaryLang: 'zh-TW',
+    title_zh: '', body_zh: '', excerpt_zh: '', metaDesc_zh: '',
+    title_ja: '', body_ja: '', excerpt_ja: '', metaDesc_ja: '',
+    title_en: '', body_en: '', excerpt_en: '', metaDesc_en: '',
+    coverImage: ''
+  });
+  document.getElementById('blogEditTitle').textContent = '新增文章';
+  document.getElementById('blogDeleteBtn').classList.add('hidden');
+}
+
+async function editBlogPost(id) {
+  navigate('blog-edit');
+  ensureBlogEditors();
+  document.getElementById('blogEditTitle').textContent = '載入中...';
+  try {
+    const post = await apiGet('/blog/admin/posts/' + id);
+    blogState.editing = post;
+    blogState.slugManuallyEdited = true;
+    populateBlogForm(post);
+    document.getElementById('blogEditTitle').textContent = '編輯文章';
+    document.getElementById('blogDeleteBtn').classList.remove('hidden');
+  } catch (e) {
+    showToast('載入失敗：' + e.message, 'error');
+    navigate('blog');
+  }
+}
+
+function populateBlogForm(p) {
+  document.getElementById('blog-id').value = p.id || '';
+  document.getElementById('blog-slug').value = p.slug || '';
+  document.getElementById('blog-slug-preview').textContent = p.slug || 'your-slug';
+  document.getElementById('blog-primaryLang').value = p.primaryLang || 'zh-TW';
+
+  const sel = document.getElementById('blog-categoryId');
+  sel.innerHTML = blogState.categories.map(c => `<option value="${c.id}" ${p.categoryId == c.id ? 'selected' : ''}>${escapeHtml(c.name_zh)}</option>`).join('');
+
+  document.getElementById('blog-title-zh').value = p.title_zh || '';
+  document.getElementById('blog-excerpt-zh').value = p.excerpt_zh || '';
+  document.getElementById('blog-metaDesc-zh').value = p.metaDesc_zh || '';
+  document.getElementById('blog-title-ja').value = p.title_ja || '';
+  document.getElementById('blog-excerpt-ja').value = p.excerpt_ja || '';
+  document.getElementById('blog-metaDesc-ja').value = p.metaDesc_ja || '';
+  document.getElementById('blog-title-en').value = p.title_en || '';
+  document.getElementById('blog-excerpt-en').value = p.excerpt_en || '';
+  document.getElementById('blog-metaDesc-en').value = p.metaDesc_en || '';
+
+  if (blogState.editors.zh) blogState.editors.zh.root.innerHTML = p.body_zh || '';
+  if (blogState.editors.ja) blogState.editors.ja.root.innerHTML = p.body_ja || '';
+  if (blogState.editors.en) blogState.editors.en.root.innerHTML = p.body_en || '';
+
+  setBlogCoverPreview(p.coverImage || '');
+  switchBlogTab(p.primaryLang || 'zh-TW');
+}
+
+function switchBlogTab(lang) {
+  blogState.activeTab = lang;
+  ['zh-TW','ja','en'].forEach(l => {
+    const tab = document.getElementById('blog-tab-' + l);
+    const fields = document.getElementById('blog-fields-' + l);
+    if (tab) {
+      tab.classList.toggle('border-primary', l === lang);
+      tab.classList.toggle('text-primary', l === lang);
+      tab.classList.toggle('border-transparent', l !== lang);
+      tab.classList.toggle('text-text-secondary', l !== lang);
+    }
+    if (fields) fields.classList.toggle('hidden', l !== lang);
+  });
+}
+
+// Auto-slug from primary-language title (only if user hasn't edited slug manually)
+document.addEventListener('input', (e) => {
+  if (e.target && e.target.id === 'blog-slug') {
+    blogState.slugManuallyEdited = true;
+    document.getElementById('blog-slug-preview').textContent = e.target.value || 'your-slug';
+    return;
+  }
+  if (!blogState.slugManuallyEdited && (e.target && (e.target.id === 'blog-title-zh' || e.target.id === 'blog-title-ja' || e.target.id === 'blog-title-en'))) {
+    const lang = document.getElementById('blog-primaryLang').value;
+    const langKey = lang === 'zh-TW' ? 'zh' : lang;
+    if (e.target.id === 'blog-title-' + langKey) {
+      const s = slugify(e.target.value);
+      document.getElementById('blog-slug').value = s;
+      document.getElementById('blog-slug-preview').textContent = s || 'your-slug';
+    }
+  }
+});
+
+async function uploadBlogCover(file) {
+  if (!file) return;
+  try {
+    const up = await apiUpload([file]);
+    if (!up || !up[0]) return;
+    let url = up[0].url;
+    if (!url.startsWith('/') && !url.startsWith('http')) url = '/' + url;
+    setBlogCoverPreview(url);
+    showToast('封面已上傳，記得儲存文章', 'success');
+  } catch (e) { showToast('封面上傳失敗：' + e.message, 'error'); }
+}
+
+function setBlogCoverPreview(url) {
+  const img = document.getElementById('blog-cover-preview');
+  const empty = document.getElementById('blog-cover-empty');
+  if (url) {
+    img.src = url; img.dataset.url = url;
+    img.classList.remove('hidden'); empty.classList.add('hidden');
+  } else {
+    img.src = ''; img.dataset.url = '';
+    img.classList.add('hidden'); empty.classList.remove('hidden');
+  }
+}
+function clearBlogCover() { setBlogCoverPreview(''); }
+
+async function saveBlogPost(forceStatus) {
+  const id = document.getElementById('blog-id').value;
+  const primaryLang = document.getElementById('blog-primaryLang').value;
+  const slug = document.getElementById('blog-slug').value.trim() || slugify(
+    document.getElementById('blog-title-' + (primaryLang === 'zh-TW' ? 'zh' : primaryLang)).value
+  );
+  const data = {
+    slug,
+    categoryId: document.getElementById('blog-categoryId').value || null,
+    primaryLang,
+    title_zh:    document.getElementById('blog-title-zh').value.trim(),
+    excerpt_zh:  document.getElementById('blog-excerpt-zh').value.trim(),
+    metaDesc_zh: document.getElementById('blog-metaDesc-zh').value.trim(),
+    body_zh:     blogState.editors.zh ? blogState.editors.zh.root.innerHTML : '',
+    title_ja:    document.getElementById('blog-title-ja').value.trim(),
+    excerpt_ja:  document.getElementById('blog-excerpt-ja').value.trim(),
+    metaDesc_ja: document.getElementById('blog-metaDesc-ja').value.trim(),
+    body_ja:     blogState.editors.ja ? blogState.editors.ja.root.innerHTML : '',
+    title_en:    document.getElementById('blog-title-en').value.trim(),
+    excerpt_en:  document.getElementById('blog-excerpt-en').value.trim(),
+    metaDesc_en: document.getElementById('blog-metaDesc-en').value.trim(),
+    body_en:     blogState.editors.en ? blogState.editors.en.root.innerHTML : '',
+    coverImage:  document.getElementById('blog-cover-preview').dataset.url || '',
+    status:      forceStatus || (blogState.editing ? blogState.editing.status : 'draft')
+  };
+  try {
+    let saved;
+    if (id) saved = await apiPut('/blog/posts/' + id, data);
+    else    saved = await apiPost('/blog/posts', data);
+    showToast(forceStatus === 'published' ? '已發布' : '已儲存', 'success');
+    blogState.editing = Object.assign({}, data, { id: saved.id, status: saved.status, publishedAt: saved.publishedAt });
+    document.getElementById('blog-id').value = saved.id;
+    document.getElementById('blogDeleteBtn').classList.remove('hidden');
+    document.getElementById('blogEditTitle').textContent = '編輯文章';
+  } catch (e) { showToast('儲存失敗：' + e.message, 'error'); }
+}
+
+async function deleteBlogPost() {
+  const id = document.getElementById('blog-id').value;
+  if (!id) return;
+  if (!confirm('確定刪除此文章？此操作無法復原。')) return;
+  try {
+    await apiDelete('/blog/posts/' + id);
+    showToast('已刪除', 'success');
+    navigate('blog');
+  } catch (e) { showToast('刪除失敗：' + e.message, 'error'); }
+}
+
+// ---- Categories ----
+async function loadBlogCategories() {
+  const list = document.getElementById('blogCategoriesList');
+  list.innerHTML = '<div class="p-8 text-center text-text-secondary text-sm">載入中...</div>';
+  try {
+    const cats = await apiGet('/blog/categories');
+    blogState.categories = cats;
+    if (cats.length === 0) {
+      list.innerHTML = '<div class="p-8 text-center text-text-secondary text-sm">尚無分類</div>';
+      return;
+    }
+    list.innerHTML = cats.map(c => `
+      <div class="grid md:grid-cols-5 gap-3 items-center px-5 py-3">
+        <input type="text" value="${escapeHtml(c.slug)}" data-cat-id="${c.id}" data-field="slug" class="form-input font-mono text-sm">
+        <input type="text" value="${escapeHtml(c.name_zh)}" data-cat-id="${c.id}" data-field="name_zh" class="form-input">
+        <input type="text" value="${escapeHtml(c.name_ja || '')}" data-cat-id="${c.id}" data-field="name_ja" class="form-input">
+        <input type="text" value="${escapeHtml(c.name_en || '')}" data-cat-id="${c.id}" data-field="name_en" class="form-input">
+        <div class="flex gap-2">
+          <button onclick="updateBlogCategory(${c.id})" class="btn btn-default flex-1">儲存</button>
+          <button onclick="deleteBlogCategory(${c.id})" class="btn btn-default text-destructive">刪除</button>
+        </div>
+      </div>`).join('');
+  } catch (e) {
+    list.innerHTML = `<div class="p-8 text-center text-destructive text-sm">載入失敗：${escapeHtml(e.message)}</div>`;
+  }
+}
+
+async function saveBlogCategory() {
+  const data = {
+    slug:    document.getElementById('blogCat-slug').value.trim() || slugify(document.getElementById('blogCat-name-zh').value),
+    name_zh: document.getElementById('blogCat-name-zh').value.trim(),
+    name_ja: document.getElementById('blogCat-name-ja').value.trim(),
+    name_en: document.getElementById('blogCat-name-en').value.trim(),
+    sortOrder: blogState.categories.length
+  };
+  try {
+    await apiPost('/blog/categories', data);
+    showToast('分類已新增', 'success');
+    document.getElementById('blogCat-slug').value = '';
+    document.getElementById('blogCat-name-zh').value = '';
+    document.getElementById('blogCat-name-ja').value = '';
+    document.getElementById('blogCat-name-en').value = '';
+    loadBlogCategories();
+  } catch (e) { showToast('新增失敗：' + e.message, 'error'); }
+}
+
+async function updateBlogCategory(id) {
+  const fields = ['slug','name_zh','name_ja','name_en'];
+  const data = { id };
+  for (const f of fields) {
+    const el = document.querySelector(`input[data-cat-id="${id}"][data-field="${f}"]`);
+    data[f] = el ? el.value.trim() : '';
+  }
+  try { await apiPost('/blog/categories', data); showToast('已更新', 'success'); }
+  catch (e) { showToast('更新失敗：' + e.message, 'error'); }
+}
+
+async function deleteBlogCategory(id) {
+  if (!confirm('刪除分類後，原本屬於此分類的文章會變成「未分類」。確定？')) return;
+  try { await apiDelete('/blog/categories/' + id); showToast('已刪除', 'success'); loadBlogCategories(); }
+  catch (e) { showToast('刪除失敗：' + e.message, 'error'); }
 }
 
 // ==================== INIT ====================
