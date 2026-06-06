@@ -1074,6 +1074,9 @@ app.get('/sitemap.xml', (req, res) => {
   xml += '</urlset>';
 
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+  // Short TTL so new blog posts / properties appear in the sitemap quickly
+  // instead of being stuck behind Varnish's long default cache.
+  res.setHeader('Cache-Control', 'public, max-age=300');
   res.send(xml);
 });
 
