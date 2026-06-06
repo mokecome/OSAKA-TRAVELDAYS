@@ -1537,9 +1537,9 @@
         </a>
         <div class="flex items-center gap-6">
           <div class="lang-switcher-nav">
-            <button onclick="setLanguage('zh-TW')" data-lang="zh-TW" class="lang-btn-nav active" aria-pressed="true">中文</button>
-            <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-nav" aria-pressed="false">日本語</button>
-            <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-nav" aria-pressed="false">EN</button>
+            <button onclick="setLanguage('zh-TW', true)" data-lang="zh-TW" class="lang-btn-nav active" aria-pressed="true">中文</button>
+            <button onclick="setLanguage('ja', true)" data-lang="ja" class="lang-btn-nav" aria-pressed="false">日本語</button>
+            <button onclick="setLanguage('en', true)" data-lang="en" class="lang-btn-nav" aria-pressed="false">EN</button>
           </div>
           <nav class="hidden md:flex items-center space-x-8">
             <a href="/become-host.html" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.becomeHost">成為房東/達人</a>
@@ -2031,9 +2031,12 @@
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const hash = this.getAttribute('href');
+        const target = document.querySelector(hash);
         if (target) {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Virtual pageview so in-page section navigation shows up in GA4.
+          if (window.gtag) gtag('event', 'page_view', { page_path: location.pathname + hash, page_title: document.title });
         }
       });
     });
@@ -3235,6 +3238,7 @@
         'faq.q3': '民宿提供哪些設施和服務？',
         'faq.a3': '所有房源均配備免費 WiFi、廚房設備、洗衣機、空調、吹風機、毛巾及沐浴用品等基本生活設施。部分房源另提供停車場、浴缸、私人庭院等。詳細設施請參考各房源頁面。',
         'faq.q4': '大阪旅行日民宿有哪些地區的房源？',
+        'faq.a4': '我們的房源遍布大阪熱門地區，包括<strong>大正區</strong>（小沖繩風情）、<strong>心齋橋/日本橋/難波</strong>（購物美食中心）、<strong>住之江區</strong>（寧靜住宅區）、<strong>西九條/九條區/福島區</strong>（USJ交通樞紐）。所有房源均鄰近車站，方便前往各大景點。',
         'faq.q5': '可以取消預訂或改期嗎？',
         'faq.a5': '入住 14 天前可免費取消，之後將依距離入住日的時間收取相應費用。如需改期，請盡早透過 LINE 或 Email 聯繫我們協助處理。詳細取消政策請參考 Airbnb 預訂頁面。',
         'faq.q6': '退房後可以寄放行李嗎？',
@@ -3327,6 +3331,7 @@
         'faq.q3': 'どんな設備・サービスがありますか？',
         'faq.a3': '全物件に無料WiFi・キッチン・洗濯機・エアコン・ドライヤー・タオル・アメニティを完備。一部物件は駐車場・バスタブ・専用庭あり。詳細は各物件ページへ。',
         'faq.q4': 'どのエリアに物件がありますか？',
+        'faq.a4': '私たちの物件は大阪の人気エリアに広がっています。<strong>大正区</strong>（リトル沖縄）、<strong>心斎橋/日本橋/難波</strong>（ショッピング・グルメの中心）、<strong>住之江区</strong>（静かな住宅街）、<strong>西九条/九条/福島区</strong>（USJへの交通拠点）など。すべての物件が駅近で、各観光地へ便利です。',
         'faq.q5': 'キャンセル・日程変更はできますか？',
         'faq.a5': '14日前まで無料キャンセル、以降は時期により費用が発生します。日程変更はLINEまたはEmailでお早めにご連絡ください。詳細はAirbnbページをご確認ください。',
         'faq.q6': 'チェックアウト後、荷物を預けられますか？',
@@ -3419,6 +3424,7 @@
         'faq.q3': 'What amenities are included?',
         'faq.a3': 'Every stay has WiFi, kitchen, washer, AC, hair dryer, towels and toiletries. Some add parking, bathtub or a private garden — see each listing.',
         'faq.q4': 'Which areas do you cover?',
+        'faq.a4': 'Our stays are spread across popular Osaka areas, including <strong>Taisho</strong> (Little Okinawa), <strong>Shinsaibashi/Nipponbashi/Namba</strong> (shopping and dining hub), <strong>Suminoe</strong> (quiet residential), and <strong>Nishikujo/Kujo/Fukushima</strong> (gateway to USJ). All are near stations for easy access to top sights.',
         'faq.q5': 'Can I cancel or reschedule?',
         'faq.a5': 'Free cancellation up to 14 days before check-in; fees apply after that. For rescheduling, contact us on LINE or email. See the Airbnb listing for the full cancellation policy.',
         'faq.q6': 'Can I store luggage after check-out?',
@@ -3480,9 +3486,12 @@
       }
     };
 
-    function setLanguage(lang) {
+    function setLanguage(lang, fromUser) {
       if (!TRANSLATIONS[lang]) return;
       localStorage.setItem('lang', lang);
+      // Track only user-initiated switches (the nav buttons pass fromUser=true),
+      // not the call made during page-load init — otherwise every load counts.
+      if (fromUser && window.gtag) gtag('event', 'language_switch', { event_label: lang });
       document.documentElement.lang = lang;
 
       // Keep the browser tab title in sync with the chosen language.
