@@ -1739,6 +1739,21 @@ app.post('/api/settings', requireAuth, (req, res) => {
 
 // ==================== BLOG ====================
 
+// `style` is allowed on several tags, but sanitize-html does NOT parse CSS
+// values by default — so `background:url(javascript:...)`, `position:fixed`
+// clickjacking overlays, `expression()` and `-moz-binding:url()` would slip
+// through. Restrict every style declaration to a safe property + value via
+// allowedStyles (postcss-backed); anything not matching is dropped. The value
+// regexes deliberately exclude url()/parens so no resource/script can be
+// referenced. Covers the layout properties actually used in existing content
+// (display/height/margin/max-width/width) plus the common safe editor set.
+const CSS_LEN = /^(auto|0|\d+(?:\.\d+)?(?:px|em|rem|%|vh|vw))(\s+(auto|0|\d+(?:\.\d+)?(?:px|em|rem|%|vh|vw))){0,3}$/;
+const CSS_COLOR = [
+  /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i,
+  /^rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)$/,
+  /^rgba\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*(0|1|0?\.\d+)\s*\)$/,
+  /^[a-z]+$/i
+];
 const SANITIZE_OPTS = {
   allowedTags: [
     'h2','h3','h4','h5','h6','p','blockquote','ul','ol','li','strong','em','u','s',
@@ -1756,6 +1771,21 @@ const SANITIZE_OPTS = {
     td:     ['style','colspan','rowspan'],
     th:     ['style','colspan','rowspan'],
     '*':    ['data-*']
+  },
+  allowedStyles: {
+    '*': {
+      'width': [CSS_LEN], 'height': [CSS_LEN], 'max-width': [CSS_LEN],
+      'min-width': [CSS_LEN], 'max-height': [CSS_LEN],
+      'margin': [CSS_LEN], 'margin-top': [CSS_LEN], 'margin-bottom': [CSS_LEN],
+      'margin-left': [CSS_LEN], 'margin-right': [CSS_LEN], 'padding': [CSS_LEN],
+      'display': [/^(block|inline-block|inline|none|flex)$/],
+      'text-align': [/^(left|right|center|justify)$/],
+      'float': [/^(left|right|none)$/],
+      'color': CSS_COLOR, 'background-color': CSS_COLOR,
+      'font-weight': [/^(normal|bold|[1-9]00)$/],
+      'font-style': [/^(normal|italic)$/],
+      'text-decoration': [/^(none|underline|line-through)$/]
+    }
   },
   allowedSchemes: ['http','https','mailto','tel'],
   allowedSchemesByTag: { img: ['http','https','data'] },
