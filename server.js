@@ -527,6 +527,10 @@ function durationToDays(s) {
 
 function parseIcal(icsText) {
   const blocked = new Set();
+  // RFC 5545 line unfolding: a CRLF (or LF) followed by a space/tab is a
+  // continuation of the previous line. Must run before any field matching,
+  // otherwise folded DTSTART/DTEND values are silently missed.
+  icsText = icsText.replace(/\r?\n[ \t]/g, '');
   const events = icsText.split('BEGIN:VEVENT').slice(1);
   for (const ev of events) {
     if (/\nSTATUS:CANCELLED\b/i.test(ev)) continue;
