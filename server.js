@@ -1279,6 +1279,30 @@ app.get('/api/properties/:id', (req, res) => {
 
 // Get availability (blocked dates) from Airbnb iCal
 const ICAL_TTL_MS = 30000; // 30 seconds
+
+// Single-flight de-duplication: collapse concurrent iCal fetches for the same
+// property into ONE network request. Without this, every request that arrives
+// while the cache is expired fires its own fetch and races on INSERT OR REPLACE
+// (last-write-wins could overwrite fresh data with a slower/older response, and
+// it needlessly hammers the upstream iCal feed). The background refresher routes
+// through here too, so it can't race a user request either.
+const inflightIcal = new Map(); // property_id -> Promise<blockedDates>
+function fetchAndCacheIcal(id, icalUrl, timeoutMs) {
+  const existing = inflightIcal.get(id);
+  if (existing) return existing;
+  const p = (async () => {
+    const response = await fetch(icalUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(timeoutMs) });
+    if (!response.ok) throw new Error('iCal fetch failed: ' + response.status);
+    const text = await response.text();
+    const blockedDates = parseIcal(text);
+    db.prepare('INSERT OR REPLACE INTO ical_cache (property_id, blocked_dates, fetched_at) VALUES (?,?,?)').run(id, JSON.stringify(blockedDates), Date.now());
+    return blockedDates;
+  })();
+  inflightIcal.set(id, p);
+  p.finally(() => { if (inflightIcal.get(id) === p) inflightIcal.delete(id); });
+  return p;
+}
+
 app.get('/api/properties/:id/availability', async (req, res) => {
   try {
     const prop = db.prepare('SELECT ical_url FROM properties WHERE id = ?').get(req.params.id);
@@ -1291,11 +1315,7 @@ app.get('/api/properties/:id/availability', async (req, res) => {
       return res.json({ blockedDates: JSON.parse(cached.blocked_dates) });
     }
 
-    const response = await fetch(prop.ical_url, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) });
-    if (!response.ok) throw new Error('iCal fetch failed: ' + response.status);
-    const text = await response.text();
-    const blockedDates = parseIcal(text);
-    db.prepare('INSERT OR REPLACE INTO ical_cache (property_id, blocked_dates, fetched_at) VALUES (?,?,?)').run(req.params.id, JSON.stringify(blockedDates), Date.now());
+    const blockedDates = await fetchAndCacheIcal(req.params.id, prop.ical_url, 8000);
     res.json({ blockedDates });
   } catch (err) {
     console.error('iCal fetch error:', err.message);
@@ -1311,11 +1331,7 @@ app.get('/api/properties/:id/availability', async (req, res) => {
 async function refreshIcalForProperty(id, icalUrl) {
   if (!icalUrl) return;
   try {
-    const response = await fetch(icalUrl, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(10000) });
-    if (!response.ok) return;
-    const text = await response.text();
-    const blockedDates = parseIcal(text);
-    db.prepare('INSERT OR REPLACE INTO ical_cache (property_id, blocked_dates, fetched_at) VALUES (?,?,?)').run(id, JSON.stringify(blockedDates), Date.now());
+    await fetchAndCacheIcal(id, icalUrl, 10000);
   } catch (e) { /* swallow */ }
 }
 
@@ -1707,9 +1723,16 @@ app.post('/api/settings', requireAuth, (req, res) => {
   if (value === undefined) {
     return res.status(400).json({ error: 'value is required' });
   }
+  // charter.body.* is rich HTML rendered via innerHTML on the public /charter
+  // page — sanitize at the write boundary (same allowlist as blog/room bodies)
+  // so a compromised or rogue admin can't store a stored-XSS payload.
+  let storedValue = value;
+  if (key.trim().startsWith('charter.body.')) {
+    storedValue = cleanBody(typeof value === 'string' ? value : '');
+  }
   db.prepare(`INSERT INTO site_settings (key, value, updatedAt) VALUES (?, ?, CURRENT_TIMESTAMP)
     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updatedAt = CURRENT_TIMESTAMP`)
-    .run(key.trim(), JSON.stringify(value));
+    .run(key.trim(), JSON.stringify(storedValue));
   invalidateSSRCache();
   res.json({ success: true });
 });
