@@ -410,9 +410,9 @@ db.exec(`
       {
         q: { 'zh-TW': '如何預訂大阪旅行日民宿？', 'ja': '大阪旅行日民宿の予約方法は？', 'en': 'How do I book?' },
         a: {
-          'zh-TW': '透過 Airbnb 預訂，或透過 LINE（@fgk8695x）/ Email（service.traveldays@gmail.com）聯繫我們進行直接預訂。最少需訂 2 晚，支援信用卡、PayPal、Apple Pay / Google Pay 等付款方式。',
-          'ja': 'Airbnbでご予約いただくか、LINE（@fgk8695x）/ Email（service.traveldays@gmail.com）でご連絡ください。最低2泊から。クレジットカード・PayPal・Apple Pay / Google Pay対応。',
-          'en': 'Book via Airbnb, or contact us via LINE (@fgk8695x) / Email (service.traveldays@gmail.com) for direct booking. Minimum 2 nights. Accepts credit card, PayPal, Apple Pay / Google Pay.'
+          'zh-TW': '透過 Airbnb 預訂，或透過 LINE（@fgk8695x）/ Email（support@traveldays.jp）聯繫我們進行直接預訂。最少需訂 2 晚，支援信用卡、PayPal、Apple Pay / Google Pay 等付款方式。',
+          'ja': 'Airbnbでご予約いただくか、LINE（@fgk8695x）/ Email（support@traveldays.jp）でご連絡ください。最低2泊から。クレジットカード・PayPal・Apple Pay / Google Pay対応。',
+          'en': 'Book via Airbnb, or contact us via LINE (@fgk8695x) / Email (support@traveldays.jp) for direct booking. Minimum 2 nights. Accepts credit card, PayPal, Apple Pay / Google Pay.'
         }
       },
       {
@@ -456,7 +456,7 @@ db.exec(`
         }
       }
     ])],
-    ['footer.email', JSON.stringify('service.traveldays@gmail.com')],
+    ['footer.email', JSON.stringify('support@traveldays.jp')],
     ['footer.line', JSON.stringify('@fgk8695x')],
     ['footer.company', JSON.stringify({
       'zh-TW': 'DAIDODO合同会社',
