@@ -46,7 +46,9 @@
   <!-- Google Search Console placeholder -->
   <!-- <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE"> -->
 
-  <link rel="preload" as="image" href="/images/hero.jpg" fetchpriority="high">
+  <!-- Preload the WebP hero for browsers that support it; the type gate makes
+       others skip it and load the <img> JPEG fallback instead. -->
+  <link rel="preload" as="image" href="/images/hero.webp" type="image/webp" fetchpriority="high">
   <link rel="stylesheet" href="/css/tailwind.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -1416,6 +1418,7 @@
   </style>
 
   <!-- Structured Data: Organization + LodgingBusiness -->
+  <!-- TODO(本地SEO): 上線前請填入真實值 — telephone(電話)、geo latitude/longitude(磯路1-8-3 實際經緯度)、確認 postalCode。需與 Google 商家檔案(GMB)完全一致。 -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -1426,15 +1429,19 @@
     "logo": "https://stay.traveldays.com.tw/images/logo.png",
     "image": "https://stay.traveldays.com.tw/images/hero.jpg",
     "email": "support@traveldays.jp",
+    "telephone": "+81-XX-XXXX-XXXX",
     "address": {
       "@type": "PostalAddress",
+      "streetAddress": "港区磯路1-8-3",
       "addressLocality": "大阪市",
       "addressRegion": "大阪府",
+      "postalCode": "552-0003",
       "addressCountry": "JP"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "addressCountry": "JP"
+      "latitude": "34.6600",
+      "longitude": "135.4600"
     },
     "priceRange": "$$",
     "openingHoursSpecification": {
@@ -1529,7 +1536,10 @@
     <div class="container mx-auto px-4 lg:px-8">
       <div class="flex items-center justify-between h-18 py-4">
         <a href="/" class="flex items-center gap-3 group">
-          <img src="images/logo.png" alt="大阪旅行日民宿 OSAKA TRAVELDAYS" class="w-10 h-10 object-contain">
+          <picture>
+            <source srcset="images/logo.webp" type="image/webp">
+            <img src="images/logo.png" alt="大阪旅行日民宿 OSAKA TRAVELDAYS" width="40" height="40" class="w-10 h-10 object-contain">
+          </picture>
           <div>
             <span class="hidden sm:inline text-xl font-serif font-bold text-amber-900 group-hover:text-amber-700 transition-colors">大阪旅行日民宿</span>
             <span class="hidden sm:inline text-xs text-amber-600 ml-2 tracking-widest">OSAKA TRAVELDAYS</span>
@@ -1576,10 +1586,13 @@
   <!-- Hero Section -->
   <section class="relative min-h-screen flex items-start justify-center" style="padding-top: 12rem; padding-bottom: 4rem;">
     <div class="absolute inset-0">
-      <img id="heroImg" src="images/hero.jpg"
-           alt="大阪旅行日民宿 - 精選大阪各區優質民宿住宿"
-           width="1477" height="1072" fetchpriority="high"
-           class="w-full h-full object-cover object-center">
+      <picture>
+        <source id="heroWebpSource" srcset="images/hero.webp" type="image/webp">
+        <img id="heroImg" src="images/hero.jpg"
+             alt="大阪旅行日民宿 - 精選大阪各區優質民宿住宿"
+             width="1477" height="1072" fetchpriority="high"
+             class="w-full h-full object-cover object-center">
+      </picture>
       <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-amber-50/80"></div>
     </div>
 
@@ -1860,7 +1873,10 @@
         <!-- Logo + 標語 (left) -->
         <div class="footer-logo-col">
           <div class="flex items-center gap-3 mb-5">
-            <img src="images/logo.png" alt="Logo" class="w-12 h-12 object-contain">
+            <picture>
+              <source srcset="images/logo.webp" type="image/webp">
+              <img src="images/logo.png" alt="Logo" width="48" height="48" class="w-12 h-12 object-contain">
+            </picture>
             <div>
               <h3 class="text-xl font-serif text-white">大阪旅行日民宿</h3>
               <p class="text-amber-400 text-xs tracking-widest">OSAKA TRAVELDAYS</p>
@@ -2490,6 +2506,13 @@
         return cover ? (cover.url || '') : '';
       }
 
+      // WebP sibling of the cover image, when the API reports one exists.
+      function getCoverWebp(property) {
+        if (!property.images || property.images.length === 0) return '';
+        var cover = property.images.find(function(img) { return img.isCover; });
+        return cover ? (cover.webpUrl || '') : '';
+      }
+
       // escHtml is defined in the i18n script block below.
       // Safe to reference here: these functions only run from async callbacks
       // (API fetch / DOM ready), by which time all scripts have executed.
@@ -2504,6 +2527,7 @@
         var transportInfo = localizeField(property.transportInfo, lang);
 
         var coverUrl = getCoverImage(property);
+        var coverWebp = getCoverWebp(property);
         var badgeIcon = getBadgeIcon(badge, property.type);
         var delayAttr = delay > 0 ? ' style="animation-delay: ' + delay + 's;"' : '';
 
@@ -2524,9 +2548,12 @@
             '<span>' + escHtml(CARD_ACCESS_LABELS[lang].garage) + '</span></span>';
         }
 
+        var coverImgTag = '<img src="' + escHtml(coverUrl) + '" alt="' + escHtml(name) + '" loading="lazy" class="w-full h-full object-cover card-image">';
         return '<div class="property-card animate-fadeInUp"' + delayAttr + '>' +
           '<div class="relative aspect-[4/3] overflow-hidden">' +
-            '<img src="' + escHtml(coverUrl) + '" alt="' + escHtml(name) + '" loading="lazy" class="w-full h-full object-cover card-image">' +
+            (coverWebp
+              ? '<picture><source srcset="' + escHtml(coverWebp) + '" type="image/webp">' + coverImgTag + '</picture>'
+              : coverImgTag) +
             '<div class="image-overlay"></div>' +
             '<div class="absolute top-4 left-4">' +
               '<span class="badge">' +
@@ -3594,6 +3621,12 @@
       if (settings['hero.image'] && settings['hero.image'].url) {
         var heroImg = document.getElementById('heroImg');
         if (heroImg) heroImg.src = settings['hero.image'].url;
+        // The default-hero <source> points at images/hero.webp; a custom hero has
+        // no guaranteed .webp sibling, so drop the source and let <img> render.
+        var heroWebpSource = document.getElementById('heroWebpSource');
+        if (heroWebpSource && heroWebpSource.parentNode) {
+          heroWebpSource.parentNode.removeChild(heroWebpSource);
+        }
       }
 
       // 2. Hero text translations (title, subtitle, desc, cta)

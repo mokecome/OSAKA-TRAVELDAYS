@@ -597,12 +597,16 @@ function ssrRenderCard(property, delay, lang) {
   const transportInfo = localizeField(property.transportInfo, lang);
   const coverImg = property.images && property.images.find(img => img.isCover);
   const coverUrl = coverImg ? coverImg.url || '' : '';
+  const coverWebp = coverImg ? coverImg.webpUrl || '' : '';
   const badgeIcon = (badge === '公寓式民宿' || property.type === '公寓式民宿') ? APARTMENT_ICON_SVG : HOUSE_ICON_SVG;
   const delayAttr = delay > 0 ? ` style="animation-delay: ${delay}s;"` : '';
+  const coverImgTag = `<img src="${escHtml(coverUrl)}" alt="${escHtml(name)}" loading="lazy" class="w-full h-full object-cover card-image">`;
 
   return `<div class="property-card animate-fadeInUp"${delayAttr}>` +
     `<div class="relative aspect-[4/3] overflow-hidden">` +
-      `<img src="${escHtml(coverUrl)}" alt="${escHtml(name)}" loading="lazy" class="w-full h-full object-cover card-image">` +
+      (coverWebp
+        ? `<picture><source srcset="${escHtml(coverWebp)}" type="image/webp">${coverImgTag}</picture>`
+        : coverImgTag) +
       `<div class="image-overlay"></div>` +
       `<div class="absolute top-4 left-4"><span class="badge">${badgeIcon} ${escHtml(badge)}</span></div>` +
       (secondaryBadge ? `<div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5"><span class="text-amber-800 font-bold text-sm">${escHtml(secondaryBadge)}</span></div>` : '') +
@@ -732,6 +736,7 @@ function getRegionsWithProperties() {
           img.url = img.url + '?' + mtime;
         } catch (e) {}
       }
+      attachWebpUrl(img);
       imagesByPropId[img.propertyId].push(img);
     }
 
@@ -758,6 +763,24 @@ function getRegionsWithProperties() {
   return regions;
 }
 
+// For a local image, attach `webpUrl` pointing at its <path>.webp sibling when
+// that file exists on disk. `img.url` may already carry a ?mtime cache-buster,
+// which we preserve so the WebP invalidates in step with the original.
+function attachWebpUrl(img) {
+  img.webpUrl = null;
+  if (!img.isLocal || !img.url) return img;
+  const qIdx = img.url.indexOf('?');
+  const pathPart = qIdx === -1 ? img.url : img.url.slice(0, qIdx);
+  const query = qIdx === -1 ? '' : img.url.slice(qIdx);
+  const webpRel = pathPart + '.webp';
+  try {
+    if (fs.existsSync(path.join(__dirname, webpRel.replace(/^\//, '')))) {
+      img.webpUrl = webpRel + query;
+    }
+  } catch (e) {}
+  return img;
+}
+
 function getPropertyWithImages(prop) {
   if (!prop) return null;
   prop.images = db.prepare('SELECT id, propertyId, url, isLocal, filename, sortOrder, isCover FROM property_images WHERE propertyId = ? ORDER BY sortOrder').all(prop.id);
@@ -772,6 +795,7 @@ function getPropertyWithImages(prop) {
         img.url = img.url + '?' + mtime;
       } catch (e) {}
     }
+    attachWebpUrl(img);
     return img;
   });
   prop.quickInfo    = safeParseJSON(prop.quickInfo);
@@ -1275,6 +1299,7 @@ app.get('/api/properties', (req, res) => {
           img.url = img.url + '?' + mtime;
         } catch (e) {}
       }
+      attachWebpUrl(img);
       imagesByPropId[img.propertyId].push(img);
     }
     for (const p of props) {
@@ -1603,15 +1628,28 @@ app.post('/api/upload', requireAuth, (req, res) => {
       try {
         const img = sharp(filePath);
         const meta = await img.metadata();
-        if (meta.width <= COMPRESS_MAX_WIDTH && f.size < 500 * 1024) return f;
-        let pipeline = img.resize({ width: COMPRESS_MAX_WIDTH, withoutEnlargement: true });
-        if (ext === '.png') pipeline = pipeline.png({ quality: COMPRESS_QUALITY });
-        else if (ext === '.webp') pipeline = pipeline.webp({ quality: COMPRESS_QUALITY });
-        else pipeline = pipeline.jpeg({ quality: COMPRESS_QUALITY, mozjpeg: true });
-        const tmpPath = filePath + '.' + crypto.randomBytes(4).toString('hex') + '.tmp';
-        await pipeline.toFile(tmpPath);
-        fs.renameSync(tmpPath, filePath);
+        // Skip the resize/recompress for already-small images, but still emit
+        // a WebP sibling below for next-gen delivery.
+        if (!(meta.width <= COMPRESS_MAX_WIDTH && f.size < 500 * 1024)) {
+          let pipeline = img.resize({ width: COMPRESS_MAX_WIDTH, withoutEnlargement: true });
+          if (ext === '.png') pipeline = pipeline.png({ quality: COMPRESS_QUALITY });
+          else if (ext === '.webp') pipeline = pipeline.webp({ quality: COMPRESS_QUALITY });
+          else pipeline = pipeline.jpeg({ quality: COMPRESS_QUALITY, mozjpeg: true });
+          const tmpPath = filePath + '.' + crypto.randomBytes(4).toString('hex') + '.tmp';
+          await pipeline.toFile(tmpPath);
+          fs.renameSync(tmpPath, filePath);
+        }
       } catch (e) { console.warn('[upload] compression skipped:', f.originalname, e.message); }
+      // Also emit a WebP sibling (<file>.webp) for next-gen <picture> delivery.
+      // Best-effort: a failure here must not affect the upload response.
+      if (ext !== '.webp') {
+        try {
+          await sharp(filePath)
+            .resize({ width: COMPRESS_MAX_WIDTH, withoutEnlargement: true })
+            .webp({ quality: COMPRESS_QUALITY })
+            .toFile(filePath + '.webp');
+        } catch (e) { console.warn('[upload] webp skipped:', f.originalname, e.message); }
+      }
       return f;
     })).then(files => {
       res.json(files.map(f => ({
@@ -1635,6 +1673,10 @@ app.delete('/api/upload/:filename', requireAuth, (req, res) => {
   }
   if (fs.existsSync(filePath)) {
     try { fs.unlinkSync(filePath); } catch (e) { /* ignore */ }
+  }
+  // Remove the WebP sibling generated on upload, if present.
+  if (fs.existsSync(filePath + '.webp')) {
+    try { fs.unlinkSync(filePath + '.webp'); } catch (e) { /* ignore */ }
   }
   res.json({ success: true });
 });
