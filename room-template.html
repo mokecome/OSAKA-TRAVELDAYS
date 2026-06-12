@@ -526,6 +526,7 @@
 
   <script>
     var allImages = [];
+    var galleryObjs = [];
     var currentIndex = 0;
 
     // Extract property ID from URL: /rooms/xxx.html -> xxx
@@ -537,6 +538,15 @@
       var div = document.createElement('div');
       div.textContent = str || '';
       return div.innerHTML;
+    }
+
+    // Wrap an <img> tag string in a <picture> with a WebP <source> when the
+    // image object has WebP siblings (webpUrl / webpSrcset from the API).
+    function webpPicture(imgObj, imgTag, sizes) {
+      if (!imgObj || !imgObj.webpUrl) return imgTag;
+      var srcset = imgObj.webpSrcset || imgObj.webpUrl;
+      var sizesAttr = (imgObj.webpSrcset && sizes) ? ' sizes="' + esc(sizes) + '"' : '';
+      return '<picture><source srcset="' + esc(srcset) + '" type="image/webp"' + sizesAttr + '>' + imgTag + '</picture>';
     }
 
     function getCurrentLang() {
@@ -713,7 +723,8 @@
     function renderProperty(p, lang) {
       lang = lang || getCurrentLang();
       document.title = localizeField(p.name, lang) + ' | 大阪旅行日民宿';
-      allImages = (p.images || []).filter(function(img) { return !img.isCover; }).map(function(img) { return img.url; });
+      galleryObjs = (p.images || []).filter(function(img) { return !img.isCover; });
+      allImages = galleryObjs.map(function(img) { return img.url; });
 
       var embedUrl = getYoutubeEmbedUrl(p.videoUrl);
       var ytId = getYoutubeId(p.videoUrl);
@@ -778,24 +789,27 @@
 
       // ========== Gallery (show up to 8, with "+N 張" overlay on last) ==========
       var galleryHtml = '';
-      var galleryImages = allImages;
+      var galleryImages = galleryObjs;
+      var gallerySizes = '(max-width: 768px) 50vw, 25vw';
       var maxShow = 8; // show up to 8 photos like original
       if (galleryImages.length > 0) {
         var showCount = Math.min(galleryImages.length, maxShow);
         var remaining = galleryImages.length - showCount;
         for (var i = 0; i < showCount; i++) {
-          var url = galleryImages[i];
+          var gimg = galleryImages[i];
+          var imgTag = '<img src="' + esc(gimg.url) + '" alt="房源照片 ' + (i + 2) + '" loading="lazy">';
+          var picture = webpPicture(gimg, imgTag, gallerySizes);
           var isLast = (i === showCount - 1) && remaining > 0;
           if (isLast) {
             // Last item with "+N 張" overlay
             galleryHtml += '<div class="gallery-item relative" onclick="openLightbox(' + (i + 1) + ')">' +
-              '<img src="' + esc(url) + '" alt="房源照片 ' + (i + 2) + '" loading="lazy">' +
+              picture +
               '<div class="absolute inset-0 bg-black/50 flex items-center justify-center">' +
               '<span class="text-white font-semibold">+' + remaining + ROOM_T[lang].photoUnit + '</span>' +
               '</div></div>';
           } else {
             galleryHtml += '<div class="gallery-item" onclick="openLightbox(' + (i + 1) + ')">' +
-              '<img src="' + esc(url) + '" alt="房源照片 ' + (i + 2) + '" loading="lazy"></div>';
+              picture + '</div>';
           }
         }
       }

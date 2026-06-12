@@ -46,9 +46,11 @@
   <!-- Google Search Console placeholder -->
   <!-- <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE"> -->
 
-  <!-- Preload the WebP hero for browsers that support it; the type gate makes
-       others skip it and load the <img> JPEG fallback instead. -->
-  <link rel="preload" as="image" href="/images/hero.webp" type="image/webp" fetchpriority="high">
+  <!-- Preload the responsive WebP hero for browsers that support it; the type
+       gate makes others skip it and load the <img> JPEG fallback instead. -->
+  <link rel="preload" as="image" type="image/webp" fetchpriority="high"
+        imagesrcset="/images/hero-480.webp 480w, /images/hero-960.webp 960w, /images/hero.webp 1920w"
+        imagesizes="100vw">
   <link rel="stylesheet" href="/css/tailwind.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -1587,7 +1589,8 @@
   <section class="relative min-h-screen flex items-start justify-center" style="padding-top: 12rem; padding-bottom: 4rem;">
     <div class="absolute inset-0">
       <picture>
-        <source id="heroWebpSource" srcset="images/hero.webp" type="image/webp">
+        <source id="heroWebpSource" type="image/webp" sizes="100vw"
+                srcset="images/hero-480.webp 480w, images/hero-960.webp 960w, images/hero.webp 1920w">
         <img id="heroImg" src="images/hero.jpg"
              alt="大阪旅行日民宿 - 精選大阪各區優質民宿住宿"
              width="1477" height="1072" fetchpriority="high"
@@ -2506,11 +2509,19 @@
         return cover ? (cover.url || '') : '';
       }
 
-      // WebP sibling of the cover image, when the API reports one exists.
-      function getCoverWebp(property) {
-        if (!property.images || property.images.length === 0) return '';
-        var cover = property.images.find(function(img) { return img.isCover; });
-        return cover ? (cover.webpUrl || '') : '';
+      // The cover image object (carries webpUrl / webpSrcset from the API).
+      function getCover(property) {
+        if (!property.images || property.images.length === 0) return null;
+        return property.images.find(function(img) { return img.isCover; }) || null;
+      }
+
+      // Wrap an <img> tag string in a <picture> with a WebP <source> when the
+      // image has WebP siblings; otherwise return the <img> unchanged.
+      function webpPicture(imgObj, imgTag, sizes) {
+        if (!imgObj || !imgObj.webpUrl) return imgTag;
+        var srcset = imgObj.webpSrcset || imgObj.webpUrl;
+        var sizesAttr = (imgObj.webpSrcset && sizes) ? ' sizes="' + escHtml(sizes) + '"' : '';
+        return '<picture><source srcset="' + escHtml(srcset) + '" type="image/webp"' + sizesAttr + '>' + imgTag + '</picture>';
       }
 
       // escHtml is defined in the i18n script block below.
@@ -2527,7 +2538,7 @@
         var transportInfo = localizeField(property.transportInfo, lang);
 
         var coverUrl = getCoverImage(property);
-        var coverWebp = getCoverWebp(property);
+        var coverObj = getCover(property);
         var badgeIcon = getBadgeIcon(badge, property.type);
         var delayAttr = delay > 0 ? ' style="animation-delay: ' + delay + 's;"' : '';
 
@@ -2549,11 +2560,10 @@
         }
 
         var coverImgTag = '<img src="' + escHtml(coverUrl) + '" alt="' + escHtml(name) + '" loading="lazy" class="w-full h-full object-cover card-image">';
+        var cardSizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px';
         return '<div class="property-card animate-fadeInUp"' + delayAttr + '>' +
           '<div class="relative aspect-[4/3] overflow-hidden">' +
-            (coverWebp
-              ? '<picture><source srcset="' + escHtml(coverWebp) + '" type="image/webp">' + coverImgTag + '</picture>'
-              : coverImgTag) +
+            webpPicture(coverObj, coverImgTag, cardSizes) +
             '<div class="image-overlay"></div>' +
             '<div class="absolute top-4 left-4">' +
               '<span class="badge">' +

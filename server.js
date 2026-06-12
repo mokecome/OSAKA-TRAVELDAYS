@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const sharp = require('sharp');
 const rateLimit = require('express-rate-limit');
 const sanitizeHtml = require('sanitize-html');
+const { generateWebpVariants, webpVariantPaths, buildWebpInfo } = require('./lib/webp');
 
 const app = express();
 const PORT = 3000;
@@ -470,12 +471,13 @@ db.exec(`
     })],
     ['charter.body.zh-TW', JSON.stringify(
       '<table style="margin:0 auto;max-width:1000px;width:100%" border="0" cellpadding="0" cellspacing="0">' +
-      '<tr><td><img src="/onepage/images/oneday_description_01.jpg" style="width:100%;height:auto;display:block" alt=""></td></tr>' +
-      '<tr><td><img src="/onepage/images/oneday_description_02.jpg" style="width:100%;height:auto;display:block" alt=""></td></tr>' +
-      '<tr><td><img src="/onepage/images/oneday_description_03.jpg" style="width:100%;height:auto;display:block" alt=""></td></tr>' +
-      '<tr><td><img src="/onepage/images/oneday_description_04.jpg" style="width:100%;height:auto;display:block" alt=""></td></tr>' +
-      '<tr><td><img src="/onepage/images/oneday_description_05.jpg" style="width:100%;height:auto;display:block" alt=""></td></tr>' +
-      '<tr><td><img src="/onepage/images/oneday_description_06.jpg" style="width:100%;height:auto;display:block" alt=""></td></tr>' +
+      [1, 2, 3, 4, 5, 6].map((n) => {
+        const jpg = `/onepage/images/oneday_description_0${n}.jpg`;
+        return '<tr><td><picture>' +
+          `<source srcset="${jpg}.webp" type="image/webp">` +
+          `<img src="${jpg}" style="width:100%;height:auto;display:block" alt="" loading="lazy">` +
+          '</picture></td></tr>';
+      }).join('') +
       '</table>'
     )],
     ['charter.body.ja', JSON.stringify('')],
@@ -597,16 +599,14 @@ function ssrRenderCard(property, delay, lang) {
   const transportInfo = localizeField(property.transportInfo, lang);
   const coverImg = property.images && property.images.find(img => img.isCover);
   const coverUrl = coverImg ? coverImg.url || '' : '';
-  const coverWebp = coverImg ? coverImg.webpUrl || '' : '';
   const badgeIcon = (badge === '公寓式民宿' || property.type === '公寓式民宿') ? APARTMENT_ICON_SVG : HOUSE_ICON_SVG;
   const delayAttr = delay > 0 ? ` style="animation-delay: ${delay}s;"` : '';
   const coverImgTag = `<img src="${escHtml(coverUrl)}" alt="${escHtml(name)}" loading="lazy" class="w-full h-full object-cover card-image">`;
+  const CARD_SIZES = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px';
 
   return `<div class="property-card animate-fadeInUp"${delayAttr}>` +
     `<div class="relative aspect-[4/3] overflow-hidden">` +
-      (coverWebp
-        ? `<picture><source srcset="${escHtml(coverWebp)}" type="image/webp">${coverImgTag}</picture>`
-        : coverImgTag) +
+      webpPicture(coverImg, coverImgTag, CARD_SIZES) +
       `<div class="image-overlay"></div>` +
       `<div class="absolute top-4 left-4"><span class="badge">${badgeIcon} ${escHtml(badge)}</span></div>` +
       (secondaryBadge ? `<div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5"><span class="text-amber-800 font-bold text-sm">${escHtml(secondaryBadge)}</span></div>` : '') +
@@ -763,21 +763,19 @@ function getRegionsWithProperties() {
   return regions;
 }
 
-// For a local image, attach `webpUrl` pointing at its <path>.webp sibling when
-// that file exists on disk. `img.url` may already carry a ?mtime cache-buster,
-// which we preserve so the WebP invalidates in step with the original.
+// For a local image, attach `webpUrl` (full-size) and `webpSrcset` (responsive
+// widths) pointing at the WebP siblings on disk. `img.url` may already carry a
+// ?mtime cache-buster, which buildWebpInfo preserves so the WebP invalidates in
+// step with the original.
 function attachWebpUrl(img) {
-  img.webpUrl = null;
-  if (!img.isLocal || !img.url) return img;
-  const qIdx = img.url.indexOf('?');
-  const pathPart = qIdx === -1 ? img.url : img.url.slice(0, qIdx);
-  const query = qIdx === -1 ? '' : img.url.slice(qIdx);
-  const webpRel = pathPart + '.webp';
-  try {
-    if (fs.existsSync(path.join(__dirname, webpRel.replace(/^\//, '')))) {
-      img.webpUrl = webpRel + query;
-    }
-  } catch (e) {}
+  if (!img.isLocal || !img.url) {
+    img.webpUrl = null;
+    img.webpSrcset = null;
+    return img;
+  }
+  const info = buildWebpInfo(img.url, __dirname);
+  img.webpUrl = info.webpUrl;
+  img.webpSrcset = info.webpSrcset;
   return img;
 }
 
@@ -808,6 +806,16 @@ function getPropertyWithImages(prop) {
 function escHtml(str) {
   if (!str) return '';
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Wrap an <img> tag in a <picture> with a WebP <source> when the image has
+// WebP siblings. `img` is a property_images row decorated by attachWebpUrl
+// (webpUrl / webpSrcset). Falls back to the bare <img> when no WebP exists.
+function webpPicture(img, imgTag, sizes) {
+  if (!img || !img.webpUrl) return imgTag;
+  const srcset = img.webpSrcset || img.webpUrl;
+  const sizesAttr = (img.webpSrcset && sizes) ? ` sizes="${escHtml(sizes)}"` : '';
+  return `<picture><source srcset="${escHtml(srcset)}" type="image/webp"${sizesAttr}>${imgTag}</picture>`;
 }
 
 function stripHtmlForMeta(str) {
@@ -1640,15 +1648,11 @@ app.post('/api/upload', requireAuth, (req, res) => {
           fs.renameSync(tmpPath, filePath);
         }
       } catch (e) { console.warn('[upload] compression skipped:', f.originalname, e.message); }
-      // Also emit a WebP sibling (<file>.webp) for next-gen <picture> delivery.
-      // Best-effort: a failure here must not affect the upload response.
+      // Also emit WebP siblings (<file>.webp + responsive widths) for next-gen
+      // <picture> delivery. Best-effort: failures must not affect the response.
       if (ext !== '.webp') {
-        try {
-          await sharp(filePath)
-            .resize({ width: COMPRESS_MAX_WIDTH, withoutEnlargement: true })
-            .webp({ quality: COMPRESS_QUALITY })
-            .toFile(filePath + '.webp');
-        } catch (e) { console.warn('[upload] webp skipped:', f.originalname, e.message); }
+        try { await generateWebpVariants(filePath); }
+        catch (e) { console.warn('[upload] webp skipped:', f.originalname, e.message); }
       }
       return f;
     })).then(files => {
@@ -1674,9 +1678,11 @@ app.delete('/api/upload/:filename', requireAuth, (req, res) => {
   if (fs.existsSync(filePath)) {
     try { fs.unlinkSync(filePath); } catch (e) { /* ignore */ }
   }
-  // Remove the WebP sibling generated on upload, if present.
-  if (fs.existsSync(filePath + '.webp')) {
-    try { fs.unlinkSync(filePath + '.webp'); } catch (e) { /* ignore */ }
+  // Remove all WebP siblings generated on upload, if present.
+  for (const wp of webpVariantPaths(filePath)) {
+    if (fs.existsSync(wp)) {
+      try { fs.unlinkSync(wp); } catch (e) { /* ignore */ }
+    }
   }
   res.json({ success: true });
 });
@@ -1813,11 +1819,12 @@ const CSS_COLOR = [
 const SANITIZE_OPTS = {
   allowedTags: [
     'h2','h3','h4','h5','h6','p','blockquote','ul','ol','li','strong','em','u','s',
-    'a','img','iframe','figure','figcaption','br','hr','span','div','code','pre','table','thead','tbody','tr','td','th'
+    'a','img','picture','source','iframe','figure','figcaption','br','hr','span','div','code','pre','table','thead','tbody','tr','td','th'
   ],
   allowedAttributes: {
     a:      ['href','target','rel','title'],
-    img:    ['src','alt','title','width','height','loading','decoding','class','style'],
+    img:    ['src','alt','title','width','height','loading','decoding','class','style','srcset','sizes'],
+    source: ['srcset','type','media','sizes'],
     iframe: ['src','width','height','frameborder','allow','allowfullscreen','title','class','style'],
     span:   ['style','class'],
     div:    ['style','class'],
