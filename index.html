@@ -1420,7 +1420,8 @@
   </style>
 
   <!-- Structured Data: Organization + LodgingBusiness -->
-  <!-- TODO(本地SEO): 上線前請填入真實值 — telephone(電話)、geo latitude/longitude(磯路1-8-3 實際經緯度)、確認 postalCode。需與 Google 商家檔案(GMB)完全一致。 -->
+  <!-- 本地SEO: telephone 與 geo(經緯度)已刻意省略 — 寧缺勿假(假值會誤導地圖/AI)。
+       有真實電話與 GMB 正式座標後再加回 "telephone" 與 "geo"{latitude,longitude},並與 Google 商家檔案保持一致。 -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -1431,7 +1432,6 @@
     "logo": "https://stay.traveldays.com.tw/images/logo.png",
     "image": "https://stay.traveldays.com.tw/images/hero.jpg",
     "email": "support@traveldays.jp",
-    "telephone": "+81-XX-XXXX-XXXX",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "港区磯路1-8-3",
@@ -1439,11 +1439,6 @@
       "addressRegion": "大阪府",
       "postalCode": "552-0003",
       "addressCountry": "JP"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": "34.6600",
-      "longitude": "135.4600"
     },
     "priceRange": "$$",
     "openingHoursSpecification": {
