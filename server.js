@@ -909,10 +909,9 @@ app.get('/rooms/:id.html', (req, res) => {
       "addressRegion": "大阪府",
       "addressCountry": "JP"
     },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "addressCountry": "JP"
-    },
+    // No "geo" node until GMB registration yields official coordinates — a
+    // GeoCoordinates without latitude/longitude is invalid and Google flags it,
+    // which is worse than omitting it. Matches the homepage LodgingBusiness.
     "checkinTime": p.checkIn || "15:00",
     "checkoutTime": p.checkOut || "10:00",
     "amenityFeature": (p.amenities || []).map(a => ({
