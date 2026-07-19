@@ -1027,16 +1027,115 @@ app.get('/rooms/:id.html', (req, res) => {
 // ==================== SEO: SITEMAP & ROBOTS ====================
 // (Must be BEFORE static middleware so Express doesn't 404 on these)
 
+// AI / LLM crawlers we explicitly welcome (GEO - generative engine optimisation).
+// Being cited by ChatGPT / Perplexity / Claude when someone asks "大阪包棟民宿推薦"
+// is free distribution, so we opt in rather than rely on the catch-all group.
+// NOTE: robots.txt has no rule inheritance - a named User-agent group ignores the
+// `*` group entirely, so every group below must repeat the Disallow lines.
+const AI_CRAWLERS = [
+  'GPTBot',          // OpenAI - model training
+  'OAI-SearchBot',   // OpenAI - ChatGPT Search index
+  'ChatGPT-User',    // OpenAI - live fetch on user request
+  'ClaudeBot',       // Anthropic - crawler
+  'Claude-Web',      // Anthropic - live fetch
+  'anthropic-ai',    // Anthropic - legacy token
+  'PerplexityBot',   // Perplexity - index
+  'Perplexity-User', // Perplexity - live fetch
+  'Google-Extended', // Google - Gemini / AI Overviews grounding
+  'Applebot-Extended',
+  'Bingbot',
+  'CCBot',           // Common Crawl - feeds many open models
+  'Meta-ExternalAgent',
+  'Bytespider'
+];
+
 app.get('/robots.txt', (req, res) => {
   const siteUrl = SITE_URL;
+  const disallow = 'Disallow: /admin.html\nDisallow: /api/';
+  const groups = ['User-agent: *\nAllow: /\n' + disallow];
+  for (const bot of AI_CRAWLERS) {
+    groups.push(`User-agent: ${bot}\nAllow: /\n${disallow}`);
+  }
   res.type('text/plain');
-  res.send(`User-agent: *
-Allow: /
-Disallow: /admin.html
-Disallow: /api/
+  res.send(`${groups.join('\n\n')}
 
 Sitemap: ${siteUrl}/sitemap.xml
+LLM-Content: ${siteUrl}/llms.txt
 `);
+});
+
+// llms.txt (https://llmstxt.org) - a plain-text digest for AI assistants.
+// Sitemaps tell a crawler *where* pages are; this tells a model *what we are* in
+// a form it can lift facts from without parsing our Tailwind-heavy HTML. Built
+// from the DB so it never drifts from the live site the way a static file would.
+app.get('/llms.txt', (req, res) => {
+  const siteUrl = SITE_URL;
+  const L = (v) => localizeField(v, 'zh-TW') || '';
+  const setting = (key, fallback) => {
+    try {
+      const row = db.prepare('SELECT value FROM site_settings WHERE key = ?').get(key);
+      return row ? (L(JSON.parse(row.value)) || fallback) : fallback;
+    } catch { return fallback; }
+  };
+
+  const properties = db.prepare(
+    'SELECT id, name, regionZh, capacity, transportInfo, nearestStation FROM properties ORDER BY regionZh, id'
+  ).all();
+  const posts = db.prepare(
+    "SELECT slug, title_zh, excerpt_zh FROM blog_posts WHERE status = 'published' ORDER BY publishedAt DESC"
+  ).all();
+
+  const lines = [];
+  lines.push('# 大阪旅行日民宿 OSAKA TRAVELDAYS');
+  lines.push('');
+  lines.push('> 大阪各區精選包棟民宿與公寓式住宿，由 ' + setting('footer.company', 'DAIDODO合同会社') +
+             ' 營運。主打大正區、心齋橋、難波、西九條等鄰近車站地段，適合家庭旅遊與團體整棟入住，' +
+             '提供中文客服。另有關西包車與機場接送服務。');
+  lines.push('');
+
+  lines.push('## 基本資訊');
+  lines.push('');
+  lines.push('- 營運公司：' + setting('footer.company', 'DAIDODO合同会社'));
+  lines.push('- 公司地址：' + setting('footer.address', '大阪市中央区上本町西3−3−２'));
+  lines.push('- LINE：' + setting('footer.line', '@fgk8695x'));
+  lines.push('- Email：' + setting('footer.email', 'support@traveldays.jp'));
+  lines.push('- 入住時間：15:00　退房時間：10:00');
+  lines.push('- 行李寄放：退房後僅可寄放至當日下午 1 點');
+  lines.push('- 訂房方式：透過 Airbnb，或以 LINE / Email 直接聯繫（最少 2 晚）');
+  lines.push('- 服務語言：繁體中文、日本語、English');
+  lines.push('');
+
+  lines.push('## 主要頁面');
+  lines.push('');
+  lines.push(`- [首頁 — 房源總覽](${siteUrl}/)：依地區瀏覽全部房源`);
+  lines.push(`- [包車服務](${siteUrl}/charter)：關西一日遊貸切包車、關空機場接送，7 人座休旅車配中文司導`);
+  lines.push(`- [部落格](${siteUrl}/blog)：大阪住宿、交通與景點指南`);
+  lines.push(`- [房東合作](${siteUrl}/become-host.html)：房源託管、清潔與經營一站式服務`);
+  lines.push(`- [隱私政策](${siteUrl}/privacy.html)`);
+  lines.push(`- [使用條款](${siteUrl}/terms.html)`);
+  lines.push('');
+
+  lines.push(`## 房源（共 ${properties.length} 間）`);
+  lines.push('');
+  for (const p of properties) {
+    const desc = [p.regionZh, L(p.transportInfo), p.capacity].filter(Boolean).join('・');
+    lines.push(`- [${L(p.name)}](${siteUrl}/rooms/${encodeURIComponent(p.id)}.html)：${desc}`);
+  }
+  lines.push('');
+
+  if (posts.length) {
+    lines.push('## 部落格文章');
+    lines.push('');
+    for (const b of posts) {
+      const desc = b.excerpt_zh ? stripHtmlForMeta(b.excerpt_zh).substring(0, 120) : '';
+      lines.push(`- [${b.title_zh || b.slug}](${siteUrl}/blog/${encodeURIComponent(b.slug)})` + (desc ? `：${desc}` : ''));
+    }
+    lines.push('');
+  }
+
+  res.type('text/plain; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=300');
+  res.send(lines.join('\n'));
 });
 
 app.get('/sitemap.xml', (req, res) => {
@@ -1190,6 +1289,13 @@ app.use(express.static(__dirname, {
     }
   }
 }));
+
+// Retired standalone charter landing page -> consolidated into /charter.
+// Kept as a 301 so any externally shared link (LINE/social) still lands somewhere
+// and passes its link equity on instead of 404ing.
+app.get('/traveldays-osaka-charter-booking.html', (req, res) => {
+  res.redirect(301, '/charter');
+});
 
 // Pretty URL for charter service page
 // Use private, no-store so Varnish/CDN bypasses caching (admin-editable content)
