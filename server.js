@@ -834,6 +834,29 @@ function htmlSafeJson(obj) {
 // ==================== SSR: ROOM PAGES ====================
 const roomTemplate = fs.readFileSync(path.join(__dirname, 'room-template.html'), 'utf-8');
 
+// Replace the text content of an element located by its id attribute.
+function setTagText(html, id, text) {
+  const re = new RegExp(`(<[a-zA-Z0-9]+ id="${id}"[^>]*>)[\\s\\S]*?(</[a-zA-Z0-9]+>)`);
+  return html.replace(re, (_, open, close) => open + text + close);
+}
+
+// Replace one attribute's value on an element located by its id attribute.
+function setTagAttr(html, id, attr, value) {
+  const re = new RegExp(`(<[a-zA-Z0-9]+ id="${id}"[^>]*\\s${attr}=")[^"]*(")`);
+  return html.replace(re, (_, pre, post) => pre + escHtml(value) + post);
+}
+
+function pickLangSSR(row, field, lang) {
+  const LANG_KEY = { 'zh-TW': 'zh', 'ja': 'ja', 'en': 'en' };
+  const v = row[field + '_' + LANG_KEY[lang]];
+  if (v && String(v).trim()) return v;
+  const pk = LANG_KEY[row.primaryLang || 'zh-TW'];
+  return row[field + '_' + pk] || '';
+}
+
+// ==================== SSR: BLOG POST PAGES ====================
+const blogPostTemplate = fs.readFileSync(path.join(__dirname, 'blog-post.html'), 'utf-8');
+
 app.get('/rooms/:id.html', (req, res) => {
   const propertyId = req.params.id;
   const prop = db.prepare('SELECT * FROM properties WHERE id = ?').get(propertyId);
@@ -1304,16 +1327,133 @@ app.get('/charter', (req, res) => {
   res.sendFile(path.join(__dirname, 'charter.html'));
 });
 
-// Blog list and single-post pages (admin-editable, bypass cache)
+// Blog list page (admin-editable, bypass cache)
 app.get('/blog', (req, res) => {
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
   res.setHeader('Pragma', 'no-cache');
   res.sendFile(path.join(__dirname, 'blog.html'));
 });
+
+// SSR: single blog post — the client-rendered version left title/description/
+// canonical blank and the article body empty until JS ran, so every post looked
+// identical (and empty) to a crawler's first pass. Inject real per-post <head>
+// tags + JSON-LD + a <noscript> body fallback server-side, same pattern as the
+// room pages above. Client JS still re-renders on load for language switching.
 app.get('/blog/:slug', (req, res) => {
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
   res.setHeader('Pragma', 'no-cache');
-  res.sendFile(path.join(__dirname, 'blog-post.html'));
+
+  const row = db.prepare(
+    `SELECT p.*, c.slug AS categorySlug,
+            c.name_zh AS categoryName_zh, c.name_ja AS categoryName_ja, c.name_en AS categoryName_en
+       FROM blog_posts p
+       LEFT JOIN blog_categories c ON p.categoryId = c.id
+      WHERE p.slug = ? AND p.status = 'published'`
+  ).get(req.params.slug);
+
+  if (!row) {
+    res.status(404).send(`<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>找不到此篇文章 | 大阪旅行日民宿</title>
+  <meta name="robots" content="noindex">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body style="font-family:'Noto Sans TC',sans-serif;background:#FFFBF7;color:#2D1810;">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;">
+    <div>
+      <h1 style="font-family:'Noto Serif TC',serif;font-size:2rem;color:#8B4513;margin-bottom:0.5rem;">找不到此篇文章</h1>
+      <p style="color:#6B5344;margin-bottom:2rem;">此網址可能已失效或文章已被移除。</p>
+      <a href="/blog" style="display:inline-block;padding:14px 28px;background:linear-gradient(135deg,#8B4513,#A0522D);color:white;border-radius:12px;text-decoration:none;font-weight:600;">返回部落格</a>
+    </div>
+  </div>
+</body>
+</html>`);
+    return;
+  }
+
+  const lang = 'zh-TW';
+  const title = pickLangSSR(row, 'title', lang) || row.slug;
+  const body = pickLangSSR(row, 'body', lang) || '';
+  const excerpt = pickLangSSR(row, 'excerpt', lang) || '';
+  const metaDesc = (row.metaDesc_zh && row.metaDesc_zh.trim())
+                 || excerpt
+                 || stripHtmlForMeta(body.replace(/<[^>]*>/g, ' ')).substring(0, 160)
+                 || '';
+  const catName = row.categoryName_zh || '';
+  const date = row.publishedAt ? row.publishedAt.split(' ')[0] : '';
+  const url = `${SITE_URL}/blog/${encodeURIComponent(row.slug)}`;
+  const cover = row.coverImage || '';
+  const ogImage = cover && cover.startsWith('/') ? SITE_URL + cover : (cover || (SITE_URL + '/images/hero.jpg'));
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    description: metaDesc,
+    image: [ogImage],
+    author: { "@type": "Organization", name: "DAIDODO合同会社" },
+    publisher: {
+      "@type": "Organization",
+      name: "大阪旅行日民宿 OSAKA TRAVELDAYS",
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/images/logo.png` }
+    },
+    datePublished: row.publishedAt ? row.publishedAt.replace(' ', 'T') : undefined,
+    dateModified: row.updatedAt ? row.updatedAt.replace(' ', 'T') : undefined,
+    mainEntityOfPage: { "@type": "WebPage", "@id": url },
+    articleSection: catName || undefined,
+    inLanguage: lang
+  };
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "首頁", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "部落格", item: `${SITE_URL}/blog` },
+      { "@type": "ListItem", position: 3, name: title, item: url }
+    ]
+  };
+
+  let html = blogPostTemplate;
+  html = setTagText(html, 'pageTitle', escHtml(title + ' | 大阪旅行日民宿'));
+  html = setTagAttr(html, 'metaDescription', 'content', metaDesc);
+  html = setTagAttr(html, 'canonicalLink', 'href', url);
+  html = setTagAttr(html, 'hreflangZh', 'href', row.title_zh ? `${url}?lang=zh-TW` : url);
+  html = setTagAttr(html, 'hreflangJa', 'href', row.title_ja ? `${url}?lang=ja` : url);
+  html = setTagAttr(html, 'hreflangEn', 'href', row.title_en ? `${url}?lang=en` : url);
+  html = setTagAttr(html, 'hreflangDef', 'href', url);
+  html = setTagAttr(html, 'ogTitle', 'content', title);
+  html = setTagAttr(html, 'ogDescription', 'content', metaDesc);
+  html = setTagAttr(html, 'ogUrl', 'content', url);
+  html = setTagAttr(html, 'ogImage', 'content', ogImage);
+  html = setTagAttr(html, 'twTitle', 'content', title);
+  html = setTagAttr(html, 'twDescription', 'content', metaDesc);
+  html = setTagAttr(html, 'twImage', 'content', ogImage);
+  html = setTagText(html, 'ldjson', htmlSafeJson(jsonLd));
+  html = html.replace('</head>', `<script type="application/ld+json">${htmlSafeJson(breadcrumbLd)}</script>\n</head>`);
+
+  // SSR fallback content — visible to crawlers/parsers that don't execute JS.
+  // The stored body HTML is already sanitized at the write boundary (see
+  // sanitize-html usage on the blog POST/PUT routes), same trust boundary the
+  // client-side innerHTML assignment relies on.
+  const ssrContent = `
+    <noscript>
+      <article class="container mx-auto px-4 py-20 max-w-3xl">
+        <h1 class="text-3xl font-bold text-amber-900 mb-4">${escHtml(title)}</h1>
+        ${catName ? `<p class="text-amber-600 mb-2">${escHtml(catName)}</p>` : ''}
+        ${date ? `<p class="text-amber-700 mb-4">${escHtml(date)}</p>` : ''}
+        ${cover ? `<img src="${escHtml(cover)}" alt="${escHtml(title)}" style="max-width:100%;height:auto;">` : ''}
+        <div class="mt-6">${body}</div>
+      </article>
+    </noscript>`;
+  html = html.replace('</main>', ssrContent + '\n  </main>');
+
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(html);
 });
 
 // ==================== API ROUTES ====================
