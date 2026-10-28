@@ -1014,6 +1014,17 @@ app.get('/rooms/:id.html', (req, res) => {
   html = html.replace(/<title>[^<]*<\/title>/, seoHead);
   // Inject SSR content after the loading div
   html = html.replace('</main>', ssrContent + '\n  </main>');
+  // Monthly-stay mode (?monthly=1, linked from /monthly): only when this room is
+  // in the admin's monthly.items list. Swaps the booking box for the admin-set
+  // monthly price + LINE/WhatsApp contact — no Airbnb anywhere in this flow.
+  let monthlyItem = null;
+  if (req.query.monthly) {
+    try {
+      const row = db.prepare("SELECT value FROM site_settings WHERE key = 'monthly.items'").get();
+      const items = row ? JSON.parse(row.value) : [];
+      monthlyItem = (Array.isArray(items) && items.find(it => it.propertyId === propertyId)) || null;
+    } catch (e) {}
+  }
   // Inject mobile booking bar (SSR — no JS dependency)
   {
     const trackUrl = p.airbnbUrl ? p.airbnbUrl + (p.airbnbUrl.includes('?') ? '&' : '?') + 'utm_source=osaka-traveldays&utm_medium=website&utm_campaign=room-page' : '';
@@ -1027,15 +1038,17 @@ app.get('/rooms/:id.html', (req, res) => {
     const lineBtn = `<a href="https://lin.ee/YDEZNOL" target="_blank" rel="noopener" class="booking-btn" data-gtag-label="line_booking">${iconLine}<span class="booking-label">LINE專人客服訂房</span>${chevron}</a>`;
     const waBtn = `<a href="https://wa.me/+819054076414" target="_blank" rel="noopener" class="booking-btn" data-gtag-label="whatsapp_booking">${iconWa}<span class="booking-label">電話·WhatsApp預約</span>${chevron}</a>`;
     const mobileBarHtml = `<div id="mobileBookingBar" class="mobile-booking-bar booking-wrapper" style="flex-direction:column;align-items:stretch;padding:0;background:transparent;border-top:none;box-shadow:none;">` +
-      `<div class="booking-popup" style="bottom:100%;top:auto;margin:0 0 8px 0;">${airbnbBtn}${lineBtn}${waBtn}</div>` +
+      `<div class="booking-popup" style="bottom:100%;top:auto;margin:0 0 8px 0;">${monthlyItem ? '' : airbnbBtn}${lineBtn}${waBtn}</div>` +
       `<button type="button" class="booking-primary" onclick="toggleBookingPopup(this)" style="border-radius:0;">` +
-      `<span id="mobileBookingBarText">立即預訂</span>` +
+      `<span id="mobileBookingBarText">${monthlyItem ? '月租洽詢 ¥' + monthlyItem.price.toLocaleString('en-US') + ' / 月' : '立即預訂'}</span>` +
       `<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>` +
       `</button></div>`;
     html = html.replace('<!-- MOBILE_BOOKING_BAR_PLACEHOLDER -->', mobileBarHtml);
   }
   // Inject full multilingual property data for client-side language switching
   const propDataScript = `<script>window.__PROPERTY_DATA = ${htmlSafeJson(p)};</script>`;
+  // __MONTHLY must exist before the template's main script runs, so it goes in <head>
+  html = html.replace('</head>', `<script>window.__MONTHLY = ${htmlSafeJson(monthlyItem)};</script>\n</head>`);
   html = html.replace('</body>', propDataScript + '\n</body>');
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -1325,6 +1338,13 @@ app.get('/charter', (req, res) => {
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
   res.setHeader('Pragma', 'no-cache');
   res.sendFile(path.join(__dirname, 'charter.html'));
+});
+
+// Monthly-stay listing page (admin-editable, bypass cache)
+app.get('/monthly', (req, res) => {
+  res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.sendFile(path.join(__dirname, 'monthly.html'));
 });
 
 // Blog list page (admin-editable, bypass cache)
@@ -2001,7 +2021,7 @@ const ALLOWED_SETTINGS_KEYS = new Set([
   'faq.items', 'footer.email', 'footer.line', 'footer.company', 'footer.address',
   'footer.partners', 'menu.product',
   'charter.body.zh-TW', 'charter.body.ja', 'charter.body.en',
-  'charter.hero.image'
+  'charter.hero.image', 'monthly.items'
 ]);
 
 // Get all settings (public)
@@ -2036,6 +2056,20 @@ app.post('/api/settings', requireAuth, (req, res) => {
   let storedValue = value;
   if (key.trim().startsWith('charter.body.')) {
     storedValue = cleanBody(typeof value === 'string' ? value : '');
+  }
+  // monthly.items: [{ propertyId, price, note }] — keep only well-formed rows
+  // pointing at existing properties; note is plain text (escaped on render).
+  if (key.trim() === 'monthly.items') {
+    if (!Array.isArray(value)) return res.status(400).json({ error: 'monthly.items must be an array' });
+    const exists = db.prepare('SELECT 1 FROM properties WHERE id = ?');
+    const seen = new Set();
+    storedValue = value
+      .filter(it => it && typeof it.propertyId === 'string' && exists.get(it.propertyId) && !seen.has(it.propertyId) && seen.add(it.propertyId))
+      .map(it => ({
+        propertyId: it.propertyId,
+        price: Math.max(0, Math.round(Number(it.price) || 0)),
+        note: String(it.note || '').slice(0, 200)
+      }));
   }
   db.prepare(`INSERT INTO site_settings (key, value, updatedAt) VALUES (?, ?, CURRENT_TIMESTAMP)
     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updatedAt = CURRENT_TIMESTAMP`)

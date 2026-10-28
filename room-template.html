@@ -553,6 +553,13 @@
       return localStorage.getItem('lang') || 'zh-TW';
     }
 
+    // Monthly-stay mode: set by server only for ?monthly=1 on a room listed in monthly.items
+    var MONTHLY = window.__MONTHLY || null;
+    function mobileBarLabel(lang) {
+      var T = ROOM_T[lang];
+      return MONTHLY ? T.monthlyCta + ' ¥' + Number(MONTHLY.price).toLocaleString('en-US') + T.perMonth : T.bookNow;
+    }
+
     var ROOM_T = {
       'zh-TW': {
         intro: '房源介紹',
@@ -588,6 +595,12 @@
         bookingWaTitle: '電話·WhatsApp預約',
         shareThis: '分享這間房',
         shareCopy: '複製連結',
+        monthlyTitle: '月租方案',
+        monthlySpecial: '月租優惠',
+        perMonth: ' / 月',
+        monthlyDesc: '歡迎聯絡客服洽詢月租入住日期與細節',
+        monthlyCta: '月租洽詢',
+        monthlyLine: 'LINE 聯絡客服',
         shareCopied: '已複製連結'
       },
       'ja': {
@@ -624,6 +637,12 @@
         bookingWaTitle: '電話・WhatsApp予約',
         shareThis: 'この部屋をシェア',
         shareCopy: 'リンクをコピー',
+        monthlyTitle: 'マンスリープラン',
+        monthlySpecial: 'マンスリー特別価格',
+        perMonth: ' / 月',
+        monthlyDesc: '入居日や詳細はカスタマーサービスまでお気軽にお問い合わせください',
+        monthlyCta: 'マンスリーのお問い合わせ',
+        monthlyLine: 'LINE でお問い合わせ',
         shareCopied: 'コピーしました'
       },
       'en': {
@@ -660,6 +679,12 @@
         bookingWaTitle: 'Phone · WhatsApp',
         shareThis: 'Share this room',
         shareCopy: 'Copy link',
+        monthlyTitle: 'Monthly Stay',
+        monthlySpecial: 'Monthly Special',
+        perMonth: ' / month',
+        monthlyDesc: 'Contact us for move-in dates and details',
+        monthlyCta: 'Monthly Inquiry',
+        monthlyLine: 'LINE Customer Service',
         shareCopied: 'Link copied'
       }
     };
@@ -1035,7 +1060,8 @@
       }
 
       // ========== Mobile Availability Calendar ==========
-      if (p.ical_url) {
+      // (hidden in monthly mode — the calendar is Airbnb nightly availability)
+      if (p.ical_url && !MONTHLY) {
         html += '<section class="py-12 lg:hidden bg-amber-50/50" id="mobileCalendarSection">' +
           '<div class="container mx-auto px-4">' +
           '<h2 class="text-2xl font-serif text-amber-900 mb-6 section-title">' + ROOM_T[lang].availability + '</h2>' +
@@ -1056,13 +1082,27 @@
       var sidebarEl = document.getElementById('roomSidebar');
       if (sidebarEl) {
         var sidebarHtml = '';
-        if (p.ical_url) {
+        if (p.ical_url && !MONTHLY) {
           sidebarHtml += '<div style="background:#fff;border:1px solid #fde68a;border-radius:12px;padding:20px;margin-bottom:16px">' +
             '<h3 style="font-size:1rem;font-weight:600;color:#92400e;margin-bottom:12px;font-family:serif">' + ROOM_T[lang].availability + '</h3>' +
             '<div id="availabilityCalendar" style="min-height:220px">' +
             '<p style="color:#9ca3af;font-size:0.95rem">' + ROOM_T[lang].loading + '</p></div>' +
             '</div>';
         }
+        if (MONTHLY) {
+          // Monthly mode: admin-set price + customer-service contact, no Airbnb
+          sidebarHtml += '<div style="background:linear-gradient(135deg,#78350f,#451a03);border-radius:12px;padding:20px;text-align:center">' +
+            '<h3 style="font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:12px;font-family:serif">' + ROOM_T[lang].monthlyTitle + '</h3>' +
+            '<p style="color:#fcd34d;font-size:0.9rem;font-weight:600;letter-spacing:0.1em;margin-bottom:2px">' + ROOM_T[lang].monthlySpecial + '</p>' +
+            '<p style="color:#fff;font-size:2rem;font-weight:700;line-height:1.2;margin-bottom:8px">¥' + Number(MONTHLY.price).toLocaleString('en-US') +
+            '<span style="font-size:1rem;font-weight:500">' + ROOM_T[lang].perMonth + '</span></p>' +
+            (MONTHLY.note ? '<p style="color:#fde68a;font-size:0.85rem;margin-bottom:8px">' + esc(MONTHLY.note) + '</p>' : '') +
+            '<p style="color:#fcd34d;font-size:0.8rem;margin-bottom:16px">' + ROOM_T[lang].monthlyDesc + '</p>' +
+            '<a href="https://lin.ee/YDEZNOL" target="_blank" rel="noopener" class="booking-primary" data-gtag-label="line_monthly" style="text-decoration:none;justify-content:center;margin-bottom:8px;background:#06C755">' + ROOM_T[lang].monthlyLine + '</a>' +
+            '<a href="https://wa.me/+819054076414" target="_blank" rel="noopener" class="booking-primary" data-gtag-label="whatsapp_monthly" style="text-decoration:none;justify-content:center;background:#25D366">' + ROOM_T[lang].bookingWaTitle + '</a>' +
+            '</div>';
+          sidebarEl.innerHTML = sidebarHtml;
+        } else {
         // Booking box: 立即預訂 primary + hover popup with 3 options
         sidebarHtml += '<div style="background:linear-gradient(135deg,#78350f,#451a03);border-radius:12px;padding:20px">' +
           '<h3 style="font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:8px;font-family:serif;text-align:center">' + ROOM_T[lang].selectDates + '</h3>' +
@@ -1087,10 +1127,11 @@
           iconWa + '<span class="booking-label">' + ROOM_T[lang].bookingWaTitle + '</span>' + chevron + '</a>';
         sidebarHtml += '</div></div></div>';
         sidebarEl.innerHTML = sidebarHtml;
+        }
       }
 
       // ========== Load Availability Calendar ==========
-      if (p.ical_url) {
+      if (p.ical_url && !MONTHLY) {
         clearInterval(calPollInterval);
         loadAvailability(propertyId, { fresh: true });
         calPollInterval = setInterval(function() { loadAvailability(propertyId); }, 10000);
@@ -1382,7 +1423,7 @@
         renderRoomContent(lang);
         // Update mobile booking bar text
         var mobileBarText = document.getElementById('mobileBookingBarText');
-        if (mobileBarText && ROOM_T[lang]) mobileBarText.textContent = ROOM_T[lang].bookNow;
+        if (mobileBarText && ROOM_T[lang]) mobileBarText.textContent = mobileBarLabel(lang);
         // Update nav links
         if (ROOM_T[lang]) {
           document.querySelectorAll('[data-i18n-room]').forEach(function(el) {
@@ -1417,7 +1458,7 @@
       renderRoomContent(_initLang);
       // Sync mobile booking bar text to initial language
       var _mbarText = document.getElementById('mobileBookingBarText');
-      if (_mbarText && ROOM_T[_initLang]) _mbarText.textContent = ROOM_T[_initLang].bookNow;
+      if (_mbarText && ROOM_T[_initLang]) _mbarText.textContent = mobileBarLabel(_initLang);
       // Sync nav links to initial language
       if (ROOM_T[_initLang]) {
         document.querySelectorAll('[data-i18n-room]').forEach(function(el) {

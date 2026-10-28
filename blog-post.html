@@ -57,7 +57,7 @@
     @media (max-width: 767px) { .footer-section-mobile { margin-top: 2.5rem; } }
 
     #mobileNav { position:fixed; left:0; right:0; z-index:45; background:white; border-bottom:1px solid #fef3c7; box-shadow:0 4px 12px rgba(0,0,0,0.08); max-height:0; overflow:hidden; transition:max-height 0.25s ease; }
-    #mobileNav.open { max-height: 360px; }
+    #mobileNav.open { max-height: 420px; }
     #mobileNav a { display:block; padding:0.875rem 1.5rem; color:#92400e; font-size:1rem; font-weight:500; border-bottom:1px solid #fef9ee; text-decoration:none; }
     #mobileNav a:last-child { border-bottom: none; }
     @media (min-width: 768px) { #mobileNav { display: none; } }
@@ -138,6 +138,7 @@
           <nav class="hidden md:flex items-center space-x-8">
             <a href="/become-host.html" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.becomeHost">成為房東/達人</a>
             <a href="/charter" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.charter">包車服務</a>
+            <a href="/monthly" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.monthly">月租民宿</a>
             <a href="/blog" class="text-amber-700 font-bold border-b-2 border-amber-600" data-i18n="nav.blog">部落格</a>
             <a href="/#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.rooms">房源一覽</a>
             <a href="/#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.about">關於我們</a>
@@ -152,6 +153,7 @@
   <nav id="mobileNav" style="top: 72px;">
     <a href="/become-host.html" data-i18n="nav.becomeHost">成為房東/達人</a>
     <a href="/charter" data-i18n="nav.charter">包車服務</a>
+    <a href="/monthly" data-i18n="nav.monthly">月租民宿</a>
     <a href="/blog" data-i18n="nav.blog">部落格</a>
     <a href="/#properties" data-i18n="nav.rooms">房源一覽</a>
     <a href="/#about" data-i18n="nav.about">關於我們</a>
@@ -213,13 +215,13 @@
   <script>
     const SITE = 'https://stay.traveldays.com.tw';
     const TRANSLATIONS = {
-      'zh-TW': { 'nav.becomeHost':'成為房東/達人','nav.charter':'包車服務','nav.blog':'部落格','nav.rooms':'房源一覽','nav.about':'關於我們',
+      'zh-TW': { 'nav.becomeHost':'成為房東/達人','nav.charter':'包車服務','nav.monthly':'月租民宿','nav.blog':'部落格','nav.rooms':'房源一覽','nav.about':'關於我們',
         'footer.tagline':'精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。','footer.contact':'聯絡資訊','footer.company':'公司資訊','footer.company.name':'DAIDODO合同会社','footer.address':'大阪市中央区上本町西3−3−２',
         'banner.fallback':'本篇尚無此語言版本，顯示原始版本：','prev':'上一篇','next':'下一篇' },
-      'ja':    { 'nav.becomeHost':'ホストになる','nav.charter':'チャーター便','nav.blog':'ブログ','nav.rooms':'物件一覧','nav.about':'私たちについて',
+      'ja':    { 'nav.becomeHost':'ホストになる','nav.charter':'チャーター便','nav.monthly':'マンスリー民泊','nav.blog':'ブログ','nav.rooms':'物件一覧','nav.about':'私たちについて',
         'footer.tagline':'大阪各エリアの厳選民泊で、忘れられない日本旅行体験を。','footer.contact':'お問い合わせ','footer.company':'会社情報','footer.company.name':'DAIDODO合同会社','footer.address':'大阪市中央区上本町西3−3−２',
         'banner.fallback':'この言語の翻訳がないため、元の言語で表示しています：','prev':'前の記事','next':'次の記事' },
-      'en':    { 'nav.becomeHost':'Become a Host','nav.charter':'Charter Service','nav.blog':'Blog','nav.rooms':'Properties','nav.about':'About Us',
+      'en':    { 'nav.becomeHost':'Become a Host','nav.charter':'Charter Service','nav.monthly':'Monthly Stays','nav.blog':'Blog','nav.rooms':'Properties','nav.about':'About Us',
         'footer.tagline':'Curated Osaka guesthouses for unforgettable Japan stays.','footer.contact':'Contact','footer.company':'Company','footer.company.name':'DAIDODO LLC','footer.address':'3-3-2 Uehommachi Nishi, Chuo-ku, Osaka',
         'banner.fallback':'No translation available — showing the original:','prev':'Previous','next':'Next' }
     };

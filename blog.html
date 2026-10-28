@@ -89,7 +89,7 @@
       max-height: 0; overflow: hidden;
       transition: max-height 0.25s ease;
     }
-    #mobileNav.open { max-height: 360px; }
+    #mobileNav.open { max-height: 420px; }
     #mobileNav a {
       display: block; padding: 0.875rem 1.5rem; color: #92400e;
       font-size: 1rem; font-weight: 500;
@@ -175,6 +175,7 @@
           <nav class="hidden md:flex items-center space-x-8">
             <a href="/become-host.html" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.becomeHost">成為房東/達人</a>
             <a href="/charter" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.charter">包車服務</a>
+            <a href="/monthly" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.monthly">月租民宿</a>
             <a href="/blog" class="text-amber-700 font-bold border-b-2 border-amber-600" data-i18n="nav.blog">部落格</a>
             <a href="/#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.rooms">房源一覽</a>
             <a href="/#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.about">關於我們</a>
@@ -189,6 +190,7 @@
   <nav id="mobileNav" style="top: 72px;">
     <a href="/become-host.html" data-i18n="nav.becomeHost">成為房東/達人</a>
     <a href="/charter" data-i18n="nav.charter">包車服務</a>
+    <a href="/monthly" data-i18n="nav.monthly">月租民宿</a>
     <a href="/blog" data-i18n="nav.blog">部落格</a>
     <a href="/#properties" data-i18n="nav.rooms">房源一覽</a>
     <a href="/#about" data-i18n="nav.about">關於我們</a>
@@ -244,7 +246,7 @@
   <script>
     const TRANSLATIONS = {
       'zh-TW': {
-        'nav.becomeHost':'成為房東/達人','nav.charter':'包車服務','nav.blog':'部落格',
+        'nav.becomeHost':'成為房東/達人','nav.charter':'包車服務','nav.monthly':'月租民宿','nav.blog':'部落格',
         'nav.rooms':'房源一覽','nav.about':'關於我們','nav.contact':'聯絡我們',
         'footer.tagline':'精選大阪各區優質民宿，為您打造難忘的日本旅遊體驗。',
         'footer.contact':'聯絡資訊','footer.company':'公司資訊','footer.company.name':'DAIDODO合同会社',
@@ -256,7 +258,7 @@
         'metaDescription':'大阪旅行日民宿部落格 — 美食推薦、景點推薦、體驗推薦，為您整理最新大阪旅遊資訊。'
       },
       'ja': {
-        'nav.becomeHost':'ホストになる','nav.charter':'チャーター便','nav.blog':'ブログ',
+        'nav.becomeHost':'ホストになる','nav.charter':'チャーター便','nav.monthly':'マンスリー民泊','nav.blog':'ブログ',
         'nav.rooms':'物件一覧','nav.about':'私たちについて','nav.contact':'お問い合わせ',
         'footer.tagline':'大阪各エリアの厳選民泊で、忘れられない日本旅行体験を。',
         'footer.contact':'お問い合わせ','footer.company':'会社情報','footer.company.name':'DAIDODO合同会社',
@@ -268,7 +270,7 @@
         'metaDescription':'大阪トラベルデイズ民宿のブログ — グルメ・観光スポット・体験のおすすめを発信。'
       },
       'en': {
-        'nav.becomeHost':'Become a Host','nav.charter':'Charter Service','nav.blog':'Blog',
+        'nav.becomeHost':'Become a Host','nav.charter':'Charter Service','nav.monthly':'Monthly Stays','nav.blog':'Blog',
         'nav.rooms':'Properties','nav.about':'About Us','nav.contact':'Contact',
         'footer.tagline':'Curated Osaka guesthouses for unforgettable Japan stays.',
         'footer.contact':'Contact','footer.company':'Company','footer.company.name':'DAIDODO LLC',

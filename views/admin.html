@@ -234,6 +234,14 @@
         房源管理
         <span id="navPropertyCount" class="ml-auto text-xs text-white/40 bg-white/10 px-1.5 py-0.5 rounded">0</span>
       </button>
+      <button onclick="navigate('monthly')" data-nav="monthly"
+        class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/90 text-sm transition-colors">
+        <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        月租民宿
+        <span id="navMonthlyCount" class="ml-auto text-xs text-white/40 bg-white/10 px-1.5 py-0.5 rounded">0</span>
+      </button>
     </nav>
 
     <!-- Footer -->
@@ -1204,6 +1212,29 @@
       </div>
 
       <!-- View: Charter Service -->
+      <!-- View: Monthly Stays -->
+      <div id="view-monthly" class="hidden">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <h1 class="text-xl font-semibold">月租民宿</h1>
+          <div class="flex items-center gap-2 flex-wrap">
+            <a href="/monthly" target="_blank" rel="noopener" class="btn btn-default">預覽前台</a>
+            <button onclick="saveMonthly()" class="btn btn-primary">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              儲存
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">選擇月租房源</h2>
+            <span class="text-xs text-text-disabled">勾選「房源管理」中的房間並填月租價；照片與介紹沿用房源資料</span>
+          </div>
+          <div id="monthlyList" class="divide-y divide-border-subdued"></div>
+        </div>
+      </div>
+
       <div id="view-charter" class="hidden">
         <h1 class="text-xl font-semibold mb-6">包車服務</h1>
 
@@ -1534,6 +1565,7 @@ let AUTH_TOKEN = sessionStorage.getItem('admin_token') || '';
 
 // ==================== STATE ====================
 let properties = [];
+let monthlyItems = []; // site_settings 'monthly.items': [{ propertyId, price, note }]
 let regions = [];
 let regionMap = new Map(); // id → region, for O(1) lookup
 let currentView = 'dashboard';
@@ -1663,6 +1695,7 @@ async function loadData() {
     regions = await apiGet('/regions');
     regionMap = new Map(regions.map(r => [r.id, r]));
     properties = regions.flatMap(r => r.properties);
+    await loadMonthlyItems();
     updateCounts();
     renderCurrentView();
   } catch (err) {
@@ -1679,6 +1712,7 @@ function updateCounts() {
   document.getElementById('statRegions').textContent = regions.length;
   document.getElementById('statImages').textContent = totalImages;
   document.getElementById('navPropertyCount').textContent = properties.length;
+  document.getElementById('navMonthlyCount').textContent = monthlyItems.filter(it => properties.some(p => p.id === it.propertyId)).length;
   document.getElementById('navRegionCount').textContent = regions.length;
 }
 
@@ -1716,6 +1750,7 @@ function updateBreadcrumb(view) {
     regions: '區域管理',
     homepage: '首頁管理',
     charter: '包車服務',
+    monthly: '月租民宿',
     blog: '部落格',
     'blog-edit': '撰寫文章',
     'blog-categories': '部落格分類'
@@ -1744,6 +1779,7 @@ function renderCurrentView() {
     case 'regions': renderRegionList(); break;
     case 'homepage': loadHomepageSettings(); break;
     case 'charter': loadCharterSettings(); break;
+    case 'monthly': renderMonthlyList(); break;
     case 'blog': loadBlogPosts(); break;
     case 'blog-edit': break; // form is populated when opening
     case 'blog-categories': loadBlogCategories(); break;
@@ -1820,7 +1856,7 @@ function renderPropertyList() {
             : '<div class="w-full h-full flex items-center justify-center text-text-disabled"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>'}
         </div>
         <div class="min-w-0 flex-1">
-          <p class="text-sm font-medium truncate">${localDisplay(p.name)}</p>
+          <p class="text-sm font-medium truncate">${localDisplay(p.name)}${monthlyItems.some(it => it.propertyId === p.id) ? ' <span class="ml-1 px-1.5 py-0.5 rounded bg-amber-100 text-amber-800" style="font-size:11px;vertical-align:middle">月租</span>' : ''}</p>
           <p class="text-xs text-text-secondary truncate">${p.id}</p>
         </div>
         <div class="hidden sm:block text-sm text-text-secondary flex-shrink-0 w-24 truncate">
@@ -1837,6 +1873,71 @@ function renderPropertyList() {
         </svg>
       </div>`;
   }).join('');
+}
+
+// ==================== MONTHLY STAYS ====================
+async function loadMonthlyItems() {
+  try {
+    const settings = await apiGet('/settings');
+    monthlyItems = Array.isArray(settings && settings['monthly.items']) ? settings['monthly.items'] : [];
+  } catch (err) {
+    monthlyItems = [];
+  }
+}
+
+function renderMonthlyList() {
+  const list = document.getElementById('monthlyList');
+  if (properties.length === 0) {
+    list.innerHTML = '<div class="p-8 text-center text-text-secondary text-sm">尚無房源，請先到「房源管理」新增</div>';
+    return;
+  }
+  const byId = new Map(monthlyItems.map(it => [it.propertyId, it]));
+  list.innerHTML = properties.map(p => {
+    const it = byId.get(p.id);
+    const thumb = p.images && p.images.length > 0 ? p.images[0].url : '';
+    return `
+      <div class="monthly-row flex items-center gap-4 px-5 py-3 flex-wrap" data-id="${escHtml(p.id)}">
+        <label class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer">
+          <input type="checkbox" class="monthly-on w-4 h-4" ${it ? 'checked' : ''}>
+          <div class="w-14 h-10 rounded-lg overflow-hidden bg-surface flex-shrink-0">
+            ${thumb ? `<img src="${thumb}" class="w-full h-full object-cover" onerror="this.style.display='none'">` : ''}
+          </div>
+          <div class="min-w-0">
+            <p class="text-sm font-medium truncate">${localDisplay(p.name)}</p>
+            <p class="text-xs text-text-secondary truncate">${escHtml(p.id)}</p>
+          </div>
+        </label>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-sm text-text-secondary">¥</span>
+          <input type="number" min="0" step="1000" class="monthly-price form-input" style="width:8rem" placeholder="月租價" value="${it ? it.price : ''}">
+          <span class="text-sm text-text-secondary">/ 月</span>
+          <input type="text" maxlength="200" class="monthly-note form-input w-64" placeholder="備註（例：最短1個月，含水電）" value="${it ? escHtml(it.note || '') : ''}">
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function saveMonthly() {
+  const rows = document.querySelectorAll('#monthlyList .monthly-row');
+  const items = [];
+  for (const row of rows) {
+    if (!row.querySelector('.monthly-on').checked) continue;
+    const price = Number(row.querySelector('.monthly-price').value);
+    if (!price || price <= 0) {
+      showToast('已勾選的房源請填寫月租價', 'error');
+      row.querySelector('.monthly-price').focus();
+      return;
+    }
+    items.push({ propertyId: row.dataset.id, price, note: row.querySelector('.monthly-note').value.trim() });
+  }
+  try {
+    await apiPost('/settings', { key: 'monthly.items', value: items });
+    monthlyItems = items;
+    updateCounts();
+    showToast('月租民宿已儲存', 'success');
+  } catch (err) {
+    showToast('儲存失敗：' + err.message, 'error');
+  }
 }
 
 // ==================== PROPERTY FORM ====================
@@ -3452,4 +3553,4 @@ async function deleteBlogCategory(id) {
 checkAuth();
 </script>
 </body>
-</html>
+</html>
