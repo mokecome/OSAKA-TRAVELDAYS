@@ -127,6 +127,19 @@
       object-fit: cover;
     }
 
+    /* Monthly-mode checklist (月租費用包含 / 房屋詳細) — plain CSS, prebuilt Tailwind lacks some utilities */
+    .mf-section { margin-top: 3rem; }
+    .mf-section + .mf-section { margin-top: 2.5rem; }
+    .mf-group { margin-top: 1.25rem; }
+    .mf-group-title { font-size: 0.9rem; font-weight: 600; color: #15803d; margin-bottom: 0.6rem; }
+    .mf-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .mf-chip {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.4rem 0.85rem; border-radius: 9999px;
+      background: #f0fdf4; border: 1px solid #bbf7d0; color: #14532d; font-size: 0.9rem;
+    }
+    .mf-chip svg { width: 14px; height: 14px; color: #16a34a; flex-shrink: 0; }
+
     .amenity-item {
       display: flex;
       align-items: center;
@@ -461,6 +474,7 @@
       .share-toast.show { transform: translateX(-50%); }
     }
   </style>
+  <script src="/js/monthly-features.js?v=1"></script>
 </head>
 <body>
   <!-- Header -->
@@ -880,6 +894,30 @@
           '</div><span class="text-amber-800">' + esc(name) + '</span></div>';
       });
 
+      // ========== Monthly-mode checklist (only when opened from /monthly) ==========
+      var monthlyFeaturesHtml = '';
+      var mfSelected = MONTHLY && Array.isArray(p.monthlyFeatures) ? p.monthlyFeatures : [];
+      if (mfSelected.length && window.MONTHLY_FEATURE_SECTIONS) {
+        var mfLangIdx = { 'zh-TW': 1, 'ja': 2, 'en': 3 }[lang] || 1;
+        var mfCheck = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';
+        MONTHLY_FEATURE_SECTIONS.forEach(function(section) {
+          var groupsHtml = '';
+          section.groups.forEach(function(group) {
+            var chips = group.items.filter(function(it) { return mfSelected.indexOf(it[0]) !== -1; }).map(function(it) {
+              return '<span class="mf-chip">' + mfCheck + esc(it[mfLangIdx]) + '</span>';
+            });
+            if (chips.length) {
+              groupsHtml += '<div class="mf-group"><p class="mf-group-title">' + esc(group.title[lang] || group.title['zh-TW']) + '</p>' +
+                '<div class="mf-chips">' + chips.join('') + '</div></div>';
+            }
+          });
+          if (groupsHtml) {
+            monthlyFeaturesHtml += '<div class="mf-section"><h3 class="text-xl font-serif text-amber-900">' +
+              esc(section.title[lang] || section.title['zh-TW']) + '</h3>' + groupsHtml + '</div>';
+          }
+        });
+      }
+
       // ==================== Build full page ====================
       var html = '';
 
@@ -951,6 +989,9 @@
           '<div class="prose prose-amber mt-8">' + introHtml + '</div>' +
           (qiHtml ? '<div class="mt-8 grid grid-cols-2 gap-4">' + qiHtml + '</div>' : '') +
           '</div></div>';
+
+        // Monthly checklist sits right before the photos
+        html += monthlyFeaturesHtml;
 
         // Gallery
         if (galleryHtml) {
@@ -1091,15 +1132,15 @@
         }
         if (MONTHLY) {
           // Monthly mode: admin-set price + customer-service contact, no Airbnb
-          sidebarHtml += '<div style="background:linear-gradient(135deg,#78350f,#451a03);border-radius:12px;padding:20px;text-align:center">' +
+          sidebarHtml += '<div style="background:linear-gradient(135deg,#16a34a,#14532d);border-radius:12px;padding:20px;text-align:center">' +
             '<h3 style="font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:12px;font-family:serif">' + ROOM_T[lang].monthlyTitle + '</h3>' +
-            '<p style="color:#fcd34d;font-size:0.9rem;font-weight:600;letter-spacing:0.1em;margin-bottom:2px">' + ROOM_T[lang].monthlySpecial + '</p>' +
+            '<p style="color:#bbf7d0;font-size:0.9rem;font-weight:600;letter-spacing:0.1em;margin-bottom:2px">' + ROOM_T[lang].monthlySpecial + '</p>' +
             '<p style="color:#fff;font-size:2rem;font-weight:700;line-height:1.2;margin-bottom:8px">¥' + Number(MONTHLY.price).toLocaleString('en-US') +
             '<span style="font-size:1rem;font-weight:500">' + ROOM_T[lang].perMonth + '</span></p>' +
-            (MONTHLY.note ? '<p style="color:#fde68a;font-size:0.85rem;margin-bottom:8px">' + esc(MONTHLY.note) + '</p>' : '') +
-            '<p style="color:#fcd34d;font-size:0.8rem;margin-bottom:16px">' + ROOM_T[lang].monthlyDesc + '</p>' +
-            '<a href="https://lin.ee/YDEZNOL" target="_blank" rel="noopener" class="booking-primary" data-gtag-label="line_monthly" style="text-decoration:none;justify-content:center;margin-bottom:8px;background:#06C755">' + ROOM_T[lang].monthlyLine + '</a>' +
-            '<a href="https://wa.me/+819054076414" target="_blank" rel="noopener" class="booking-primary" data-gtag-label="whatsapp_monthly" style="text-decoration:none;justify-content:center;background:#25D366">' + ROOM_T[lang].bookingWaTitle + '</a>' +
+            (MONTHLY.note ? '<p style="color:#dcfce7;font-size:0.85rem;margin-bottom:8px">' + esc(MONTHLY.note) + '</p>' : '') +
+            '<p style="color:#bbf7d0;font-size:0.8rem;margin-bottom:16px">' + ROOM_T[lang].monthlyDesc + '</p>' +
+            '<a href="https://lin.ee/YDEZNOL" target="_blank" rel="noopener" class="booking-primary" data-gtag-label="line_monthly" style="text-decoration:none;justify-content:center;margin-bottom:8px;background:#fff;color:#15803d;border-color:#fff;box-shadow:none">' + ROOM_T[lang].monthlyLine + '</a>' +
+            '<a href="https://wa.me/+819054076414" target="_blank" rel="noopener" class="booking-primary" data-gtag-label="whatsapp_monthly" style="text-decoration:none;justify-content:center;background:transparent;color:#fff;border-color:rgba(255,255,255,0.7);box-shadow:none">' + ROOM_T[lang].bookingWaTitle + '</a>' +
             '</div>';
           sidebarEl.innerHTML = sidebarHtml;
         } else {

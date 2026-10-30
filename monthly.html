@@ -97,18 +97,18 @@
     @media (min-width: 768px) { #mobileNav { display: none; } }
 
     /* Monthly listing */
-    .monthly-hero { padding: 9rem 1rem 3rem; text-align: center; background: linear-gradient(180deg, #fef3c7 0%, #FFFBF7 100%); }
+    .monthly-hero { padding: 9rem 1rem 3rem; text-align: center; background: linear-gradient(180deg, #dcfce7 0%, #f0fdf4 100%); }
     #monthlyGrid { max-width: 1200px; margin: 0 auto; padding: 0 16px 64px; display: grid; gap: 28px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
     @media (max-width: 400px) { #monthlyGrid { grid-template-columns: 1fr; } }
-    .monthly-card { display: block; background: #fff; border: 1px solid #fde68a; border-radius: 16px; overflow: hidden; text-decoration: none; color: inherit; box-shadow: 0 4px 16px rgba(120,53,15,0.06); transition: transform 0.2s ease, box-shadow 0.2s ease; }
-    .monthly-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(120,53,15,0.14); }
-    .monthly-card .cover { aspect-ratio: 4 / 3; background: #fef3c7; overflow: hidden; }
+    .monthly-card { display: block; background: #fff; border: 1px solid #bbf7d0; border-radius: 16px; overflow: hidden; text-decoration: none; color: inherit; box-shadow: 0 4px 16px rgba(21,128,61,0.08); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .monthly-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(21,128,61,0.18); }
+    .monthly-card .cover { aspect-ratio: 4 / 3; background: #dcfce7; overflow: hidden; }
     .monthly-card .cover img { width: 100%; height: 100%; object-fit: cover; }
     .monthly-card .body { padding: 18px 20px 20px; }
-    .monthly-special { color: #b45309; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.12em; }
-    .monthly-price { color: #78350f; font-size: 2rem; font-weight: 700; line-height: 1.2; }
+    .monthly-special { color: #16a34a; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.12em; }
+    .monthly-price { color: #14532d; font-size: 2rem; font-weight: 700; line-height: 1.2; }
     .monthly-price small { font-size: 1rem; font-weight: 500; }
-    .monthly-empty { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #92400e; }
+    .monthly-empty { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #166534; }
     .monthly-cta { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 999px; background: #06C755; color: #fff; font-weight: 700; text-decoration: none; }
     .monthly-cta:hover { filter: brightness(1.05); }
     /* Spacing/typography as plain CSS: css/tailwind.min.css is prebuilt and lacks these utilities */
@@ -116,9 +116,56 @@
     @media (min-width: 640px) { .monthly-hero h1 { font-size: 3rem; line-height: 1; } }
     .monthly-cta-section { text-align: center; padding: 1rem 1rem 5rem; }
     @media (min-width: 768px) { .monthly-cta-section { padding-bottom: 6rem; } }
+
+    /* Light-green theme: sets the monthly page apart from the brown 民宿 pages */
+    body.monthly-page { background-color: #f7fdf9; }
+    .mg-eyebrow { color: #15803d; }
+    .mg-title { color: #14532d; }
+    .mg-text { color: #166534; }
+    .mg-muted { color: #15803d; }
+
+    /* 租屋需求登記 form */
+    /* 租屋需求登記 opens as a modal from the 「租屋需求登記」 buttons */
+    .rr-modal { position: fixed; inset: 0; z-index: 100; background: rgba(20,83,45,0.45); overflow-y: auto; padding: 24px 12px; }
+    #rentalRequest { position: relative; max-width: 880px; margin: 0 auto; padding: 32px 16px 28px; background: #f7fdf9; border-radius: 18px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+    @media (min-width: 768px) { .rr-modal { padding: 48px 24px; } #rentalRequest { padding: 40px 32px 32px; } }
+    .rr-close { position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; border-radius: 50%; border: none; background: #dcfce7; color: #14532d; font-size: 24px; line-height: 40px; cursor: pointer; }
+    .rr-close:hover { background: #bbf7d0; }
+    .rr-open-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 999px; border: none; background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: 0 6px 16px rgba(22,163,74,0.3); font-family: inherit; }
+    .rr-open-btn:hover { filter: brightness(1.05); }
+    .rr-open-btn.ghost { background: #fff; color: #15803d; border: 2px solid #16a34a; box-shadow: none; }
+    .monthly-cta-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .rr-head { text-align: center; margin-bottom: 1.5rem; }
+    .rr-head h2 { font-size: 1.75rem; font-weight: 700; color: #14532d; }
+    .rr-head p { color: #166534; margin-top: 0.35rem; }
+    .rr-q { background: #fff; border: 1px solid #bbf7d0; border-radius: 14px; padding: 18px 18px 16px; margin-bottom: 14px; }
+    .rr-label { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #14532d; margin-bottom: 12px; }
+    .rr-num { width: 26px; height: 26px; border-radius: 50%; background: #16a34a; color: #fff; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .rr-req { color: #dc2626; }
+    .rr-hint { font-weight: 400; color: #15803d; font-size: 0.85rem; }
+    .rr-opts { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    .rr-opt { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid #d1fae5; border-radius: 10px; cursor: pointer; background: #fff; color: #1f2937; font-size: 0.95rem; line-height: 1.35; transition: border-color 0.15s, background 0.15s; }
+    .rr-opt:hover { border-color: #4ade80; }
+    .rr-opt input { accent-color: #16a34a; width: 16px; height: 16px; flex-shrink: 0; }
+    .rr-opt:has(input:checked) { border-color: #16a34a; background: #f0fdf4; }
+    .rr-input { width: 100%; padding: 11px 13px; border: 1px solid #bbf7d0; border-radius: 10px; font-size: 1rem; background: #fff; color: #1f2937; font-family: inherit; }
+    .rr-input:focus { outline: none; border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.15); }
+    textarea.rr-input { min-height: 96px; resize: vertical; }
+    .rr-sub { margin-top: 12px; }
+    .rr-sub label { display: block; font-size: 0.9rem; font-weight: 600; color: #14532d; margin-bottom: 6px; }
+    .rr-privacy { display: flex; gap: 12px; background: #f0fdf4; border-radius: 12px; padding: 14px 16px; margin: 18px 0; color: #166534; font-size: 0.85rem; }
+    .rr-privacy strong { display: block; color: #14532d; margin-bottom: 2px; }
+    .rr-submit { display: block; width: 100%; max-width: 420px; margin: 0 auto; padding: 15px; border: none; border-radius: 12px; background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; font-size: 1.1rem; font-weight: 700; cursor: pointer; box-shadow: 0 6px 16px rgba(22,163,74,0.3); }
+    .rr-submit:disabled { opacity: 0.6; cursor: wait; }
+    .rr-error { color: #dc2626; text-align: center; margin-top: 12px; }
+    .rr-success { text-align: center; background: #fff; border: 2px solid #4ade80; border-radius: 16px; padding: 40px 20px; color: #14532d; }
+    .rr-success .rr-check { width: 56px; height: 56px; border-radius: 50%; background: #16a34a; color: #fff; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+    .rr-success h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
+    .rr-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   </style>
+  <script src="/js/rental-request-options.js?v=1"></script>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen monthly-page">
 
   <!-- Header (mirrors index.html) -->
   <header class="fixed top-0 left-0 right-0 z-50 bg-white/90 header-blur border-b border-amber-100">
@@ -167,18 +214,93 @@
 
   <main>
     <section class="monthly-hero">
-      <p class="eyebrow text-amber-600 text-sm uppercase mb-4">MONTHLY STAY</p>
-      <h1 class="text-4xl font-serif text-amber-900 mb-4" data-i18n="nav.monthly">月租民宿</h1>
-      <p class="text-lg text-amber-800" data-i18n="monthly.tagline">長住大阪更划算・出差、遊學、旅居的第二個家</p>
+      <p class="eyebrow mg-eyebrow text-sm uppercase mb-4">MONTHLY STAY</p>
+      <h1 class="text-4xl font-serif mg-title mb-4" data-i18n="nav.monthly">月租民宿</h1>
+      <p class="text-lg mg-text" data-i18n="monthly.tagline">長住大阪更划算・出差、遊學、旅居的第二個家</p>
+      <div style="margin-top:1.5rem">
+        <button type="button" class="rr-open-btn ghost" onclick="openRentalRequest()" data-gtag-label="rental_request_open_hero" data-i18n="rr.title">租屋需求登記</button>
+      </div>
     </section>
 
     <div id="monthlyGrid">
       <div class="monthly-empty" data-i18n="monthly.loading">載入中…</div>
     </div>
 
+    <div class="rr-modal" id="rentalRequestModal" hidden onclick="if (event.target === this) closeRentalRequest()">
+    <section id="rentalRequest" role="dialog" aria-modal="true" aria-labelledby="rrTitle">
+      <button type="button" class="rr-close" onclick="closeRentalRequest()" aria-label="Close">&times;</button>
+      <div class="rr-head">
+        <h2 id="rrTitle" data-i18n="rr.title">租屋需求登記</h2>
+        <p data-i18n="rr.subtitle"></p>
+      </div>
+      <form id="rentalRequestForm" novalidate>
+        <div class="rr-q">
+          <div class="rr-label"><span class="rr-num">1</span><span data-i18n="rr.q.lookingFor"></span> <span class="rr-req">*</span></div>
+          <div class="rr-opts" data-rr-options="lookingFor"></div>
+        </div>
+        <div class="rr-q">
+          <div class="rr-label"><span class="rr-num">2</span><span data-i18n="rr.q.area"></span> <span class="rr-req">*</span></div>
+          <input type="text" name="area" class="rr-input" maxlength="100" required data-i18n-placeholder="rr.ph.area">
+        </div>
+        <div class="rr-q">
+          <div class="rr-label"><span class="rr-num">3</span><span data-i18n="rr.q.budget"></span> <span class="rr-req">*</span></div>
+          <div class="rr-opts" data-rr-options="budget"></div>
+        </div>
+        <div class="rr-q">
+          <div class="rr-label"><span class="rr-num">4</span><span data-i18n="rr.q.layout"></span> <span class="rr-req">*</span></div>
+          <div class="rr-opts" data-rr-options="layout"></div>
+        </div>
+        <div class="rr-q">
+          <div class="rr-label"><span class="rr-num">5</span><span data-i18n="rr.q.moveIn"></span> <span class="rr-req">*</span></div>
+          <div class="rr-opts" data-rr-options="moveIn"></div>
+        </div>
+        <div class="rr-q">
+          <div class="rr-label"><span class="rr-num">6</span><span data-i18n="rr.q.people"></span> <span class="rr-req">*</span></div>
+          <div class="rr-opts" data-rr-options="people"></div>
+        </div>
+        <div class="rr-q">
+          <div class="rr-label"><span class="rr-num">7</span><span data-i18n="rr.q.features"></span> <span class="rr-hint" data-i18n="rr.multi"></span></div>
+          <div class="rr-opts" data-rr-options="features"></div>
+        </div>
+        <div class="rr-q">
+          <div class="rr-label"><span class="rr-num">8</span><span data-i18n="rr.q.other"></span></div>
+          <textarea name="other" class="rr-input" maxlength="1000" data-i18n-placeholder="rr.ph.other"></textarea>
+        </div>
+        <div class="rr-q">
+          <div class="rr-label"><span class="rr-num">9</span><span data-i18n="rr.q.contact"></span> <span class="rr-req">*</span></div>
+          <div class="rr-opts" data-rr-options="contactVia"></div>
+          <div class="rr-sub">
+            <label for="rrEmail"><span data-i18n="rr.email"></span> <span class="rr-req">*</span></label>
+            <input type="email" id="rrEmail" name="email" class="rr-input" maxlength="200" required autocomplete="email" data-i18n-placeholder="rr.ph.email">
+          </div>
+          <div class="rr-sub" id="rrContactIdWrap" hidden>
+            <label for="rrContactId"><span data-i18n="rr.contactId"></span> <span class="rr-req">*</span></label>
+            <input type="text" id="rrContactId" name="contactId" class="rr-input" maxlength="100">
+          </div>
+        </div>
+        <div class="rr-hp" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+        <div class="rr-privacy">
+          <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          <div><strong data-i18n="rr.privacyTitle"></strong><span data-i18n="rr.privacy"></span></div>
+        </div>
+        <button type="submit" class="rr-submit" data-i18n="rr.submit">送出需求</button>
+        <p class="rr-error" id="rrError" hidden></p>
+      </form>
+      <div class="rr-success" id="rrSuccess" hidden>
+        <div class="rr-check"><svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+        <h3 data-i18n="rr.successTitle"></h3>
+        <p data-i18n="rr.successText"></p>
+        <button type="button" class="rr-open-btn" style="margin-top:1.25rem" onclick="closeRentalRequest()" data-i18n="rr.close">關閉</button>
+      </div>
+    </section>
+    </div>
+
     <section class="monthly-cta-section">
-      <p class="text-amber-900 text-lg mb-5" data-i18n="monthly.ctaText">想了解入住日期與細節？歡迎聯絡客服</p>
-      <a href="https://lin.ee/YDEZNOL" target="_blank" rel="noopener" class="monthly-cta" data-gtag-label="line_monthly" data-i18n="monthly.ctaBtn">LINE 聯絡客服</a>
+      <p class="mg-title text-lg mb-5" data-i18n="monthly.ctaText">想了解入住日期與細節？歡迎聯絡客服</p>
+      <div class="monthly-cta-row">
+        <button type="button" class="rr-open-btn" onclick="openRentalRequest()" data-i18n="rr.title">租屋需求登記</button>
+        <a href="https://lin.ee/YDEZNOL" target="_blank" rel="noopener" class="monthly-cta" data-gtag-label="line_monthly" data-i18n="monthly.ctaBtn">LINE 聯絡客服</a>
+      </div>
     </section>
   </main>
 
@@ -261,8 +383,35 @@
         'monthly.empty': '目前暫無月租房源，歡迎 LINE 洽詢。',
         'monthly.special': '月租優惠',
         'monthly.perMonth': ' / 月',
-        'monthly.ctaText': '想了解入住日期與細節？歡迎聯絡客服',
+        'monthly.ctaText': '找不到理想的房源？登記您的租屋需求，或直接聯絡客服',
+        'rr.close': '關閉',
         'monthly.ctaBtn': 'LINE 聯絡客服',
+        'rr.title': '租屋需求登記',
+        'rr.subtitle': '請告訴我們您理想的房屋條件，我們將協助您尋找合適的物件。',
+        'rr.q.lookingFor': '您要找什麼？',
+        'rr.q.area': '希望居住的地區',
+        'rr.q.budget': '每月租金預算',
+        'rr.q.layout': '希望的房屋格局',
+        'rr.q.moveIn': '預計入住時間',
+        'rr.q.people': '預計入住人數',
+        'rr.q.features': '希望具備的設備',
+        'rr.q.other': '其他希望條件',
+        'rr.q.contact': '希望如何聯絡您？',
+        'rr.multi': '（可複選）',
+        'rr.ph.area': '例如：大阪市中央區、浪速區、天王寺區等',
+        'rr.ph.other': '例如：車站距離、樓層、朝向、初期費用預算、特別需求等',
+        'rr.ph.email': '請輸入您的電子郵件地址',
+        'rr.email': '電子郵件',
+        'rr.contactId': 'LINE ID／電話號碼',
+        'rr.privacyTitle': '個人資料的使用目的',
+        'rr.privacy': '我們將使用您提供的聯絡資料，進行租屋需求確認、物件介紹及相關聯絡。未經您的同意，不會用於其他用途。',
+        'rr.submit': '送出需求',
+        'rr.sending': '送出中…',
+        'rr.successTitle': '已收到您的需求！',
+        'rr.successText': '我們將盡快以您選擇的方式與您聯絡，謝謝。',
+        'rr.errRequired': '請填寫所有必填項目（標示 * 的欄位）。',
+        'rr.errEmail': '請輸入正確的電子郵件地址。',
+        'rr.errSend': '送出失敗，請稍後再試，或直接透過 LINE 聯絡我們。',
         'nav.becomeHost': '成為房東/達人',
         'nav.charter': '包車服務',
         'nav.rooms': '房源一覽',
@@ -285,8 +434,35 @@
         'monthly.empty': '現在マンスリー物件はありません。LINE でお気軽にお問い合わせください。',
         'monthly.special': 'マンスリー特別価格',
         'monthly.perMonth': ' / 月',
-        'monthly.ctaText': '入居日や詳細はカスタマーサービスまでお問い合わせください',
+        'monthly.ctaText': 'ご希望の物件が見つからない場合は、お部屋探しリクエストまたはカスタマーサービスへ',
+        'rr.close': '閉じる',
         'monthly.ctaBtn': 'LINE でお問い合わせ',
+        'rr.title': 'お部屋探しリクエスト',
+        'rr.subtitle': 'ご希望の条件をお知らせください。ぴったりの物件探しをお手伝いします。',
+        'rr.q.lookingFor': 'お探しの物件',
+        'rr.q.area': 'ご希望のエリア',
+        'rr.q.budget': 'ご予算（月額賃料）',
+        'rr.q.layout': 'ご希望の間取り',
+        'rr.q.moveIn': '入居希望時期',
+        'rr.q.people': '入居人数',
+        'rr.q.features': 'ご希望の設備',
+        'rr.q.other': 'その他のご希望',
+        'rr.q.contact': 'ご希望の連絡方法',
+        'rr.multi': '（複数選択可）',
+        'rr.ph.area': '例：大阪市中央区、浪速区、天王寺区など',
+        'rr.ph.other': '例：駅からの距離、階数、向き、初期費用のご予算、その他ご要望など',
+        'rr.ph.email': 'メールアドレスを入力してください',
+        'rr.email': 'メールアドレス',
+        'rr.contactId': 'LINE ID／電話番号',
+        'rr.privacyTitle': '個人情報の利用目的',
+        'rr.privacy': 'ご提供いただいた連絡先は、ご希望条件の確認・物件のご紹介および関連するご連絡にのみ使用し、ご同意なく他の目的には使用しません。',
+        'rr.submit': '送信する',
+        'rr.sending': '送信中…',
+        'rr.successTitle': 'リクエストを受け付けました！',
+        'rr.successText': 'ご希望の方法で担当者よりご連絡いたします。ありがとうございました。',
+        'rr.errRequired': '必須項目（*）をすべてご入力ください。',
+        'rr.errEmail': '正しいメールアドレスを入力してください。',
+        'rr.errSend': '送信に失敗しました。時間をおいて再度お試しいただくか、LINE でお問い合わせください。',
         'nav.becomeHost': 'ホストになる',
         'nav.charter': 'チャーター便',
         'nav.rooms': '物件一覧',
@@ -309,8 +485,35 @@
         'monthly.empty': 'No monthly stays available right now — contact us on LINE.',
         'monthly.special': 'Monthly Special',
         'monthly.perMonth': ' / month',
-        'monthly.ctaText': 'Questions about move-in dates or details? Contact us',
+        'monthly.ctaText': 'Can\'t find the right place? Send us a rental request or contact us',
+        'rr.close': 'Close',
         'monthly.ctaBtn': 'LINE Customer Service',
+        'rr.title': 'Rental Request',
+        'rr.subtitle': 'Tell us what you are looking for and we will help you find the right place.',
+        'rr.q.lookingFor': 'What are you looking for?',
+        'rr.q.area': 'Preferred area',
+        'rr.q.budget': 'Monthly rent budget',
+        'rr.q.layout': 'Preferred layout',
+        'rr.q.moveIn': 'Planned move-in',
+        'rr.q.people': 'Number of occupants',
+        'rr.q.features': 'Desired features',
+        'rr.q.other': 'Other requests',
+        'rr.q.contact': 'How should we contact you?',
+        'rr.multi': '(select all that apply)',
+        'rr.ph.area': 'e.g. Chuo-ku, Naniwa-ku, Tennoji-ku (Osaka)',
+        'rr.ph.other': 'e.g. distance to station, floor, orientation, move-in cost budget, special needs',
+        'rr.ph.email': 'Enter your email address',
+        'rr.email': 'Email',
+        'rr.contactId': 'LINE ID / phone number',
+        'rr.privacyTitle': 'How we use your information',
+        'rr.privacy': 'We use your contact details only to confirm your request, introduce properties and follow up with you. We will not use them for any other purpose without your consent.',
+        'rr.submit': 'Send request',
+        'rr.sending': 'Sending…',
+        'rr.successTitle': 'We have received your request!',
+        'rr.successText': 'We will contact you soon by your preferred method. Thank you.',
+        'rr.errRequired': 'Please fill in all required fields (marked *).',
+        'rr.errEmail': 'Please enter a valid email address.',
+        'rr.errSend': 'Sending failed. Please try again later or contact us on LINE.',
         'nav.becomeHost': 'Become a Host',
         'nav.charter': 'Charter Service',
         'nav.rooms': 'Properties',
@@ -369,11 +572,11 @@
         return '<a class="monthly-card" href="/rooms/' + encodeURIComponent(p.id) + '.html?monthly=1">' +
           '<div class="cover">' + (cover ? '<img src="' + esc(cover.url) + '" alt="' + esc(loc(p.name, lang)) + '" loading="lazy">' : '') + '</div>' +
           '<div class="body">' +
-            '<h2 class="text-xl font-serif font-bold text-amber-900 mb-1">' + esc(loc(p.name, lang)) + '</h2>' +
-            (meta ? '<p class="text-sm text-amber-700 mb-3">' + esc(meta) + '</p>' : '') +
+            '<h2 class="text-xl font-serif font-bold mg-title mb-1">' + esc(loc(p.name, lang)) + '</h2>' +
+            (meta ? '<p class="text-sm mg-muted mb-3">' + esc(meta) + '</p>' : '') +
             '<p class="monthly-special">' + T['monthly.special'] + '</p>' +
             '<p class="monthly-price">¥' + Number(it.price).toLocaleString('en-US') + '<small>' + T['monthly.perMonth'] + '</small></p>' +
-            (it.note ? '<p class="text-sm text-amber-800 mt-2">' + esc(it.note) + '</p>' : '') +
+            (it.note ? '<p class="text-sm mg-text mt-2">' + esc(it.note) + '</p>' : '') +
           '</div></a>';
       });
       grid.innerHTML = cards.length ? cards.join('') : '<div class="monthly-empty">' + T['monthly.empty'] + '</div>';
@@ -408,12 +611,119 @@
       }
     }
 
+    // ---------- 租屋需求登記 ----------
+    const RR_LANG_IDX = { 'zh-TW': 1, 'ja': 2, 'en': 3 };
+    let currentLang = 'zh-TW';
+
+    function buildRentalForm() {
+      const O = window.RENTAL_REQUEST_OPTIONS;
+      document.querySelectorAll('[data-rr-options]').forEach(function(box) {
+        const name = box.dataset.rrOptions;
+        const multi = name === 'features';
+        box.innerHTML = O[name].map(function(o, i) {
+          const checked = !multi && (name === 'lookingFor' || name === 'contactVia') && i === 0 ? ' checked' : '';
+          return '<label class="rr-opt"><input type="' + (multi ? 'checkbox' : 'radio') + '" name="' + name + '" value="' + esc(o[0]) + '"' + checked + '>' +
+            '<span data-rr-opt="' + name + ':' + esc(o[0]) + '"></span></label>';
+        }).join('');
+      });
+      const form = document.getElementById('rentalRequestForm');
+      form.addEventListener('change', function(e) {
+        if (e.target.name === 'contactVia') {
+          document.getElementById('rrContactIdWrap').hidden = e.target.value === 'email';
+        }
+      });
+      form.addEventListener('submit', submitRentalRequest);
+    }
+
+    function openRentalRequest() {
+      const modal = document.getElementById('rentalRequestModal');
+      // Reopening after a successful submit starts a fresh form
+      if (!document.getElementById('rrSuccess').hidden) {
+        const form = document.getElementById('rentalRequestForm');
+        form.reset();
+        document.getElementById('rrContactIdWrap').hidden = true;
+        document.getElementById('rrError').hidden = true;
+        form.hidden = false;
+        document.getElementById('rrSuccess').hidden = true;
+      }
+      modal.hidden = false;
+      modal.scrollTop = 0;
+      document.body.style.overflow = 'hidden';
+      if (window.gtag) gtag('event', 'rental_request_open');
+    }
+
+    function closeRentalRequest() {
+      document.getElementById('rentalRequestModal').hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && !document.getElementById('rentalRequestModal').hidden) closeRentalRequest();
+    });
+
+    function applyRentalLabels(lang) {
+      const O = window.RENTAL_REQUEST_OPTIONS;
+      const idx = RR_LANG_IDX[lang] || 1;
+      document.querySelectorAll('[data-rr-opt]').forEach(function(el) {
+        const parts = el.dataset.rrOpt.split(':');
+        const o = O[parts[0]].find(function(x) { return x[0] === parts[1]; });
+        if (o) el.textContent = o[idx];
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+        const text = TRANSLATIONS[lang][el.dataset.i18nPlaceholder];
+        if (text !== undefined) el.placeholder = text;
+      });
+    }
+
+    async function submitRentalRequest(e) {
+      e.preventDefault();
+      const form = e.target;
+      const T = TRANSLATIONS[currentLang];
+      const err = document.getElementById('rrError');
+      const val = function(name) { const el = form.querySelector('[name="' + name + '"]:checked'); return el ? el.value : ''; };
+      const payload = {
+        lookingFor: val('lookingFor'), budget: val('budget'), layout: val('layout'),
+        moveIn: val('moveIn'), people: val('people'), contactVia: val('contactVia'),
+        features: Array.from(form.querySelectorAll('[name="features"]:checked')).map(function(el) { return el.value; }),
+        area: form.area.value.trim(), other: form.other.value.trim(),
+        email: form.email.value.trim(), contactId: form.contactId.value.trim(),
+        website: form.website.value, lang: currentLang
+      };
+      const missing = !payload.lookingFor || !payload.area || !payload.budget || !payload.layout || !payload.moveIn ||
+        !payload.people || !payload.contactVia || !payload.email || (payload.contactVia !== 'email' && !payload.contactId);
+      err.hidden = true;
+      if (missing) { err.textContent = T['rr.errRequired']; err.hidden = false; return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) { err.textContent = T['rr.errEmail']; err.hidden = false; return; }
+
+      const btn = form.querySelector('.rr-submit');
+      btn.disabled = true;
+      btn.textContent = T['rr.sending'];
+      try {
+        const res = await fetch('/api/rental-requests', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        form.hidden = true;
+        document.getElementById('rrSuccess').hidden = false;
+        document.getElementById('rentalRequestModal').scrollTop = 0;
+        if (window.gtag) gtag('event', 'generate_lead', { event_category: 'rental_request' });
+      } catch (ex) {
+        err.textContent = T['rr.errSend'];
+        err.hidden = false;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = TRANSLATIONS[currentLang]['rr.submit'];
+      }
+    }
+
     function setLanguage(lang) {
       if (!TRANSLATIONS[lang]) return;
+      currentLang = lang;
       localStorage.setItem('lang', lang);
       applyTranslations(lang);
       applyFooterOverrides(lang);
       renderMonthly(lang);
+      applyRentalLabels(lang);
     }
 
     async function init() {
@@ -424,6 +734,7 @@
       } catch (e) { /* keep defaults */ }
       const saved = localStorage.getItem('lang');
       const lang = TRANSLATIONS[saved] ? saved : 'zh-TW';
+      buildRentalForm();
       setLanguage(lang);
     }
 

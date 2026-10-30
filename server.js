@@ -260,6 +260,7 @@ const migrations = [
   "ALTER TABLE properties ADD COLUMN hasElevator INTEGER DEFAULT 0",
   "ALTER TABLE properties ADD COLUMN hasGarage INTEGER DEFAULT 0",
   "ALTER TABLE properties ADD COLUMN categoryTags TEXT DEFAULT '[]'",
+  "ALTER TABLE properties ADD COLUMN monthlyFeatures TEXT DEFAULT '[]'",
   "ALTER TABLE property_images ADD COLUMN isCover INTEGER DEFAULT 0"
 ];
 for (const sql of migrations) {
@@ -747,6 +748,7 @@ function getRegionsWithProperties() {
       p.amenities    = safeParseJSON(p.amenities);
       p.spaceIntro   = safeParseJSON(p.spaceIntro);
       p.categoryTags = safeParseJSON(p.categoryTags);
+      p.monthlyFeatures = safeParseJSON(p.monthlyFeatures);
     }
   }
 
@@ -800,6 +802,7 @@ function getPropertyWithImages(prop) {
   prop.amenities    = safeParseJSON(prop.amenities);
   prop.spaceIntro   = safeParseJSON(prop.spaceIntro);
   prop.categoryTags = safeParseJSON(prop.categoryTags);
+  prop.monthlyFeatures = safeParseJSON(prop.monthlyFeatures);
   return prop;
 }
 
@@ -1039,7 +1042,7 @@ app.get('/rooms/:id.html', (req, res) => {
     const waBtn = `<a href="https://wa.me/+819054076414" target="_blank" rel="noopener" class="booking-btn" data-gtag-label="whatsapp_booking">${iconWa}<span class="booking-label">電話·WhatsApp預約</span>${chevron}</a>`;
     const mobileBarHtml = `<div id="mobileBookingBar" class="mobile-booking-bar booking-wrapper" style="flex-direction:column;align-items:stretch;padding:0;background:transparent;border-top:none;box-shadow:none;">` +
       `<div class="booking-popup" style="bottom:100%;top:auto;margin:0 0 8px 0;">${monthlyItem ? '' : airbnbBtn}${lineBtn}${waBtn}</div>` +
-      `<button type="button" class="booking-primary" onclick="toggleBookingPopup(this)" style="border-radius:0;">` +
+      `<button type="button" class="booking-primary" onclick="toggleBookingPopup(this)" style="border-radius:0;${monthlyItem ? 'background:linear-gradient(135deg,#16a34a,#15803d);border-color:#15803d;' : ''}">` +
       `<span id="mobileBookingBarText">${monthlyItem ? '月租洽詢 ¥' + monthlyItem.price.toLocaleString('en-US') + ' / 月' : '立即預訂'}</span>` +
       `<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>` +
       `</button></div>`;
@@ -1804,6 +1807,7 @@ app.post('/api/properties', requireAuth, async (req, res) => {
     nearbyAttractions: ml(p.nearbyAttractions), parkingInfo: ml(p.parkingInfo),
     hasStairs: p.hasStairs ? 1 : 0, hasElevator: p.hasElevator ? 1 : 0, hasGarage: p.hasGarage ? 1 : 0,
     categoryTags: JSON.stringify(Array.isArray(p.categoryTags) ? p.categoryTags : []),
+    monthlyFeatures: JSON.stringify(Array.isArray(p.monthlyFeatures) ? p.monthlyFeatures.filter(k => typeof k === 'string') : []),
     ical_url: p.icalUrl || ''
   };
   const colNames = Object.keys(cols);
@@ -1960,6 +1964,7 @@ app.get('/api/export', requireAuth, (req, res) => {
     p.quickInfo  = safeParseJSON(p.quickInfo);
     p.amenities  = safeParseJSON(p.amenities);
     p.spaceIntro = safeParseJSON(p.spaceIntro);
+    p.monthlyFeatures = safeParseJSON(p.monthlyFeatures);
   });
   res.setHeader('Content-Disposition', 'attachment; filename=osaka-properties.json');
   res.json(props);
@@ -2075,6 +2080,130 @@ app.post('/api/settings', requireAuth, (req, res) => {
     ON CONFLICT(key) DO UPDATE SET value = excluded.value, updatedAt = CURRENT_TIMESTAMP`)
     .run(key.trim(), JSON.stringify(storedValue));
   invalidateSSRCache();
+  res.json({ success: true });
+});
+
+// ==================== RENTAL REQUESTS (租屋需求登記, /monthly form) ====================
+// Stored for the admin list and sent to the company via Google Apps Script. Option keys are whitelisted
+// against js/rental-request-options.js, the same file the form and admin read.
+const RENTAL_OPTS = require('./js/rental-request-options.js');
+const rentalKeys = name => new Set(RENTAL_OPTS[name].map(o => o[0]));
+const RENTAL_SINGLE = ['lookingFor', 'budget', 'layout', 'moveIn', 'people', 'contactVia'];
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS rental_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    data TEXT NOT NULL,
+    email TEXT NOT NULL,
+    lang TEXT DEFAULT 'zh-TW',
+    status TEXT DEFAULT 'new',
+    createdAt TEXT DEFAULT (datetime('now','localtime'))
+  );
+`);
+
+// No `trust proxy` is set, so req.ip is nginx (127.0.0.1) for everyone — key this
+// limiter on the client address nginx forwards instead.
+const rentalRequestLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  keyGenerator: req => rateLimit.ipKeyGenerator(String(req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim()),
+  message: { error: '送出次數過多，請稍後再試' }
+});
+
+// Notify the company by POSTing each request to a Google Apps Script web app
+// (docs/rental-request-apps-script.gs), which emails max@traveldays.jp from the
+// company's own Google account and logs a row to a Google Sheet. This server has
+// no SMTP (Cloudways bounces local sendmail). Best-effort: the DB row is the
+// source of truth, so a failure is only logged. Both values live in .env — the
+// URL must not go in site_settings because /api/settings is public.
+const RENTAL_REQUEST_WEBHOOK_URL = process.env.RENTAL_REQUEST_WEBHOOK_URL || '';
+const RENTAL_REQUEST_WEBHOOK_SECRET = process.env.RENTAL_REQUEST_WEBHOOK_SECRET || '';
+async function notifyRentalRequest(id, data, email, lang) {
+  if (!RENTAL_REQUEST_WEBHOOK_URL) {
+    console.log(`[rental-request] #${id} saved; RENTAL_REQUEST_WEBHOOK_URL not set, no email sent`);
+    return;
+  }
+  const label = (name, key) => { const o = RENTAL_OPTS[name].find(x => x[0] === key); return o ? o[1] : key; };
+  const fields = [
+    ['您要找什麼', label('lookingFor', data.lookingFor)],
+    ['希望居住的地區', data.area],
+    ['每月租金預算', label('budget', data.budget)],
+    ['希望的房屋格局', label('layout', data.layout)],
+    ['預計入住時間', label('moveIn', data.moveIn)],
+    ['預計入住人數', label('people', data.people)],
+    ['希望具備的設備', data.features.map(f => label('features', f)).join('、') || '（未選）'],
+    ['其他希望條件', data.other || '（無）'],
+    ['希望聯絡方式', label('contactVia', data.contactVia) + (data.contactId ? '（' + data.contactId + '）' : '')],
+    ['Email', email],
+    ['填寫語言', lang]
+  ];
+  const payload = {
+    secret: RENTAL_REQUEST_WEBHOOK_SECRET,
+    subject: `【租屋需求登記】#${id} ${data.area}`,
+    body: fields.map(([k, v]) => `${k}：${v}`).join('\n') + `\n\n後台查看：${SITE_URL}/admin.html（租屋需求 #${id}）`,
+    replyTo: email,
+    header: ['送出時間', '編號'].concat(fields.map(f => f[0])),
+    row: [new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Tokyo' }), id].concat(fields.map(f => f[1]))
+  };
+  try {
+    // Apps Script answers with a 302 to googleusercontent.com; fetch follows it
+    const res = await fetch(RENTAL_REQUEST_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(10000)
+    });
+    const text = await res.text();
+    if (!res.ok || !/"ok"\s*:\s*true/.test(text)) throw new Error(`HTTP ${res.status} ${text.slice(0, 200)}`);
+  } catch (err) {
+    console.error(`[rental-request] #${id} webhook failed:`, err.message);
+  }
+}
+
+app.post('/api/rental-requests', rentalRequestLimiter, (req, res) => {
+  const b = req.body || {};
+  // Honeypot: real visitors never see this field — pretend success, store nothing
+  if (b.website) return res.json({ success: true });
+
+  const str = (v, max) => String(v == null ? '' : v).trim().slice(0, max);
+  const data = {};
+  for (const name of RENTAL_SINGLE) {
+    const v = str(b[name], 40);
+    if (!rentalKeys(name).has(v)) return res.status(400).json({ error: 'invalid ' + name });
+    data[name] = v;
+  }
+  const featureKeys = rentalKeys('features');
+  data.features = Array.isArray(b.features) ? [...new Set(b.features.map(f => String(f)))].filter(f => featureKeys.has(f)) : [];
+  data.area = str(b.area, 100);
+  data.other = str(b.other, 1000);
+  data.contactId = str(b.contactId, 100);
+  const email = str(b.email, 200);
+  if (!data.area) return res.status(400).json({ error: 'area is required' });
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'invalid email' });
+  if (data.contactVia !== 'email' && !data.contactId) return res.status(400).json({ error: 'contactId is required' });
+  const lang = ['zh-TW', 'ja', 'en'].includes(b.lang) ? b.lang : 'zh-TW';
+
+  const info = db.prepare('INSERT INTO rental_requests (data, email, lang) VALUES (?, ?, ?)').run(JSON.stringify(data), email, lang);
+  notifyRentalRequest(info.lastInsertRowid, data, email, lang);
+  res.json({ success: true });
+});
+
+app.get('/api/rental-requests', requireAuth, (req, res) => {
+  const rows = db.prepare('SELECT * FROM rental_requests ORDER BY id DESC').all();
+  res.json(rows.map(r => ({ ...r, data: safeParseJSON(r.data, {}) })));
+});
+
+app.put('/api/rental-requests/:id', requireAuth, (req, res) => {
+  const status = req.body && req.body.status;
+  if (!['new', 'done'].includes(status)) return res.status(400).json({ error: 'status must be new or done' });
+  const info = db.prepare('UPDATE rental_requests SET status = ? WHERE id = ?').run(status, req.params.id);
+  if (!info.changes) return res.status(404).json({ error: 'Not found' });
+  res.json({ success: true });
+});
+
+app.delete('/api/rental-requests/:id', requireAuth, (req, res) => {
+  const info = db.prepare('DELETE FROM rental_requests WHERE id = ?').run(req.params.id);
+  if (!info.changes) return res.status(404).json({ error: 'Not found' });
   res.json({ success: true });
 });
 

@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="/css/tailwind.min.css">
   <link rel="stylesheet" href="/css/quill.snow.min.css">
   <script src="/js/quill.min.js" defer></script>
+  <script src="/js/monthly-features.js?v=1"></script>
+  <script src="/js/rental-request-options.js?v=1"></script>
   <style>
     .ql-toolbar.ql-snow, .ql-container.ql-snow { border-color: var(--c-border); }
     .ql-editor { min-height: 320px; font-size: 14px; line-height: 1.7; }
@@ -241,6 +243,14 @@
         </svg>
         月租民宿
         <span id="navMonthlyCount" class="ml-auto text-xs text-white/40 bg-white/10 px-1.5 py-0.5 rounded">0</span>
+      </button>
+      <button onclick="navigate('rental-requests')" data-nav="rental-requests"
+        class="sidebar-nav-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/90 text-sm transition-colors">
+        <svg class="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+        </svg>
+        租屋需求
+        <span id="navRentalRequestCount" class="ml-auto text-xs text-white/40 bg-white/10 px-1.5 py-0.5 rounded">0</span>
       </button>
     </nav>
 
@@ -618,6 +628,15 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- 月租資訊 (詳情頁，僅月租模式) -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h2 class="font-semibold text-sm">月租資訊</h2>
+            <span class="text-xs text-text-disabled">僅從「月租民宿」頁進入的房源頁顯示</span>
+          </div>
+          <div id="monthlyFeaturesBody" class="card-body space-y-4"></div>
         </div>
 
         <!-- 圖片集 (詳情頁) -->
@@ -1212,6 +1231,17 @@
       </div>
 
       <!-- View: Charter Service -->
+      <!-- View: Rental Requests (租屋需求登記 from /monthly) -->
+      <div id="view-rental-requests" class="hidden">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <h1 class="text-xl font-semibold">租屋需求</h1>
+          <span class="text-xs text-text-disabled">客人在 /monthly 填寫的「租屋需求登記」，同時寄送到 max@traveldays.jp 並記錄到 Google 試算表</span>
+        </div>
+        <div class="card">
+          <div id="rentalRequestList" class="divide-y divide-border-subdued"></div>
+        </div>
+      </div>
+
       <!-- View: Monthly Stays -->
       <div id="view-monthly" class="hidden">
         <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
@@ -1575,6 +1605,7 @@ let currentCoverImage = null;
 let currentImages = [];
 let currentAmenities = [];
 let currentCategoryTags = [];
+let currentMonthlyFeatures = []; // keys from js/monthly-features.js
 let isNewProperty = false;
 let editingRegionId = null;
 
@@ -1696,6 +1727,7 @@ async function loadData() {
     regionMap = new Map(regions.map(r => [r.id, r]));
     properties = regions.flatMap(r => r.properties);
     await loadMonthlyItems();
+    loadRentalRequestCount();
     updateCounts();
     renderCurrentView();
   } catch (err) {
@@ -1751,6 +1783,7 @@ function updateBreadcrumb(view) {
     homepage: '首頁管理',
     charter: '包車服務',
     monthly: '月租民宿',
+    'rental-requests': '租屋需求',
     blog: '部落格',
     'blog-edit': '撰寫文章',
     'blog-categories': '部落格分類'
@@ -1780,6 +1813,7 @@ function renderCurrentView() {
     case 'homepage': loadHomepageSettings(); break;
     case 'charter': loadCharterSettings(); break;
     case 'monthly': renderMonthlyList(); break;
+    case 'rental-requests': loadRentalRequests(); break;
     case 'blog': loadBlogPosts(); break;
     case 'blog-edit': break; // form is populated when opening
     case 'blog-categories': loadBlogCategories(); break;
@@ -1940,6 +1974,102 @@ async function saveMonthly() {
   }
 }
 
+// ==================== RENTAL REQUESTS ====================
+let rentalRequests = [];
+
+function rrLabel(name, key) {
+  const o = (RENTAL_REQUEST_OPTIONS[name] || []).find(x => x[0] === key);
+  return o ? o[1] : (key || '-');
+}
+
+function updateRentalRequestCount() {
+  document.getElementById('navRentalRequestCount').textContent = rentalRequests.filter(r => r.status === 'new').length;
+}
+
+async function loadRentalRequestCount() {
+  try {
+    rentalRequests = await apiGet('/rental-requests') || [];
+    updateRentalRequestCount();
+  } catch (err) { /* badge only */ }
+}
+
+async function loadRentalRequests() {
+  const list = document.getElementById('rentalRequestList');
+  list.innerHTML = '<div class="p-8 text-center text-text-secondary text-sm">載入中…</div>';
+  try {
+    rentalRequests = await apiGet('/rental-requests') || [];
+  } catch (err) {
+    list.innerHTML = '<div class="p-8 text-center text-text-secondary text-sm">載入失敗：' + escHtml(err.message) + '</div>';
+    return;
+  }
+  updateRentalRequestCount();
+  renderRentalRequests();
+}
+
+function renderRentalRequests() {
+  const list = document.getElementById('rentalRequestList');
+  if (rentalRequests.length === 0) {
+    list.innerHTML = '<div class="p-8 text-center text-text-secondary text-sm">尚無租屋需求</div>';
+    return;
+  }
+  list.innerHTML = rentalRequests.map(r => {
+    const d = r.data || {};
+    const isNew = r.status === 'new';
+    const row = (label, value) => `<div class="flex gap-3 text-sm py-1"><span class="text-text-secondary flex-shrink-0" style="width:7.5rem">${label}</span><span class="min-w-0" style="white-space:pre-wrap;word-break:break-word">${value}</span></div>`;
+    return `
+      <details class="px-5 py-3">
+        <summary class="flex items-center gap-3 cursor-pointer flex-wrap" style="list-style:none">
+          <span class="px-1.5 py-0.5 rounded text-xs ${isNew ? 'bg-amber-100 text-amber-800' : 'bg-surface text-text-secondary'}">${isNew ? '未處理' : '已處理'}</span>
+          <span class="text-sm font-medium">${escHtml(d.area || '-')}</span>
+          <span class="text-xs text-text-secondary">${escHtml(rrLabel('budget', d.budget))} · ${escHtml(rrLabel('layout', d.layout))} · ${escHtml(rrLabel('moveIn', d.moveIn))}</span>
+          <span class="ml-auto text-xs text-text-disabled">#${r.id} · ${escHtml(r.createdAt || '')}</span>
+        </summary>
+        <div class="mt-3" style="padding-left:0.25rem">
+          ${row('您要找什麼', escHtml(rrLabel('lookingFor', d.lookingFor)))}
+          ${row('希望居住的地區', escHtml(d.area || '-'))}
+          ${row('每月租金預算', escHtml(rrLabel('budget', d.budget)))}
+          ${row('希望的房屋格局', escHtml(rrLabel('layout', d.layout)))}
+          ${row('預計入住時間', escHtml(rrLabel('moveIn', d.moveIn)))}
+          ${row('預計入住人數', escHtml(rrLabel('people', d.people)))}
+          ${row('希望具備的設備', escHtml((d.features || []).map(f => rrLabel('features', f)).join('、') || '（未選）'))}
+          ${row('其他希望條件', escHtml(d.other || '（無）'))}
+          ${row('希望聯絡方式', escHtml(rrLabel('contactVia', d.contactVia)) + (d.contactId ? '（' + escHtml(d.contactId) + '）' : ''))}
+          ${row('Email', `<a href="mailto:${escHtml(r.email)}" class="text-link hover:underline">${escHtml(r.email)}</a>`)}
+          ${row('填寫語言', escHtml(r.lang || ''))}
+          <div class="flex gap-2 mt-3">
+            <button onclick="setRentalRequestStatus(${r.id}, '${isNew ? 'done' : 'new'}')" class="btn btn-default">${isNew ? '標記已處理' : '改回未處理'}</button>
+            <button onclick="deleteRentalRequest(${r.id})" class="btn btn-destructive">刪除</button>
+          </div>
+        </div>
+      </details>`;
+  }).join('');
+}
+
+async function setRentalRequestStatus(id, status) {
+  try {
+    await apiPut('/rental-requests/' + id, { status });
+    const r = rentalRequests.find(x => x.id === id);
+    if (r) r.status = status;
+    updateRentalRequestCount();
+    renderRentalRequests();
+  } catch (err) {
+    showToast('更新失敗：' + err.message, 'error');
+  }
+}
+
+async function deleteRentalRequest(id) {
+  if (!confirm('確定刪除這筆租屋需求？此操作無法復原。')) return;
+  try {
+    await apiDelete('/rental-requests/' + id);
+    rentalRequests = rentalRequests.filter(x => x.id !== id);
+    updateRentalRequestCount();
+    renderRentalRequests();
+    showToast('已刪除', 'success');
+  } catch (err) {
+    showToast('刪除失敗：' + err.message, 'error');
+  }
+}
+
 // ==================== PROPERTY FORM ====================
 function createNewProperty() {
   if (regions.length === 0) {
@@ -1985,6 +2115,7 @@ function startNewPropertyInRegion(regionId) {
   renderImageGrid();
   renderAmenities();
   renderCategoryTags();
+  renderMonthlyFeatures();
   populateRegionSelect();
   navigate('property-form');
 }
@@ -2084,6 +2215,7 @@ function clearForm() {
   currentCoverImage = null;
   currentAmenities = [];
   currentCategoryTags = [];
+  currentMonthlyFeatures = [];
   switchPropLangTab('zh-TW');
 }
 
@@ -2154,6 +2286,7 @@ function loadPropertyToForm(prop) {
 
   currentAmenities = Array.isArray(prop.amenities) ? [...prop.amenities] : [];
   currentCategoryTags = Array.isArray(prop.categoryTags) ? [...prop.categoryTags] : [];
+  currentMonthlyFeatures = Array.isArray(prop.monthlyFeatures) ? [...prop.monthlyFeatures] : [];
 
   const allImages = (prop.images || []).map(img => ({
     url: img.url,
@@ -2168,6 +2301,7 @@ function loadPropertyToForm(prop) {
   renderImageGrid();
   renderAmenities();
   renderCategoryTags();
+  renderMonthlyFeatures();
   switchPropLangTab('zh-TW');
 }
 
@@ -2235,6 +2369,7 @@ async function saveProperty() {
     hasElevator: document.getElementById('f-hasElevator').checked ? 1 : 0,
     hasGarage: document.getElementById('f-hasGarage').checked ? 1 : 0,
     categoryTags: currentCategoryTags,
+    monthlyFeatures: currentMonthlyFeatures,
     amenities: currentAmenities,
     spaceIntro: [1,2,3,4].map(function(n) {
       return {
@@ -2459,6 +2594,38 @@ function addCustomAmenity() {
 function removeCustomAmenity(name) {
   currentAmenities = currentAmenities.filter(a => a !== name);
   renderAmenities();
+}
+
+// ==================== MONTHLY FEATURES ====================
+function renderMonthlyFeatures() {
+  const body = document.getElementById('monthlyFeaturesBody');
+  if (!body || !window.MONTHLY_FEATURE_SECTIONS) return;
+  body.innerHTML = MONTHLY_FEATURE_SECTIONS.map(section => `
+    <div>
+      <p class="text-sm font-semibold mb-3">${section.title['zh-TW']}</p>
+      ${section.groups.map(group => `
+        <p class="form-label">${group.title['zh-TW']}</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-4">
+          ${group.items.map(([key, label]) => `
+            <div>
+              <input type="checkbox" id="mf-${key}" class="amenity-check hidden" ${currentMonthlyFeatures.includes(key) ? 'checked' : ''} onchange="toggleMonthlyFeature('${key}', this.checked)">
+              <label for="mf-${key}" class="amenity-label">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                ${label}
+              </label>
+            </div>`).join('')}
+        </div>`).join('')}
+    </div>`).join('<div class="border-t border-border-subdued"></div>');
+}
+
+function toggleMonthlyFeature(key, checked) {
+  if (checked) {
+    if (!currentMonthlyFeatures.includes(key)) currentMonthlyFeatures.push(key);
+  } else {
+    currentMonthlyFeatures = currentMonthlyFeatures.filter(k => k !== key);
+  }
 }
 
 // ==================== CATEGORY TAGS ====================
