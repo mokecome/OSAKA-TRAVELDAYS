@@ -23,7 +23,7 @@ const fs = require('fs');
 const { generateWebpVariants } = require('../lib/webp');
 
 const ROOT = path.join(__dirname, '..');
-const DB_PATH = path.join(ROOT, 'osaka-minshuku.db');
+const DB_PATH = process.env.DB_PATH || path.join(ROOT, '..', 'private_html', 'osaka-minshuku.db');
 
 function collectSources() {
   const sources = new Set();

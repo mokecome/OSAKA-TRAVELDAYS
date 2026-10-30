@@ -1,6 +1,6 @@
 const Database = require('better-sqlite3');
 const path = require('path');
-const db = new Database(path.join(__dirname, 'osaka-minshuku.db'));
+const db = new Database(process.env.DB_PATH || path.join(__dirname, '..', 'private_html', 'osaka-minshuku.db'));
 
 // Add new columns if not exist
 try { db.exec("ALTER TABLE properties ADD COLUMN nearbyAttractions TEXT DEFAULT ''"); } catch(e) {}

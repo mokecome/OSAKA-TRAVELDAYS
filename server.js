@@ -136,7 +136,8 @@ app.get('/admin.html', (req, res) => {
 });
 
 // ==================== DATABASE SETUP ====================
-const db = new Database(path.join(__dirname, 'osaka-minshuku.db'));
+// Lives outside public_html: nginx serves every file in the web root as-is.
+const db = new Database(process.env.DB_PATH || path.join(__dirname, '..', 'private_html', 'osaka-minshuku.db'));
 db.pragma('journal_mode = DELETE');
 db.pragma('foreign_keys = ON');
 

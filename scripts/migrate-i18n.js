@@ -11,7 +11,7 @@
 const Database = require('better-sqlite3');
 const path = require('path');
 
-const DB_PATH = path.join(__dirname, '..', 'osaka-minshuku.db');
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, '..', '..', 'private_html', 'osaka-minshuku.db');
 const API_KEY = process.env.ANTHROPIC_API_KEY;
 
 if (!API_KEY) {
