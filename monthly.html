@@ -162,6 +162,17 @@
     .rr-success .rr-check { width: 56px; height: 56px; border-radius: 50%; background: #16a34a; color: #fff; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; }
     .rr-success h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; }
     .rr-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    /* Desktop nav: keep it on one line. Tighten below 1536px; switch to the ☰ menu below 1280px */
+    .main-nav a, header .font-serif.text-xl { white-space: nowrap; }
+    @media (max-width: 1535px) {
+      .main-nav.space-x-8 > :not([hidden]) ~ :not([hidden]) { margin-left: 1.25rem; }
+      .brand-sub { display: none !important; }
+    }
+    @media (max-width: 1279px) {
+      .main-nav { display: none !important; }
+      .nav-toggle { display: block !important; }
+      #mobileNav { display: block !important; }
+    }
   </style>
   <script src="/js/rental-request-options.js?v=1"></script>
 </head>
@@ -175,7 +186,7 @@
           <img src="/images/logo.png" alt="大阪旅行日民宿 OSAKA TRAVELDAYS" class="w-10 h-10 object-contain">
           <div>
             <span class="hidden sm:inline text-xl font-serif font-bold text-amber-900 group-hover:text-amber-700 transition-colors">大阪旅行日民宿</span>
-            <span class="hidden sm:inline text-xs text-amber-600 ml-2 tracking-widest">OSAKA TRAVELDAYS</span>
+            <span class="brand-sub hidden sm:inline text-xs text-amber-600 ml-2 tracking-widest">OSAKA TRAVELDAYS</span>
           </div>
         </a>
         <div class="flex items-center gap-6">
@@ -184,7 +195,7 @@
             <button onclick="setLanguage('ja')" data-lang="ja" class="lang-btn-nav" aria-pressed="false">日本語</button>
             <button onclick="setLanguage('en')" data-lang="en" class="lang-btn-nav" aria-pressed="false">EN</button>
           </div>
-          <nav class="hidden md:flex items-center space-x-8">
+          <nav class="main-nav hidden md:flex items-center space-x-8">
             <a href="/become-host.html" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.becomeHost">成為房東/達人</a>
             <a href="/charter" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.charter">包車服務</a>
             <a href="/" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.featured">精選民宿</a>
@@ -194,7 +205,7 @@
             <a href="/#contact" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.contact">聯絡我們</a>
           </nav>
         </div>
-        <button class="md:hidden p-2 text-amber-800" aria-label="開啟選單" id="mobileMenuBtn">
+        <button class="nav-toggle md:hidden p-2 text-amber-800" aria-label="開啟選單" id="mobileMenuBtn">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
