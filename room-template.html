@@ -614,6 +614,7 @@
         perMonth: ' / 月',
         monthlyDesc: '歡迎聯絡客服洽詢月租入住日期與細節',
         monthlyCta: '月租洽詢',
+        rentalRequest: '租屋需求登記',
         monthlyLine: 'LINE 聯絡客服',
         shareCopied: '已複製連結'
       },
@@ -656,6 +657,7 @@
         perMonth: ' / 月',
         monthlyDesc: '入居日や詳細はカスタマーサービスまでお気軽にお問い合わせください',
         monthlyCta: 'マンスリーのお問い合わせ',
+        rentalRequest: 'お部屋探しリクエスト',
         monthlyLine: 'LINE でお問い合わせ',
         shareCopied: 'コピーしました'
       },
@@ -698,6 +700,7 @@
         perMonth: ' / month',
         monthlyDesc: 'Contact us for move-in dates and details',
         monthlyCta: 'Monthly Inquiry',
+        rentalRequest: 'Rental Request',
         monthlyLine: 'LINE Customer Service',
         shareCopied: 'Link copied'
       }
@@ -1139,6 +1142,7 @@
             '<span style="font-size:1rem;font-weight:500">' + ROOM_T[lang].perMonth + '</span></p>' +
             (MONTHLY.note ? '<p style="color:#dcfce7;font-size:0.85rem;margin-bottom:8px">' + esc(MONTHLY.note) + '</p>' : '') +
             '<p style="color:#bbf7d0;font-size:0.8rem;margin-bottom:16px">' + ROOM_T[lang].monthlyDesc + '</p>' +
+            '<a href="/monthly?register=1&area=' + encodeURIComponent(lang === 'zh-TW' ? (p.regionZh || '') : (p.regionEn || '')) + '" class="booking-primary" data-gtag-label="rental_request_room" style="text-decoration:none;justify-content:center;margin-bottom:8px;background:#fff;color:#15803d;border-color:#fff;box-shadow:none">' + ROOM_T[lang].rentalRequest + '</a>' +
             '<a href="https://lin.ee/YDEZNOL" target="_blank" rel="noopener" class="booking-primary" data-gtag-label="line_monthly" style="text-decoration:none;justify-content:center;margin-bottom:8px;background:#fff;color:#15803d;border-color:#fff;box-shadow:none">' + ROOM_T[lang].monthlyLine + '</a>' +
             '<a href="https://wa.me/+819054076414" target="_blank" rel="noopener" class="booking-primary" data-gtag-label="whatsapp_monthly" style="text-decoration:none;justify-content:center;background:transparent;color:#fff;border-color:rgba(255,255,255,0.7);box-shadow:none">' + ROOM_T[lang].bookingWaTitle + '</a>' +
             '</div>';

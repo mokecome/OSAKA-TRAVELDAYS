@@ -1052,7 +1052,12 @@ app.get('/rooms/:id.html', (req, res) => {
   // Inject full multilingual property data for client-side language switching
   const propDataScript = `<script>window.__PROPERTY_DATA = ${htmlSafeJson(p)};</script>`;
   // __MONTHLY must exist before the template's main script runs, so it goes in <head>
-  html = html.replace('</head>', `<script>window.__MONTHLY = ${htmlSafeJson(monthlyItem)};</script>\n</head>`);
+  // Monthly mode also swaps the page background to the /monthly light-green theme
+  // (in <head> so it never flashes the beige default)
+  const monthlyStyle = monthlyItem
+    ? '<style>:root{--color-bg:#f7fdf9}section.from-amber-50{background-image:linear-gradient(to bottom,#dcfce7,#f7fdf9)!important}section.bg-amber-50\\/50{background-color:#f0fdf4!important}</style>\n'
+    : '';
+  html = html.replace('</head>', `<script>window.__MONTHLY = ${htmlSafeJson(monthlyItem)};</script>\n${monthlyStyle}</head>`);
   html = html.replace('</body>', propDataScript + '\n</body>');
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');

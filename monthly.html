@@ -86,7 +86,7 @@
       max-height: 0; overflow: hidden;
       transition: max-height 0.25s ease;
     }
-    #mobileNav.open { max-height: 420px; }
+    #mobileNav.open { max-height: 480px; }
     #mobileNav a {
       display: block; padding: 0.875rem 1.5rem; color: #92400e;
       font-size: 1rem; font-weight: 500;
@@ -187,6 +187,7 @@
           <nav class="hidden md:flex items-center space-x-8">
             <a href="/become-host.html" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.becomeHost">成為房東/達人</a>
             <a href="/charter" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.charter">包車服務</a>
+            <a href="/" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.featured">精選民宿</a>
             <a href="/monthly" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.monthly">月租民宿</a>
             <a href="/#properties" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.rooms">房源一覽</a>
             <a href="/#about" class="text-amber-800 hover:text-amber-600 transition-colors font-medium" data-i18n="nav.about">關於我們</a>
@@ -206,6 +207,7 @@
   <nav id="mobileNav" style="top: 72px;">
     <a href="/become-host.html" data-i18n="nav.becomeHost">成為房東/達人</a>
     <a href="/charter" data-i18n="nav.charter">包車服務</a>
+    <a href="/" data-i18n="nav.featured">精選民宿</a>
     <a href="/monthly" data-i18n="nav.monthly">月租民宿</a>
     <a href="/#properties" data-i18n="nav.rooms">房源一覽</a>
     <a href="/#about" data-i18n="nav.about">關於我們</a>
@@ -377,7 +379,7 @@
     // Slim translations covering only nav + footer + monthly keys this page uses
     const TRANSLATIONS = {
       'zh-TW': {
-        'nav.monthly': '月租民宿',
+        'nav.featured': '精選民宿', 'nav.monthly': '月租民宿',
         'monthly.tagline': '長住大阪更划算・出差、遊學、旅居的第二個家',
         'monthly.loading': '載入中…',
         'monthly.empty': '目前暫無月租房源，歡迎 LINE 洽詢。',
@@ -428,7 +430,7 @@
         'footer.terms': '使用條款'
       },
       'ja': {
-        'nav.monthly': 'マンスリー民泊',
+        'nav.featured': 'おすすめ民泊', 'nav.monthly': 'マンスリー民泊',
         'monthly.tagline': '大阪に長く暮らすようにお得に滞在・出張、留学、長期滞在に',
         'monthly.loading': '読み込み中…',
         'monthly.empty': '現在マンスリー物件はありません。LINE でお気軽にお問い合わせください。',
@@ -479,7 +481,7 @@
         'footer.terms': '利用規約'
       },
       'en': {
-        'nav.monthly': 'Monthly Stays',
+        'nav.featured': 'Featured Stays', 'nav.monthly': 'Monthly Stays',
         'monthly.tagline': 'Stay longer in Osaka for less · Business trips, study abroad & long stays',
         'monthly.loading': 'Loading…',
         'monthly.empty': 'No monthly stays available right now — contact us on LINE.',
@@ -736,6 +738,14 @@
       const lang = TRANSLATIONS[saved] ? saved : 'zh-TW';
       buildRentalForm();
       setLanguage(lang);
+      // The room page's 租屋需求登記 button links here with ?register=1&area=<region>
+      const params = new URLSearchParams(location.search);
+      if (params.get('register') === '1') {
+        const area = (params.get('area') || '').slice(0, 100);
+        openRentalRequest();
+        if (area) document.querySelector('#rentalRequestForm [name="area"]').value = area;
+        history.replaceState(null, '', location.pathname);
+      }
     }
 
     // Mobile menu toggle
