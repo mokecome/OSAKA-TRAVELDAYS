@@ -569,6 +569,15 @@
 
     // Monthly-stay mode: set by server only for ?monthly=1 on a room listed in monthly.items
     var MONTHLY = window.__MONTHLY || null;
+    // Mobile bar's 租屋需求登記 link (monthly mode only): label + prefilled area follow the language
+    function syncMobileRegister(lang) {
+      var btn = document.getElementById('mobileRegisterBtn');
+      var d = window.__PROPERTY_DATA;
+      if (!btn || !ROOM_T[lang]) return;
+      document.getElementById('mobileRegisterLabel').textContent = ROOM_T[lang].rentalRequest;
+      if (d) btn.href = '/monthly?register=1&area=' + encodeURIComponent(lang === 'zh-TW' ? (d.regionZh || '') : (d.regionEn || ''));
+    }
+
     function mobileBarLabel(lang) {
       var T = ROOM_T[lang];
       return MONTHLY ? T.monthlyCta + ' ¥' + Number(MONTHLY.price).toLocaleString('en-US') + T.perMonth : T.bookNow;
@@ -1469,6 +1478,7 @@
         // Update mobile booking bar text
         var mobileBarText = document.getElementById('mobileBookingBarText');
         if (mobileBarText && ROOM_T[lang]) mobileBarText.textContent = mobileBarLabel(lang);
+        syncMobileRegister(lang);
         // Update nav links
         if (ROOM_T[lang]) {
           document.querySelectorAll('[data-i18n-room]').forEach(function(el) {
@@ -1504,6 +1514,7 @@
       // Sync mobile booking bar text to initial language
       var _mbarText = document.getElementById('mobileBookingBarText');
       if (_mbarText && ROOM_T[_initLang]) _mbarText.textContent = mobileBarLabel(_initLang);
+      syncMobileRegister(_initLang);
       // Sync nav links to initial language
       if (ROOM_T[_initLang]) {
         document.querySelectorAll('[data-i18n-room]').forEach(function(el) {
@@ -1519,7 +1530,11 @@
         })
         .then(function(data) {
           window.__PROPERTY_DATA = data;
-          renderProperty(data, getCurrentLang());
+          var fetchLang = getCurrentLang();
+          renderProperty(data, fetchLang);
+          var mbarText = document.getElementById('mobileBookingBarText');
+          if (mbarText && ROOM_T[fetchLang]) mbarText.textContent = mobileBarLabel(fetchLang);
+          syncMobileRegister(fetchLang);
         })
         .catch(function(err) {
           document.getElementById('loadingState').innerHTML =

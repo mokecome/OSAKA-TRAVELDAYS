@@ -1041,8 +1041,12 @@ app.get('/rooms/:id.html', (req, res) => {
       : '';
     const lineBtn = `<a href="https://lin.ee/YDEZNOL" target="_blank" rel="noopener" class="booking-btn" data-gtag-label="line_booking">${iconLine}<span class="booking-label">LINE專人客服訂房</span>${chevron}</a>`;
     const waBtn = `<a href="https://wa.me/+819054076414" target="_blank" rel="noopener" class="booking-btn" data-gtag-label="whatsapp_booking">${iconWa}<span class="booking-label">電話·WhatsApp預約</span>${chevron}</a>`;
+    // Monthly mode: the sidebar's 租屋需求登記 button is hidden on phones, so the bar offers it too
+    // (room-template's setLanguage keeps its label and area in step with the page language)
+    const iconForm = `<span class="booking-icon" style="background:#16a34a"><svg style="width:18px;height:18px" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></span>`;
+    const registerBtn = `<a href="/monthly?register=1&amp;area=${encodeURIComponent(p.regionZh || '')}" id="mobileRegisterBtn" class="booking-btn" data-gtag-label="rental_request_room_mobile">${iconForm}<span class="booking-label" id="mobileRegisterLabel">租屋需求登記</span>${chevron}</a>`;
     const mobileBarHtml = `<div id="mobileBookingBar" class="mobile-booking-bar booking-wrapper" style="flex-direction:column;align-items:stretch;padding:0;background:transparent;border-top:none;box-shadow:none;">` +
-      `<div class="booking-popup" style="bottom:100%;top:auto;margin:0 0 8px 0;">${monthlyItem ? '' : airbnbBtn}${lineBtn}${waBtn}</div>` +
+      `<div class="booking-popup" style="bottom:100%;top:auto;margin:0 0 8px 0;">${monthlyItem ? registerBtn : airbnbBtn}${lineBtn}${waBtn}</div>` +
       `<button type="button" class="booking-primary" onclick="toggleBookingPopup(this)" style="border-radius:0;${monthlyItem ? 'background:linear-gradient(135deg,#16a34a,#15803d);border-color:#15803d;' : ''}">` +
       `<span id="mobileBookingBarText">${monthlyItem ? '月租洽詢 ¥' + monthlyItem.price.toLocaleString('en-US') + ' / 月' : '立即預訂'}</span>` +
       `<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>` +
