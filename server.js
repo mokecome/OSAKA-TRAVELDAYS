@@ -1913,11 +1913,16 @@ app.post('/api/upload', requireAuth, (req, res) => {
       const filePath = path.join(uploadDir, f.filename);
       const ext = path.extname(f.originalname).toLowerCase();
       try {
-        const img = sharp(filePath);
+        // .rotate() bakes the EXIF Orientation into the pixels: phone photos store
+        // portrait shots sideways plus a "display rotated" tag, and sharp drops
+        // that tag on output — without this they'd show up rotated on the site.
+        const img = sharp(filePath).rotate();
         const meta = await img.metadata();
-        // Skip the resize/recompress for already-small images, but still emit
-        // a WebP sibling below for next-gen delivery.
-        if (!(meta.width <= COMPRESS_MAX_WIDTH && f.size < 500 * 1024)) {
+        const rotated = meta.orientation > 1;
+        const displayWidth = meta.orientation >= 5 ? meta.height : meta.width;
+        // Skip the resize/recompress for already-small, upright images, but
+        // still emit a WebP sibling below for next-gen delivery.
+        if (rotated || !(displayWidth <= COMPRESS_MAX_WIDTH && f.size < 500 * 1024)) {
           let pipeline = img.resize({ width: COMPRESS_MAX_WIDTH, withoutEnlargement: true });
           if (ext === '.png') pipeline = pipeline.png({ quality: COMPRESS_QUALITY });
           else if (ext === '.webp') pipeline = pipeline.webp({ quality: COMPRESS_QUALITY });
